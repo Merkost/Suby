@@ -3,6 +3,10 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.kotlinParcelize)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.kapt)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 android {
@@ -42,7 +46,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
     packaging {
         resources {
@@ -52,7 +56,7 @@ android {
 }
 
 dependencies {
-
+    implementation(libs.kotlin.datetime)
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.activity.compose)
@@ -60,10 +64,24 @@ dependencies {
     implementation(libs.icons.extended)
     implementation(libs.navigation)
     implementation(libs.ui)
+    implementation(libs.ui.util)
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
     implementation(libs.systemUiController)
+    implementation(libs.datastore)
+    implementation(libs.ktor)
+    implementation(libs.ktor.logging)
+    implementation(libs.ktor.serialization)
+    implementation(libs.ktor.negotiation)
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+//    implementation(libs.hilt.work)
+    implementation(libs.hilt.navigation)
+    ksp(libs.hilt.kapt)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
