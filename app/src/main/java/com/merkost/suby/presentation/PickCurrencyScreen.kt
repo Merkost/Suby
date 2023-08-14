@@ -29,26 +29,32 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.merkost.suby.SubyShape
 import com.merkost.suby.asWindowInsets
 import com.merkost.suby.model.Currency
 import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.SubyTopAppBar
+import com.merkost.suby.viewModel.MainViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PickCurrencyScreen(onCurrencySelected: (Currency) -> Unit) {
+fun PickCurrencyScreen(
+    isMainCurrency: Boolean = false,
+    onCurrencySelected: (Currency) -> Unit,
+    upPress: () -> Unit
+) {
     // TODO: search bar
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-
+    val mainViewModel = hiltViewModel<MainViewModel>()
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp),
         topBar = {
             SubyTopAppBar(title = {
                 Text(text = "Currencies")
-            }, scrollBehavior = scrollBehavior)
+            }, upPress = upPress, scrollBehavior = scrollBehavior)
         }) {
         LazyColumn(
             modifier = Modifier
@@ -63,7 +69,12 @@ fun PickCurrencyScreen(onCurrencySelected: (Currency) -> Unit) {
                 CurrencyItem(
                     modifier = Modifier.fillMaxWidth(),
                     currency = currency,
-                    onClick = onCurrencySelected
+                    onClick = {
+                        if (isMainCurrency) {
+                            mainViewModel.updateMainCurrency(currency)
+                        }
+                        onCurrencySelected(currency)
+                    }
                 )
             }
             item {
@@ -100,8 +111,8 @@ fun CurrencyAbsentItem(modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CurrencyItem(modifier: Modifier = Modifier, currency: Currency, onClick: (Currency) -> Unit) {
-    ElevatedCard(modifier = modifier, onClick = { onClick(currency) }) {
+fun CurrencyItem(modifier: Modifier = Modifier, currency: Currency, onClick: () -> Unit) {
+    ElevatedCard(modifier = modifier, onClick = onClick) {
         Row(
             modifier = modifier.padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -116,7 +127,7 @@ fun CurrencyItem(modifier: Modifier = Modifier, currency: Currency, onClick: (Cu
                     text = currency.flagEmoji,
                     style = MaterialTheme.typography.headlineMedium
                 )
-                Text(text = currency.name + " (${currency.code})")
+                Text(text = currency.fullName + " (${currency.code})")
             }
             Row {
                 Text(
