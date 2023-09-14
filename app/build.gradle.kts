@@ -56,6 +56,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.splashscreen)
     implementation(libs.kotlin.datetime)
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
