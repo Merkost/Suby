@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Suby</string>
+    <string name="add_new_currency">Add new currency</string>
+    <string name="add_new_currency_question">What currency do you want us to add?</string>
+    <string name="today">today</string>
+    <string name="tomorrow">tomorrow</string>
+    <string name="after_days">in %d days</string>
 </resources>
