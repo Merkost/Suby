@@ -27,7 +27,7 @@ class AppSettingsImpl(private val context: Context) : AppSettings {
 
     override suspend fun saveFirstTimeLaunch(newValue: Boolean) {
         context.dataStore.edit { preferences ->
-            preferences[FIRST_TIME_OPENING] = true
+            preferences[FIRST_TIME_OPENING] = newValue
         }
     }
 
