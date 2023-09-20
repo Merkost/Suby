@@ -8,6 +8,7 @@ import io.ktor.client.request.get
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import org.json.JSONObject
 
@@ -15,7 +16,7 @@ class RatesApi(private val client: HttpClient) {
 
     suspend fun getCurrencyRates(
         currencyCode: String
-    ) = flow<Rates> {
+    ) = flow<Result<Rates>> {
         val url = buildString {
             append(CURRENCY_ENDPOINT_FREE)
             append("/${currencyCode.lowercase()}")
@@ -41,10 +42,11 @@ class RatesApi(private val client: HttpClient) {
             }
 
             val currencyRates = Rates(date, ratesMap)
-            emit(currencyRates)
+            emit(Result.success(currencyRates))
         } else {
-            // Handle error cases
-            // Emit an empty or default CurrencyRates object
+            emit(Result.failure(Throwable()))
         }
+    }.catch {
+        emit(Result.failure(Throwable()))
     }
 }
