@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.activity.compose)
     implementation(libs.coil)
     implementation(libs.coil.svg)
+    implementation(libs.lottie)
 
     implementation(platform(libs.compose.bom))
     implementation(libs.icons.extended)
