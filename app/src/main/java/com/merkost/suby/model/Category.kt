@@ -1,16 +1,14 @@
 package com.merkost.suby.model
 
-enum class Category(val categoryName: String, val emoji: String) {
-    ENTERTAINMENT("Entertainment", "🍿"),
-    TECHNOLOGY("Technology", "📱"),
-    SOCIAL_MEDIA("Social Media", "📷"),
-    EDUCATION("Education", "📚"),
-    NEWS_MEDIA("News & Media", "📰"),
-    FITNESS_HEALTH("Fitness & Health", "💪"),
-    FOOD("Food", "🍔"),
-    SHOPPING("Shopping", "🛍️"),
-    UTILITIES("Utilities", "💡"),
-    FINANCE("Finance", "💰"),
-    TRAVEL("Travel", "✈️"),
-    CUSTOM("Custom", "✏️")
-}
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Parcelize
+@Serializable
+data class Category(
+    @SerialName("id") val categoryId: Int,
+    @SerialName("name") val categoryName: String,
+    val emoji: String,
+) : Parcelable
