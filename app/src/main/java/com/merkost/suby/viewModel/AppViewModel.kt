@@ -6,11 +6,13 @@ import com.merkost.suby.model.Currency
 import com.merkost.suby.repository.datastore.AppSettings
 import com.merkost.suby.repository.room.SubscriptionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,8 +23,9 @@ class AppViewModel @Inject constructor(
 ) : ViewModel() {
 
     var isLoading: Boolean = true
+        private set
 
-    val isFirstTime = MutableStateFlow(false)
+    val isFirstTimeState = MutableStateFlow(true)
 
     val subscriptions = subscriptionRepository.subscriptions
         .stateIn(viewModelScope, SharingStarted.Eagerly, listOf())
@@ -30,15 +33,12 @@ class AppViewModel @Inject constructor(
     val mainCurrency = appSettings.mainCurrency
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Currency.USD)
 
-    val total = MutableStateFlow(TotalPrice())
-
     init {
-        viewModelScope.launch {
-            appSettings.isFirstTimeLaunch.collectLatest { isF ->
-                isFirstTime.update { isF }
+            appSettings.isFirstTimeLaunch.zip(subscriptions) { isFirstTimeLaunch, _ ->
+                isFirstTimeState.update { isFirstTimeLaunch }
+                delay(200)
                 isLoading = false
-            }
-        }
+            }.launchIn(viewModelScope)
     }
 
     fun updateFirstTimeOpening() {
