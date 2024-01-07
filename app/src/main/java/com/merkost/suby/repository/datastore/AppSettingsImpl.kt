@@ -13,7 +13,7 @@ class AppSettingsImpl(private val context: Context) : AppSettings {
 
     // to make sure there's only one instance
     companion object {
-        private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("appSettings")
+        private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("SubySettings")
 
         private val FIRST_TIME_OPENING = booleanPreferencesKey("first_time_opening")
         private val MAIN_CURRENCY = stringPreferencesKey("main_currency")
