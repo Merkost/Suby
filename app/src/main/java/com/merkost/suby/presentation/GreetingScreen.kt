@@ -46,10 +46,6 @@ fun GreetingScreen(onContinueClick: () -> Unit) {
         )
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.updateFirstTimeOpening()
-    }
-
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -92,7 +88,10 @@ fun GreetingScreen(onContinueClick: () -> Unit) {
             ) {
                 FilledTonalButton(
                     modifier = Modifier.align(Alignment.CenterStart),
-                    onClick = onContinueClick
+                    onClick = {
+                        viewModel.updateFirstTimeOpening()
+                        onContinueClick()
+                    }
                 ) {
                     Text(
                         text = "Continue",
