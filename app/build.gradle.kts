@@ -19,7 +19,7 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -41,18 +41,18 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
     buildFeatures {
         compose = true
         buildConfig = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.4"
     }
     packaging {
         resources {
@@ -81,19 +81,15 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.systemUiController)
     implementation(libs.datastore)
-    implementation(libs.ktor)
-    implementation(libs.ktor.logging)
-    implementation(libs.ktor.serialization)
-    implementation(libs.ktor.negotiation)
+    implementation(libs.bundles.ktor)
     implementation(platform(libs.supabase.bom))
     implementation(libs.supabase.database)
     implementation(libs.supabase.storage)
+    ksp(libs.room.compiler)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    ksp(libs.room.compiler)
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
-//    implementation(libs.hilt.work)
     implementation(libs.hilt.navigation)
     ksp(libs.hilt.kapt)
     testImplementation(libs.junit)
