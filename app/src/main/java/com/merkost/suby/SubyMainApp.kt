@@ -14,8 +14,10 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.merkost.suby.model.Currency
 import com.merkost.suby.model.FeedbackAction
+import com.merkost.suby.presentation.FeedbackScreen
 import com.merkost.suby.presentation.GreetingScreen
 import com.merkost.suby.presentation.NewSubscriptionScreen
 import com.merkost.suby.presentation.PickCurrencyScreen
@@ -68,9 +70,9 @@ private fun NavGraphBuilder.NavGraph(
 
     }
 
-    composable(Destinations.ONBOARDING) {
-        // TODO:
-    }
+//    composable(Destinations.ONBOARDING) {
+//        // TODO:
+//    }
 
     composable(Destinations.MAIN_SCREEN) { backStackEntry ->
         SubscriptionsScreen(onAddClicked = {
@@ -78,8 +80,7 @@ private fun NavGraphBuilder.NavGraph(
         }, onCurrencyClick = {
             navController.navigate(Destinations.MAIN_CURRENCY_PICK)
         }, onSubscriptionInfo = { subId ->
-            backStackEntry.savedStateHandle[Arguments.SUBSCRIPTION_ID] = subId
-            navController.navigate(Destinations.SUBSCRIPTION_INFO)
+            navController.navigate(Destinations.SubscriptionInfo(subId))
         })
     }
 
@@ -88,19 +89,15 @@ private fun NavGraphBuilder.NavGraph(
             pickedCurrency = backStackEntry.savedStateHandle.get<Currency>(Arguments.CURRENCY),
             onCurrencyClicked = { navController.navigate(Destinations.CURRENCY_PICK) },
             upPress = upPress,
-            onServiceAbsent = {
-                backStackEntry.savedStateHandle[Arguments.FEEDBACK_SECTION] =
-                    FeedbackAction.ADD_SERVICE
-                navController.navigate(Destinations.ADD_CUSTOM_SERVICE)
+            onServiceAbsent = { inputText ->
+                navController.navigate(Destinations.Feedback(FeedbackAction.ADD_SERVICE.toString(), text = inputText))
             }
         )
     }
 
-    composable(Destinations.SUBSCRIPTION_INFO) { backStackEntry ->
+    composable<Destinations.SubscriptionInfo> {
         SubscriptionInfoScreen(
-            subscriptionId = navController.previousBackStackEntry?.savedStateHandle?.get<Int>(
-                Arguments.SUBSCRIPTION_ID
-            ),
+            subscriptionId = it.toRoute<Destinations.SubscriptionInfo>().subscriptionId,
             upPress = upPress
         )
     }
@@ -117,14 +114,14 @@ private fun NavGraphBuilder.NavGraph(
     composable(Destinations.MAIN_CURRENCY_PICK) {
         PickCurrencyScreen(
             isMainCurrency = true,
-            onCurrencySelected = {
-                upPress()
-            }, upPress = upPress
+            onCurrencySelected = { upPress() },
+            upPress = upPress
         )
     }
 
-    composable(Destinations.FEEDBACK) {
-
+    composable<Destinations.Feedback> {
+        val section = it.toRoute<Destinations.Feedback>()
+        FeedbackScreen(upPress = upPress, FeedbackAction.valueOf(section.action), text = section.text)
     }
 
 

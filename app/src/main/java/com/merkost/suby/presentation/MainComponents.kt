@@ -10,9 +10,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -42,12 +40,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.merkost.suby.R
 import com.merkost.suby.SubyShape
 import com.merkost.suby.dateString
 import com.merkost.suby.model.Currency
@@ -57,7 +57,7 @@ import com.merkost.suby.model.Period
 import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.SubyTextField
 import com.merkost.suby.presentation.base.TitleColumn
-import com.merkost.suby.utils.Constants.defultCustomPeriod
+import com.merkost.suby.utils.Constants.DEFAULT_CUSTOM_PERIOD
 
 @Composable
 fun DescriptionView(
@@ -69,16 +69,13 @@ fun DescriptionView(
         FocusRequester()
     }
     TitleColumn(
-        title = "Description",
+        title = stringResource(id = R.string.title_description),
         modifier = modifier,
     ) {
         Card {
-            BasicTextField(
+            SubyTextField(
                 value = description,
                 readOnly = onDescriptionChanged == null,
-                textStyle = MaterialTheme.typography.bodyLarge.copy(
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                ),
                 onValueChange = { newValue ->
                     onDescriptionChanged?.let { onDescriptionChanged(newValue) }
                 },
@@ -90,9 +87,7 @@ fun DescriptionView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester),
-                decorationBox = {
-                    Box(modifier = Modifier.padding(16.dp)) { it() }
-                })
+            )
         }
     }
 }
@@ -100,12 +95,20 @@ fun DescriptionView(
 
 @Composable
 fun PriceField(
+    modifier: Modifier = Modifier,
     price: String,
     currency: Currency,
     textStyle: TextStyle,
     onPriceInput: ((String) -> Unit)? = null,
 ) {
+    val focusRequester = remember {
+        FocusRequester()
+    }
+
     SubyTextField(
+        modifier = Modifier
+            .focusRequester(focusRequester)
+            .then(modifier),
         value = price,
         readOnly = onPriceInput == null,
         prefix = {
@@ -124,7 +127,11 @@ fun PriceField(
         colors = TextFieldDefaults.colors(),
         shape = SubyShape,
         keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = { focusRequester.freeFocus() }
         ),
         placeholder = {
             Text(
@@ -266,11 +273,11 @@ fun CustomPeriodInput(
             value = number,
             onValueChange = {
                 number = it
-                onPeriodSelected(selectedPeriodType, it.toLongOrNull() ?: defultCustomPeriod)
+                onPeriodSelected(selectedPeriodType, it.toLongOrNull() ?: DEFAULT_CUSTOM_PERIOD)
             },
             placeholder = {
                 Text(
-                    "$defultCustomPeriod",
+                    "$DEFAULT_CUSTOM_PERIOD",
                     style = LocalTextStyle.current.copy(color = Color.DarkGray)
                 )
             },
@@ -289,7 +296,11 @@ fun CustomPeriodInput(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    Text(selectedPeriodType.getTitle(number.toIntOrNull() ?: defultCustomPeriod.toInt()))
+                    Text(
+                        selectedPeriodType.getTitle(
+                            number.toIntOrNull() ?: DEFAULT_CUSTOM_PERIOD.toInt()
+                        )
+                    )
                     Icon(Icons.Default.ArrowDropDown)
                 }
             }
@@ -302,7 +313,11 @@ fun CustomPeriodInput(
                 CustomPeriodType.entries.forEach { type ->
                     DropdownMenuItem(
                         text = {
-                            Text(text = type.getTitle(number.toIntOrNull() ?: defultCustomPeriod.toInt()))
+                            Text(
+                                text = type.getTitle(
+                                    number.toIntOrNull() ?: DEFAULT_CUSTOM_PERIOD.toInt()
+                                )
+                            )
                         },
                         onClick = {
                             selectedPeriodType = type

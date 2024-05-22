@@ -11,8 +11,10 @@ import androidx.compose.ui.unit.Dp
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -20,19 +22,20 @@ import java.util.Locale
 val Dp.asWindowInsets: WindowInsets
     get() = WindowInsets(this, this, this, this)
 
-fun Long.formatDateLongToDate(): String {
+fun Long.dateString(): String {
     val date = Date(this)
-    val sdf = SimpleDateFormat("dd MMMM", Locale.getDefault())
+    val sdf = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
     return sdf.format(date)
 }
 
 fun Double.formatDecimal(): String {
-    return if (this == this.toLong().toDouble()) {
-        this.toLong().toString()
-    } else {
-        String.format("%.2f", this)
+    val formatter = DecimalFormat("#.##").apply {
+        isDecimalSeparatorAlwaysShown = false
     }
-}
+    return formatter.format(this)}
+
+fun String?.toSafeLocalDateTime(): LocalDateTime? =
+    runCatching { this?.toLocalDateTime() }.getOrNull()
 
 inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
     SDK_INT >= 33 -> getParcelableExtra(key, T::class.java)
@@ -58,4 +61,9 @@ val Long.toLocalDate: LocalDate
 
 fun Context.showToast(text: String) {
     Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
+}
+
+fun Double.round(): String {
+    val roundedValue = (this * 100.0).toInt() / 100.0
+    return roundedValue.toString()
 }

@@ -5,4 +5,21 @@
     <string name="today">today</string>
     <string name="tomorrow">tomorrow</string>
     <string name="after_days">in %d days</string>
+    <string name="add_new_service">Add new service</string>
+    <string name="add_new_service_question">What service do you want to add?</string>
+    <string name="categories">Categories</string>
+    <string name="list">List</string>
+    <string name="feedback_general_success">The request has been sent successfully</string>
+    <string name="feedback_general_failure">Failed to sent the request</string>
+    <string name="new_subscription">New subscription</string>
+    <string name="title_service">Service</string>
+    <string name="title_billing_date">Billing date</string>
+    <string name="title_price">Price</string>
+    <string name="title_currency">Currency</string>
+    <string name="title_description">Description</string>
+    <string name="add_description">Add description</string>
+    <string name="title_subscriptions">Subscriptions</string>
+    <string name="unknown">Unknown</string>
+    <string name="updating_state">Updating…</string>
+    <string name="updated_on">Updated on %1$s</string>
 </resources>

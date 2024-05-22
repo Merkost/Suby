@@ -34,7 +34,7 @@ enum class Currency(val fullName: String, val symbol: String, val flagEmoji: Str
 
     companion object {
         fun find(currencyName: String?): Currency {
-            return Currency.values().find {
+            return entries.find {
                 it.name.lowercase() == currencyName?.lowercase()
             } ?: Currency.USD
         }
