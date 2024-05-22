@@ -3,7 +3,9 @@ package com.merkost.suby.di
 import android.content.Context
 import androidx.room.Room
 import com.merkost.suby.model.room.AppDatabase
+import com.merkost.suby.model.room.dao.CategoryDao
 import com.merkost.suby.model.room.dao.CurrencyRatesDao
+import com.merkost.suby.model.room.dao.ServiceDao
 import com.merkost.suby.model.room.dao.SubscriptionDao
 import com.merkost.suby.repository.room.CurrencyRatesRepository
 import com.merkost.suby.repository.room.CurrencyRatesRepositoryImpl
@@ -19,6 +21,18 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Module
 object DatabaseModule {
+
+    @Provides
+    @Singleton
+    fun provideCategoryDao(appDatabase: AppDatabase): CategoryDao {
+        return appDatabase.categoryDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideServiceDao(appDatabase: AppDatabase): ServiceDao {
+        return appDatabase.servicesDao()
+    }
 
     @Provides
     @Singleton
@@ -51,7 +65,8 @@ object DatabaseModule {
             appContext,
             AppDatabase::class.java,
             "app_database"
-        ).fallbackToDestructiveMigration().build()
+        ).fallbackToDestructiveMigration()
+            .build()
 
         // TODO: Remove fallbackToDestructiveMigration
 

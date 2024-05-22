@@ -8,7 +8,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @Entity(tableName = "currency_rates")
-data class CurrencyRates(
+data class CurrencyRatesDb(
     @PrimaryKey(autoGenerate = false)
     val mainCurrency: Currency,
     val rates: Map<Currency, Double>,

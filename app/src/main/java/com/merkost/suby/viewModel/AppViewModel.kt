@@ -27,7 +27,7 @@ class AppViewModel @Inject constructor(
 
     val isFirstTimeState = MutableStateFlow(true)
 
-    val subscriptions = subscriptionRepository.subscriptions
+    val subscriptions = subscriptionRepository.subscriptionsWithServices
         .stateIn(viewModelScope, SharingStarted.Eagerly, listOf())
 
     val mainCurrency = appSettings.mainCurrency

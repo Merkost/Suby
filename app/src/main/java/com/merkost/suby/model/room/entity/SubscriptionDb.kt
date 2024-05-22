@@ -2,34 +2,64 @@ package com.merkost.suby.model.room.entity
 
 import android.content.Context
 import android.os.Parcelable
-import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.merkost.suby.R
 import com.merkost.suby.model.Currency
+import com.merkost.suby.model.CustomPeriodType
 import com.merkost.suby.model.Period
-import com.merkost.suby.model.Service
 import com.merkost.suby.model.room.Status
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
 
 @Parcelize
-@Entity(tableName = "subscriptions")
-data class Subscription(
+@Entity(
+    tableName = "subscriptions",
+    foreignKeys = [
+        ForeignKey(
+            entity = ServiceDb::class,
+            parentColumns = ["serviceId"],
+            childColumns = ["serviceId"],
+            onDelete = ForeignKey.SET_NULL
+        )
+    ]
+)
+data class SubscriptionDb(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    @Embedded
-    val service: Service,
+    val serviceId: Int,
     val price: Double,
     val currency: Currency,
     val period: Period,
+
+    val customPeriodType: CustomPeriodType,
+    val customPeriodDuration: Long,
+
     val status: Status,
     val paymentDate: Long,
 
     val createdDate: Long = System.currentTimeMillis(),
     val durationDays: Long,
+
+    val description: String,
 ) : Parcelable {
+
+    @IgnoredOnParcel
+    val periodDays: Long
+        get() = when (this.period) {
+            Period.CUSTOM -> when (this.customPeriodType) {
+                CustomPeriodType.DAYS -> this.customPeriodDuration
+                CustomPeriodType.WEEKS -> this.customPeriodDuration * 7L
+                CustomPeriodType.MONTHS -> this.customPeriodDuration * 30L
+                CustomPeriodType.YEARS -> this.customPeriodDuration * 365L
+            }
+
+            else -> this.period.days
+        }
+
     val remainingDays: Long
         get() {
             val currentTimeMillis = System.currentTimeMillis().milliseconds
@@ -48,9 +78,9 @@ data class Subscription(
         }
     }
 
-    fun getPriceForPeriod(selectedPeriod: Period): String {
-        return if (period.days != selectedPeriod.days) {
-            "~" + price / period.days * selectedPeriod.days
-        } else price.toString()
+    fun getPriceForPeriod(selectedPeriod: Period): Double {
+        return if (this.periodDays != selectedPeriod.days) {
+            (price / this.periodDays * selectedPeriod.days)
+        } else price
     }
 }
