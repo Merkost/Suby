@@ -2,7 +2,7 @@ package com.merkost.suby.repository.ktor.api
 
 import com.merkost.suby.CURRENCY_ENDPOINT_FREE
 import com.merkost.suby.model.Currency
-import com.merkost.suby.model.entity.Rates
+import com.merkost.suby.model.entity.dto.RatesDto
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.HttpResponse
@@ -16,7 +16,7 @@ class RatesApi(private val client: HttpClient) {
 
     suspend fun getCurrencyRates(
         currencyCode: String
-    ) = flow<Result<Rates>> {
+    ) = flow<Result<RatesDto>> {
         val url = buildString {
             append(CURRENCY_ENDPOINT_FREE)
             append("/${currencyCode.lowercase()}")
@@ -41,8 +41,8 @@ class RatesApi(private val client: HttpClient) {
                 }
             }
 
-            val currencyRates = Rates(date, ratesMap)
-            emit(Result.success(currencyRates))
+            val currencyRatesDto = RatesDto(date, ratesMap)
+            emit(Result.success(currencyRatesDto))
         } else {
             emit(Result.failure(Throwable()))
         }

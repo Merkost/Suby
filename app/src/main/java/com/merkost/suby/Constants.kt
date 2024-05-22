@@ -1,21 +1,12 @@
 package com.merkost.suby
 
 import androidx.compose.foundation.shape.RoundedCornerShape
-import com.merkost.suby.model.Category
-import com.merkost.suby.model.Service
 
 
-val CURRENCY_ENDPOINT_FREE = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies"
+const val CURRENCY_ENDPOINT_FREE =
+    "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies"
 
-val servicesByCategory: Map<Category, List<Service>> =
-    Category.values()
-        .associateWith { category ->
-            if (category == Category.CUSTOM) {
-                emptyList()
-            } else {
-                Service.values().filter { it.category == category }
-            }
-        }
+val SUPABASE_ENDPOINT = "https://${BuildConfig.SUPABASE_ID}.supabase.co"
 
 val SubyShape = RoundedCornerShape(25)
 
