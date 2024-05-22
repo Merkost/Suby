@@ -12,4 +12,7 @@ interface AppSettings {
     val mainCurrency: Flow<Currency>
     suspend fun saveMainCurrency(currency: Currency)
 
+    val lastTotalPrice: Flow<LastTotalPrice?>
+    suspend fun saveLastTotalPrice(lastTotalPrice: LastTotalPrice)
+
 }
