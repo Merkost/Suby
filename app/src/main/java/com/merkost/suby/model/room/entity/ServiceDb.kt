@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.merkost.suby.repository.ktor.serializer.ZonedDateTimeSerializer
 import com.merkost.suby.repository.ktor.supaClient
@@ -23,7 +24,8 @@ import java.time.ZonedDateTime
             childColumns = ["categoryId"],
             onDelete = ForeignKey.SET_NULL
         )
-    ]
+    ],
+    indices = [Index(value = ["categoryId"])]
 )
 data class ServiceDb(
     @PrimaryKey
@@ -34,6 +36,7 @@ data class ServiceDb(
     val logoId: String?,
     @Serializable(with = ZonedDateTimeSerializer::class)
     val createdAt: ZonedDateTime,
+    val lastUpdated: Long = System.currentTimeMillis(),
 ) : Parcelable {
 
     private val logoPath: String

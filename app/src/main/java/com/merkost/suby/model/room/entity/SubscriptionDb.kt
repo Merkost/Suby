@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.merkost.suby.R
 import com.merkost.suby.model.Currency
@@ -25,7 +26,8 @@ import kotlin.time.Duration.Companion.milliseconds
             childColumns = ["serviceId"],
             onDelete = ForeignKey.SET_NULL
         )
-    ]
+    ],
+    indices = [Index(value = ["serviceId"])]
 )
 data class SubscriptionDb(
     @PrimaryKey(autoGenerate = true)
@@ -33,8 +35,8 @@ data class SubscriptionDb(
     val serviceId: Int,
     val price: Double,
     val currency: Currency,
-    val period: Period,
 
+    val period: Period,
     val customPeriodType: CustomPeriodType,
     val customPeriodDuration: Long,
 

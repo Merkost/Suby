@@ -13,4 +13,5 @@ data class CategoryDb(
     val name: String,
     val emoji: String,
     val createdAt: ZonedDateTime,
+    val lastUpdated: Long = System.currentTimeMillis(),
 )

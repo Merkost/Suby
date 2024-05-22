@@ -20,7 +20,7 @@ interface CategoryDao {
     suspend fun updateCategory(service: CategoryDb)
 
     @Transaction
-    suspend fun upsertServices(categories: List<CategoryDb>) {
+    suspend fun upsertCategories(categories: List<CategoryDb>) {
         categories.forEach { category ->
             val id = insertCategory(category)
             if (id == -1L) {
@@ -34,5 +34,8 @@ interface CategoryDao {
 
     @Delete
     suspend fun deleteCategory(categoryDb: CategoryDb): Int
+
+    @Query("SELECT MAX(lastUpdated) FROM category")
+    suspend fun getLastCategoryUpdate(): Long?
 
 }

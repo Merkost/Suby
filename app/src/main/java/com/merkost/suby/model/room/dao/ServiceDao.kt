@@ -40,4 +40,7 @@ interface ServiceDao {
     @Delete
     suspend fun deleteServices(serviceDb: ServiceDb): Int
 
+    @Query("SELECT MAX(lastUpdated) FROM service")
+    suspend fun getLastServiceUpdate(): Long?
+
 }
