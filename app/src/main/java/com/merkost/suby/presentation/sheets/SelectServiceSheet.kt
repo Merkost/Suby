@@ -59,7 +59,6 @@ import coil.request.ImageRequest
 import com.merkost.suby.R
 import com.merkost.suby.SubyShape
 import com.merkost.suby.asWindowInsets
-import com.merkost.suby.model.entity.dto.ServiceDto
 import com.merkost.suby.model.room.entity.CategoryDb
 import com.merkost.suby.model.room.entity.ServiceDb
 import com.merkost.suby.model.room.entity.ServiceWithCategory
@@ -69,19 +68,19 @@ import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.PlaceholderHighlight
 import com.merkost.suby.presentation.base.fade
 import com.merkost.suby.presentation.base.placeholder3
-import com.merkost.suby.utils.BaseViewState
+import com.merkost.suby.use_case.GetServicesResult
 import kotlinx.coroutines.launch
 
 @Composable
 fun SelectServiceSheet(
-    servicesState: BaseViewState<List<ServiceWithCategory>>,
+    servicesState: GetServicesResult,
     onServiceSelected: (ServiceWithCategory) -> Unit,
     onServiceAbsent: (inputText: String) -> Unit,
     onRetryLoadServices: () -> Unit,
 ) {
     AnimatedContent(targetState = servicesState, label = "") { state ->
         when (state) {
-            BaseViewState.Loading -> {
+            GetServicesResult.Loading -> {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -92,7 +91,7 @@ fun SelectServiceSheet(
                 }
             }
 
-            is BaseViewState.Error -> {
+            is GetServicesResult.Failure -> {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -111,8 +110,8 @@ fun SelectServiceSheet(
                 }
             }
 
-            is BaseViewState.Success -> {
-                if (state.data.isEmpty()) {
+            is GetServicesResult.Success -> {
+                if (state.servicesWithCategory.isEmpty()) {
                     AbsentItem(
                         text = "No services found",
                         onClick = {
@@ -150,9 +149,17 @@ fun SelectServiceSheet(
                         }
                         HorizontalPager(state = pagerState) { page ->
                             if (page == 1) {
-                                CategoriesPage(state.data, onServiceSelected, onServiceAbsent)
+                                CategoriesPage(
+                                    state.servicesWithCategory,
+                                    onServiceSelected,
+                                    onServiceAbsent
+                                )
                             } else {
-                                ListPage(state.data, onServiceSelected, onServiceAbsent) {}
+                                ListPage(
+                                    state.servicesWithCategory,
+                                    onServiceSelected,
+                                    onServiceAbsent
+                                ) {}
                             }
                         }
                     }
@@ -169,6 +176,7 @@ fun ListPage(
     servicesWithCategories: List<ServiceWithCategory>,
     onServiceSelected: (ServiceWithCategory) -> Unit,
     onServiceAbsent: (inputText: String) -> Unit,
+    // FIXME: Remove it from here
     onSearch: (String) -> Unit,
 ) {
 
