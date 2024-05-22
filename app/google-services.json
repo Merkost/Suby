@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "9419554854",
+    "project_id": "suby-abd2b",
+    "storage_bucket": "suby-abd2b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9419554854:android:bfa76ee563259d4e8526e7",
+        "android_client_info": {
+          "package_name": "com.merkost.suby"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAieXH5Kb1AB6qkHwbuYKNdJINj0DAD3HE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
