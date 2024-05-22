@@ -63,22 +63,25 @@ import com.merkost.suby.utils.Constants.defultCustomPeriod
 fun DescriptionView(
     modifier: Modifier = Modifier,
     description: String,
-    onDescriptionChanged: (String) -> Unit,
+    onDescriptionChanged: ((String) -> Unit)? = null,
 ) {
     val focusRequester = remember {
         FocusRequester()
     }
     TitleColumn(
         title = "Description",
-        modifier = modifier
-            .padding(horizontal = 16.dp),
+        modifier = modifier,
     ) {
         Card {
-            BasicTextField(value = description,
+            BasicTextField(
+                value = description,
+                readOnly = onDescriptionChanged == null,
                 textStyle = MaterialTheme.typography.bodyLarge.copy(
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 ),
-                onValueChange = onDescriptionChanged,
+                onValueChange = { newValue ->
+                    onDescriptionChanged?.let { onDescriptionChanged(newValue) }
+                },
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.Sentences,
                     imeAction = ImeAction.Done
@@ -100,10 +103,11 @@ fun PriceField(
     price: String,
     currency: Currency,
     textStyle: TextStyle,
-    onPriceInput: (String) -> Unit,
+    onPriceInput: ((String) -> Unit)? = null,
 ) {
     SubyTextField(
         value = price,
+        readOnly = onPriceInput == null,
         prefix = {
             Text(
                 text = currency.symbol,
@@ -112,7 +116,9 @@ fun PriceField(
                 maxLines = 1
             )
         },
-        onValueChange = onPriceInput,
+        onValueChange = { newValue ->
+            onPriceInput?.let { onPriceInput(newValue) }
+        },
         textStyle = textStyle,
         singleLine = true,
         colors = TextFieldDefaults.colors(),
@@ -140,6 +146,7 @@ fun BillingDate(
     onBillingDateSelected: (Long) -> Unit,
 ) {
 
+    // TODO: Add validation
     val datePickerDate = rememberDatePickerState()
 
     var showDatePicker by rememberSaveable { mutableStateOf(false) }
@@ -156,10 +163,7 @@ fun BillingDate(
                 Text("Cancel")
             }
         }) {
-            DatePicker(state = datePickerDate, dateValidator = {
-                // TODO: add validation
-                true
-            })
+            DatePicker(state = datePickerDate)
         }
     }
 
@@ -209,8 +213,10 @@ fun BillingDate(
 @Composable
 fun Period(
     selectedPeriod: Period?,
-    onPeriodSelected: (Period) -> Unit
+    onPeriodSelected: (Period) -> Unit,
+    onCustomPeriodSelected: (CustomPeriodType, duration: Long) -> Unit,
 ) {
+
     FlowRow(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -222,11 +228,13 @@ fun Period(
                 onClick = { onPeriodSelected(period) })
         }
     }
+
     AnimatedContent(targetState = selectedPeriod) { selectedPeriod ->
         if (selectedPeriod == Period.CUSTOM) {
             CustomPeriodInput(
                 modifier = Modifier.imePadding(),
-                onPeriodSelected = { _, _ -> })
+                onPeriodSelected = onCustomPeriodSelected
+            )
         }
     }
 }
@@ -234,7 +242,7 @@ fun Period(
 @Composable
 fun CustomPeriodInput(
     modifier: Modifier = Modifier,
-    onPeriodSelected: (CustomPeriodType, Int) -> Unit,
+    onPeriodSelected: (CustomPeriodType, Long) -> Unit,
 ) {
     var number by remember { mutableStateOf("") }
     var selectedPeriodType by remember { mutableStateOf(CustomPeriodType.DAYS) }
@@ -258,7 +266,7 @@ fun CustomPeriodInput(
             value = number,
             onValueChange = {
                 number = it
-                onPeriodSelected(selectedPeriodType, it.toIntOrNull() ?: defultCustomPeriod)
+                onPeriodSelected(selectedPeriodType, it.toLongOrNull() ?: defultCustomPeriod)
             },
             placeholder = {
                 Text(
@@ -281,7 +289,7 @@ fun CustomPeriodInput(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    Text(selectedPeriodType.getTitle(number.toIntOrNull() ?: defultCustomPeriod))
+                    Text(selectedPeriodType.getTitle(number.toIntOrNull() ?: defultCustomPeriod.toInt()))
                     Icon(Icons.Default.ArrowDropDown)
                 }
             }
@@ -294,7 +302,7 @@ fun CustomPeriodInput(
                 CustomPeriodType.entries.forEach { type ->
                     DropdownMenuItem(
                         text = {
-                            Text(text = type.getTitle(number.toIntOrNull() ?: defultCustomPeriod))
+                            Text(text = type.getTitle(number.toIntOrNull() ?: defultCustomPeriod.toInt()))
                         },
                         onClick = {
                             selectedPeriodType = type
