@@ -5,9 +5,11 @@ plugins {
     alias(libs.plugins.kotlinParcelize)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.kapt)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.secrets)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.googleServices)
+    alias(libs.plugins.firebaseCrashlytics)
 }
 
 android {
@@ -51,8 +53,11 @@ android {
         compose = true
         buildConfig = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.4"
+    composeCompiler {
+        enableStrongSkippingMode = true
+
+        reportsDestination = layout.buildDirectory.dir("compose_compiler")
+//        stabilityConfigurationFile = rootProject.layout.projectDirectory.file("stability_config.conf")
     }
     packaging {
         resources {
@@ -81,16 +86,20 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.systemUiController)
     implementation(libs.datastore)
+    implementation(libs.kotlin.serialization)
     implementation(libs.bundles.ktor)
     implementation(platform(libs.supabase.bom))
     implementation(libs.supabase.database)
     implementation(libs.supabase.storage)
     ksp(libs.room.compiler)
+    implementation(libs.timber)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
     implementation(libs.hilt.navigation)
+    ksp(libs.hilt.compiler)
     ksp(libs.hilt.kapt)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

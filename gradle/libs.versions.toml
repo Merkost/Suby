@@ -1,35 +1,41 @@
 [versions]
-agp = "8.5.0-alpha03"
-kotlin = "1.9.20"
-core-ktx = "1.12.0"
+agp = "8.6.0-alpha02"
+kotlin = "2.0.0"
+core-ktx = "1.13.1"
 junit = "4.13.2"
 androidx-test-ext-junit = "1.1.5"
 espresso-core = "3.5.1"
-lifecycle-runtime-ktx = "2.7.0"
-activity-compose = "1.8.2"
-compose-bom = "2024.02.01"
+lifecycle-runtime-ktx = "2.8.0"
+activity-compose = "1.9.0"
+compose-bom = "2024.05.00"
 coil = "2.5.0"
 lottie = "6.1.0"
 supabase = "1.3.0"
-navigation = "2.7.7"
+navigation = "2.8.0-beta01"
 accompanist = "0.34.0"
 room = "2.6.1"
-ksp = "1.9.20-1.0.14"
+ksp = "2.0.0-1.0.21"
 dagger-hilt = "2.50"
 hilt = "1.2.0"
 ktor = "2.3.3"
 secrets = "2.0.1"
+datastore = "1.1.1"
+serialization = "1.6.3"
+timber = "5.0.1"
+firebase = "32.8.1"
 
 
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
 lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 ui = { group = "androidx.compose.ui", name = "ui" }
 # for lerp func
 ui-util = { group = "androidx.compose.ui", name = "ui-util" }
@@ -41,10 +47,11 @@ ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 material3 = { group = "androidx.compose.material3", name = "material3" }
 icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
-datastore = { group = "androidx.datastore", name = "datastore-preferences", version = "1.0.0" }
+datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 kotlin-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.4.0" }
 splashscreen = { group = "androidx.core", name = "core-splashscreen", version = "1.0.1" }
 lottie = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
+kotlin-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
 
 coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 coil-svg = { group = "io.coil-kt", name = "coil-svg", version.ref = "coil" }
@@ -69,6 +76,9 @@ supabase-database = { group = "io.github.jan-tennert.supabase", name = "postgres
 supabase-storage = { group = "io.github.jan-tennert.supabase", name = "storage-kt" }
 supabase-compose-auth = { group = "io.github.jan-tennert.supabase", name = "compose-auth" }
 
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase" }
+
+
 systemUiController = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist" }
 
 [bundles]
@@ -77,10 +87,14 @@ ktor = ["ktor", "ktor-logging", "ktor-negotiation", "ktor-serialization"]
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+googleServices = { id = "com.google.gms.google-services", version = "4.4.1" }
+firebaseCrashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.1" }
+firebasePerformance = { id = "com.google.firebase.firebase-perf", version = "1.4.2" }
 kotlinParcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "dagger-hilt" }
 kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
