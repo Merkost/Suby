@@ -2,30 +2,33 @@ package com.merkost.suby.use_case
 
 import com.merkost.suby.model.entity.dto.CategoryDto
 import com.merkost.suby.model.entity.dto.ServiceDto
+import com.merkost.suby.model.entity.full.Service
 import com.merkost.suby.model.room.DbMapper
 import com.merkost.suby.model.room.dao.CategoryDao
 import com.merkost.suby.model.room.dao.ServiceDao
-import com.merkost.suby.model.room.entity.ServiceWithCategory
 import com.merkost.suby.repository.ktor.api.SupabaseApi
+import com.merkost.suby.repository.room.ServiceRepository
 import com.merkost.suby.utils.Constants
+import com.merkost.suby.utils.now
+import com.merkost.suby.utils.toEpochMillis
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
+import kotlinx.datetime.LocalDateTime
 import timber.log.Timber
 
 class GetServicesUseCase(
     private val supabaseApi: SupabaseApi,
     private val serviceDao: ServiceDao,
     private val categoryDao: CategoryDao,
+    private val serviceRepository: ServiceRepository
 ) {
-    suspend operator fun invoke(): Flow<GetServicesResult> = flow {
-        emit(GetServicesResult.Loading)
-
+    suspend operator fun invoke(): Flow<Result<List<Service>>> = flow {
         val currentTime = System.currentTimeMillis()
         val updateThreshold = Constants.SUBY_UPDATE_THRESHOLD.inWholeMilliseconds
 
-        val lastServiceUpdate = serviceDao.getLastServiceUpdate() ?: 0
-        val lastCategoryUpdate = categoryDao.getLastCategoryUpdate() ?: 0
+        val lastServiceUpdate = serviceDao.getLastServiceUpdate()?.toEpochMillis() ?: 0
+        val lastCategoryUpdate = categoryDao.getLastCategoryUpdate()?.toEpochMillis() ?: 0
 
         val needToUpdateServices = currentTime - lastServiceUpdate > updateThreshold
         val needToUpdateCategories = currentTime - lastCategoryUpdate > updateThreshold
@@ -35,30 +38,20 @@ class GetServicesUseCase(
             val services = loadServices()
 
             if (categories.isEmpty() || services.isEmpty()) {
-                emit(GetServicesResult.Failure(Throwable("Failed to fetch data from API")))
+                emit(Result.failure(Throwable("Failed to fetch data from API")))
                 return@flow
             }
         }
 
-        val dbCategories = categoryDao.getCategories().first()
-        val dbServices = serviceDao.getServices().first()
-
-        if (dbCategories.isEmpty() || dbServices.isEmpty()) {
-            emit(GetServicesResult.Failure(Throwable("No categories or services available")))
-        } else {
-            val servicesWithCategory = dbServices.mapNotNull { service ->
-                val category = dbCategories.find { it.id == service.categoryId }
-                category?.let { ServiceWithCategory(service, category) }
-            }
-            emit(GetServicesResult.Success(servicesWithCategory))
-        }
+        val services = serviceRepository.services.first()
+        emit(Result.success(services))
     }
 
     private suspend fun loadServices(): List<ServiceDto> {
         return supabaseApi.getServices().first().onSuccess { result ->
             serviceDao.upsertServices(
                 result.map {
-                    DbMapper.mapService(it).copy(lastUpdated = System.currentTimeMillis())
+                    DbMapper.mapService(it).copy(lastUpdated = LocalDateTime.now())
                 }
             )
         }.onFailure {

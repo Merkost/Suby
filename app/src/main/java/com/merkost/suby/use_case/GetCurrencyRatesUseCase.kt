@@ -1,18 +1,24 @@
 package com.merkost.suby.use_case
 
 import com.merkost.suby.model.Period
+import com.merkost.suby.model.entity.full.Subscription
 import com.merkost.suby.model.room.entity.CurrencyRatesDb
-import com.merkost.suby.model.room.entity.SubscriptionDb
-import com.merkost.suby.now
 import com.merkost.suby.repository.datastore.AppSettings
 import com.merkost.suby.repository.ktor.api.RatesApi
 import com.merkost.suby.repository.room.CurrencyRatesRepository
 import com.merkost.suby.repository.room.SubscriptionRepository
-import com.merkost.suby.toLocalDate
 import com.merkost.suby.utils.Constants
+import com.merkost.suby.utils.now
 import kotlinx.coroutines.flow.first
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atTime
 import kotlinx.datetime.minus
+import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toKotlinLocalDateTime
+import kotlinx.datetime.toLocalDateTime
 import timber.log.Timber
 
 class GetCurrencyRatesUseCase(
@@ -24,20 +30,17 @@ class GetCurrencyRatesUseCase(
     private val mainCurrency = appSettings.mainCurrency
 
     suspend operator fun invoke(period: Period): Double? {
-        val rates = getRates()
-        rates?.let {
-            return kotlin.runCatching { calculateTotalCost(rates, period) }.onFailure {
-                Timber.tag("GetCurrencyRatesUseCase").e(it, "Failed to calculate total cost")
-            }.getOrNull()
-        }
-        return null
+        val rates = getRates() ?: return null
+        return kotlin.runCatching { calculateTotalCost(rates, period) }.onFailure {
+            Timber.tag("GetCurrencyRatesUseCase").e(it, "Failed to calculate total cost")
+        }.getOrNull()
     }
 
     private suspend fun getRates(): CurrencyRatesDb? {
         val mainCurrency = mainCurrency.first()
         val rates = currencyRatesRepository.getRatesByMainCurrency(mainCurrency).first()
         if (rates == null
-            || rates.lastUpdated.toLocalDate < LocalDate.now()
+            || rates.lastUpdated < LocalDate.now()
                 .minus(Constants.CURRENCY_RATES_CACHE_DAYS)
             || rates.mainCurrency != mainCurrency
         ) {
@@ -83,15 +86,15 @@ class GetCurrencyRatesUseCase(
 
     @Throws
     private fun calculateSubscriptionCost(
-        subscriptionDb: SubscriptionDb,
+        subscription: Subscription,
         targetPeriod: Period
     ): Double {
         val daysInTargetPeriod = targetPeriod.days
-        val daysInSubscriptionPeriod = subscriptionDb.periodDays
-        val pricePerDay = subscriptionDb.price / daysInSubscriptionPeriod
+        val daysInSubscriptionPeriod = subscription.periodDays
+        val pricePerDay = subscription.price / daysInSubscriptionPeriod
         val result = pricePerDay * daysInTargetPeriod
 
         if (result.isFinite()) return result
-        else throw Throwable("Subscription cost calculation error: $subscriptionDb, $targetPeriod")
+        else throw Throwable("Subscription cost calculation error: $subscription, $targetPeriod")
     }
 }
