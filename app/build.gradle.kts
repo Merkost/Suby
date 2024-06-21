@@ -1,4 +1,3 @@
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
@@ -24,9 +23,6 @@ android {
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
     }
 
     buildTypes {
@@ -57,7 +53,6 @@ android {
         enableStrongSkippingMode = true
 
         reportsDestination = layout.buildDirectory.dir("compose_compiler")
-//        stabilityConfigurationFile = rootProject.layout.projectDirectory.file("stability_config.conf")
     }
     packaging {
         resources {
