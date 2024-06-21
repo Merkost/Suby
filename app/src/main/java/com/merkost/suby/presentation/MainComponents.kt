@@ -1,7 +1,6 @@
 package com.merkost.suby.presentation
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -42,6 +42,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -54,9 +55,11 @@ import com.merkost.suby.model.Currency
 import com.merkost.suby.model.CustomPeriodType
 import com.merkost.suby.model.NewSubscription
 import com.merkost.suby.model.Period
+import com.merkost.suby.presentation.base.BaseItem
 import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.SubyTextField
 import com.merkost.suby.presentation.base.TitleColumn
+import com.merkost.suby.ui.theme.subyColors
 import com.merkost.suby.utils.Constants.DEFAULT_CUSTOM_PERIOD
 
 @Composable
@@ -98,7 +101,9 @@ fun PriceField(
     modifier: Modifier = Modifier,
     price: String,
     currency: Currency,
-    textStyle: TextStyle,
+    textStyle: TextStyle = MaterialTheme.typography.displaySmall.copy(
+        fontWeight = FontWeight.Bold,
+    ),
     onPriceInput: ((String) -> Unit)? = null,
 ) {
     val focusRequester = remember {
@@ -136,7 +141,7 @@ fun PriceField(
         placeholder = {
             Text(
                 text = "0.00",
-                style = textStyle.copy(color = textStyle.color.copy(0.2f)),
+                style = textStyle.copy(color = MaterialTheme.subyColors.textPlaceholderColor),
                 maxLines = 1,
                 overflow = TextOverflow.Visible
             )
@@ -150,17 +155,16 @@ fun BillingDate(
     modifier: Modifier = Modifier,
     selectedValues: NewSubscription,
     billingDate: Long?,
-    onBillingDateSelected: (Long) -> Unit,
+    onBillingDateSelected: (Long?) -> Unit,
+    isRequired: Boolean = true
 ) {
-
-    // TODO: Add validation
     val datePickerDate = rememberDatePickerState()
-
     var showDatePicker by rememberSaveable { mutableStateOf(false) }
+
     if (showDatePicker) {
         DatePickerDialog(onDismissRequest = { showDatePicker = false }, confirmButton = {
             TextButton(onClick = {
-                onBillingDateSelected(datePickerDate.selectedDateMillis!!)
+                onBillingDateSelected(datePickerDate.selectedDateMillis)
                 showDatePicker = false
             }) {
                 Text("Ok")
@@ -174,34 +178,50 @@ fun BillingDate(
         }
     }
 
+    val backgroundColor = if (billingDate == null && isRequired) {
+        MaterialTheme.colorScheme.error.copy(alpha = 0.1f)
+    } else {
+        MaterialTheme.colorScheme.surfaceVariant
+    }
 
-    val color by animateColorAsState(
-        targetValue = if (billingDate != null) MaterialTheme.colorScheme.primary
-        else MaterialTheme.colorScheme.secondaryContainer,
-        label = "serviceSelectionColorAnim"
-    )
+    val textColor = if (billingDate == null && isRequired) {
+        MaterialTheme.colorScheme.error
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
 
     BaseItem(
         onClick = { showDatePicker = true },
-        colors = CardDefaults.cardColors(containerColor = color)
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        modifier = modifier
+            .fillMaxWidth()
     ) {
         AnimatedContent(
             targetState = billingDate, label = "selectedDateAnim"
         ) { selectedDate ->
             Row(
-                Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (selectedDate != null) {
-                    Text(text = selectedDate.dateString())
-                    Icon(Icons.Rounded.CalendarToday)
+                    Text(
+                        text = selectedDate.dateString(),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = textColor
+                    )
                 } else {
                     Text(
-                        text = "Select the payday"/*, style = MaterialTheme.typography.bodyMedium*/
+                        text = "Select the payday",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = textColor
                     )
-                    Icon(Icons.Rounded.CalendarToday)
                 }
+                Icon(
+                    imageVector = Icons.Rounded.CalendarToday,
+                    tint = textColor
+                )
             }
         }
     }
@@ -209,7 +229,12 @@ fun BillingDate(
     AnimatedContent(targetState = selectedValues) { values ->
         if (values.billingDate != null && values.period != null && values.status != null) {
             values.billingDateInfo?.let {
-                Text(text = it)
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(8.dp)
+                )
             }
         }
     }

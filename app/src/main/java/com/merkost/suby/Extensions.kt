@@ -47,18 +47,6 @@ inline fun <reified T : Parcelable> Bundle.parcelable(key: String): T? = when {
     else -> @Suppress("DEPRECATION") getParcelable(key) as? T
 }
 
-
-val currentMoment: Instant = Clock.System.now()
-
-fun LocalDate.Companion.now() =
-    currentMoment.toLocalDateTime(TimeZone.currentSystemDefault()).date
-
-
-val Long.toLocalDate: LocalDate
-    get() = Instant.fromEpochMilliseconds(this)
-        .toLocalDateTime(TimeZone.currentSystemDefault()).date
-
-
 fun Context.showToast(text: String) {
     Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
 }
