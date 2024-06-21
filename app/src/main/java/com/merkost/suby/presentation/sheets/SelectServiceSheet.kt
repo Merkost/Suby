@@ -5,36 +5,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.add
-import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
-import androidx.compose.material3.CardColors
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.SearchBar
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -47,40 +32,33 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import coil.compose.SubcomposeAsyncImage
-import coil.decode.SvgDecoder
-import coil.request.ImageRequest
 import com.merkost.suby.R
 import com.merkost.suby.SubyShape
-import com.merkost.suby.asWindowInsets
-import com.merkost.suby.model.room.entity.CategoryDb
-import com.merkost.suby.model.room.entity.ServiceDb
-import com.merkost.suby.model.room.entity.ServiceWithCategory
+import com.merkost.suby.model.entity.full.Service
 import com.merkost.suby.presentation.AbsentItem
-import com.merkost.suby.presentation.BaseItem
 import com.merkost.suby.presentation.base.Icon
-import com.merkost.suby.presentation.base.PlaceholderHighlight
-import com.merkost.suby.presentation.base.fade
-import com.merkost.suby.presentation.base.placeholder3
-import com.merkost.suby.use_case.GetServicesResult
+import com.merkost.suby.presentation.base.components.ServiceRowItem
+import com.merkost.suby.utils.BaseViewState
 import kotlinx.coroutines.launch
 
 @Composable
 fun SelectServiceSheet(
-    servicesState: GetServicesResult,
-    onServiceSelected: (ServiceWithCategory) -> Unit,
-    onServiceAbsent: (inputText: String) -> Unit,
+    customServices: List<Service>,
+    servicesState: BaseViewState<List<Service>>,
+    onServiceSelected: (Service) -> Unit,
+    onSuggestService: (name: String) -> Unit,
+    onCustomServiceSelected: (Service) -> Unit,
+    onAddCustomService: () -> Unit,
     onRetryLoadServices: () -> Unit,
 ) {
+    val pagerState = rememberPagerState(initialPage = 0, initialPageOffsetFraction = 0f) { 2 }
+    val coroutineScope = rememberCoroutineScope()
+
     AnimatedContent(targetState = servicesState, label = "") { state ->
         when (state) {
-            GetServicesResult.Loading -> {
+            BaseViewState.Loading -> {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -91,7 +69,7 @@ fun SelectServiceSheet(
                 }
             }
 
-            is GetServicesResult.Failure -> {
+            is BaseViewState.Error -> {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -110,76 +88,95 @@ fun SelectServiceSheet(
                 }
             }
 
-            is GetServicesResult.Success -> {
-                if (state.servicesWithCategory.isEmpty()) {
-                    AbsentItem(
-                        text = "No services found",
-                        onClick = {
-                            onServiceAbsent("")
+            is BaseViewState.Success -> {
+                Column {
+
+                    TabRow(selectedTabIndex = pagerState.currentPage) {
+                        Tab(selected = pagerState.currentPage == 0, onClick = {
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(0)
+                            }
+                        }, modifier = Modifier.clip(SubyShape)) {
+                            Text(
+                                text = stringResource(id = R.string.list),
+                                modifier = Modifier.padding(16.dp)
+                            )
                         }
-                    )
-                } else {
-                    Column {
-                        val pagerState = rememberPagerState(
-                            initialPage = 0,
-                            initialPageOffsetFraction = 0f
-                        ) { 2 }
-                        val coroutineScope = rememberCoroutineScope()
-                        TabRow(selectedTabIndex = pagerState.currentPage) {
-                            Tab(selected = pagerState.currentPage == 0, onClick = {
-                                coroutineScope.launch {
-                                    pagerState.animateScrollToPage(0)
-                                }
-                            }, modifier = Modifier.clip(SubyShape)) {
-                                Text(
-                                    text = stringResource(id = R.string.list),
-                                    modifier = Modifier.padding(16.dp)
-                                )
+                        Tab(selected = pagerState.currentPage == 1, onClick = {
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(1)
                             }
-                            Tab(selected = pagerState.currentPage == 1, onClick = {
-                                coroutineScope.launch {
-                                    pagerState.animateScrollToPage(1)
-                                }
-                            }, modifier = Modifier.clip(SubyShape)) {
-                                Text(
-                                    text = stringResource(id = R.string.categories),
-                                    modifier = Modifier.padding(16.dp)
-                                )
-                            }
+                        }, modifier = Modifier.clip(SubyShape)) {
+                            Text(
+                                text = stringResource(id = R.string.custom_services),
+                                modifier = Modifier.padding(16.dp)
+                            )
                         }
-                        HorizontalPager(state = pagerState) { page ->
-                            if (page == 1) {
-                                CategoriesPage(
-                                    state.servicesWithCategory,
-                                    onServiceSelected,
-                                    onServiceAbsent
-                                )
-                            } else {
-                                ListPage(
-                                    state.servicesWithCategory,
-                                    onServiceSelected,
-                                    onServiceAbsent
-                                ) {}
-                            }
+                    }
+
+                    HorizontalPager(
+                        modifier = Modifier.fillMaxHeight(), state = pagerState
+                    ) { page ->
+                        if (page == 1) {
+                            CustomServicesList(
+                                customServices = customServices,
+                                onCustomServiceSelected = onCustomServiceSelected,
+                                onAddCustomService = onAddCustomService
+                            )
+                        } else {
+                            ServicesList(
+                                services = state.data,
+                                onServiceSelected = onServiceSelected,
+                                onSuggestService = onSuggestService
+                            )
                         }
                     }
                 }
             }
         }
     }
-
 }
+
+@Composable
+internal fun CustomServicesList(
+    customServices: List<Service>,
+    onCustomServiceSelected: (Service) -> Unit,
+    onAddCustomService: () -> Unit
+) {
+    Column(modifier = Modifier.fillMaxHeight()) {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(16.dp)
+        ) {
+            items(customServices) { service ->
+                ServiceRowItem(
+                    modifier = Modifier.animateItem(),
+                    showCreatedAt = true,
+                    showCategory = true,
+                    service = service,
+                    onClick = { onCustomServiceSelected(service) })
+            }
+            item {
+                Button(
+                    onClick = onAddCustomService,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp)
+                ) {
+                    Text(stringResource(R.string.btn_add_custom_service))
+                }
+            }
+        }
+    }
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListPage(
-    servicesWithCategories: List<ServiceWithCategory>,
-    onServiceSelected: (ServiceWithCategory) -> Unit,
-    onServiceAbsent: (inputText: String) -> Unit,
-    // FIXME: Remove it from here
-    onSearch: (String) -> Unit,
+internal fun ServicesList(
+    services: List<Service>,
+    onServiceSelected: (Service) -> Unit,
+    onSuggestService: (name: String) -> Unit,
 ) {
-
     var searchString by remember {
         mutableStateOf("")
     }
@@ -187,20 +184,19 @@ fun ListPage(
         mutableStateOf(false)
     }
     Column {
-        SearchBar(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+        SearchBar(modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
             query = searchString,
             onQueryChange = {
                 searchString = it
                 if (it.isNotEmpty()) searchEnabled = true
             },
-            onSearch = onSearch,
+            onSearch = {},
             active = searchEnabled,
             onActiveChange = {},
             placeholder = {
-                Text(text = "Find a service")
+                Text(text = stringResource(R.string.label_find_a_service))
             },
             trailingIcon = {
                 if (searchEnabled) {
@@ -208,42 +204,40 @@ fun ListPage(
                         Icon(Icons.Default.Close)
                     }
                 }
-            }
-        ) {
+            }) {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(8.dp)
             ) {
-                items(servicesWithCategories.filter { it.service.name.contains(searchString, true) }
-                    .sortedBy { serviceWithCategory ->
-                        when {
-                            serviceWithCategory.service.name.startsWith(
-                                searchString,
-                                ignoreCase = true
-                            ) -> 0
-
-                            else -> 1
-                        }
-                    }) {
-                    ServiceHorizontalItem(
-                        service = it.service,
-                        onClick = { onServiceSelected(it) }
+                items(services.filter {
+                    // TODO: Extract to viewModel
+                    it.name.contains(
+                        searchString, true
                     )
+                }.sortedBy { service ->
+                    when {
+                        service.name.startsWith(
+                            searchString, ignoreCase = true
+                        ) -> 0
+
+                        else -> 1
+                    }
+                }) {
+                    ServiceRowItem(service = it, onClick = { onServiceSelected(it) })
                 }
                 item {
-                    AbsentItem(
-                        text = "Want to add another service?",
-                        onClick = { onServiceAbsent(searchString) })
+                    OtherServiceOption(onClick = {
+                        onSuggestService(searchString)
+                    })
                 }
             }
         }
 
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(16.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(16.dp)
         ) {
-            items(servicesWithCategories) {
-                ServiceHorizontalItem(service = it.service, onClick = { onServiceSelected(it) })
+            items(services) {
+                ServiceRowItem(service = it, onClick = { onServiceSelected(it) })
             }
         }
     }
@@ -251,135 +245,6 @@ fun ListPage(
 }
 
 @Composable
-fun CategoriesPage(
-    servicesWithCategories: List<ServiceWithCategory>,
-    onServiceSelected: (ServiceWithCategory) -> Unit,
-    onServiceAbsent: (inputText: String) -> Unit
-) {
-    LazyVerticalGrid(
-        contentPadding = WindowInsets.systemBars.add(16.dp.asWindowInsets)
-            .asPaddingValues(),
-        columns = GridCells.Adaptive(150.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        servicesWithCategories.groupBy { it.category }.forEach { service ->
-            val category = service.key
-            val services = service.value
-            item(span = { GridItemSpan(this.maxLineSpan) }) {
-                CategoryName(modifier = Modifier.padding(bottom = 8.dp), category)
-            }
-            items(services) { service ->
-                ServiceVerticalItem(service.service, onClick = { onServiceSelected(service) })
-            }
-            item(span = { GridItemSpan(this.maxLineSpan) }) {
-                Spacer(modifier = Modifier.size(30.dp))
-            }
-
-        }
-        item(span = { GridItemSpan(this.maxLineSpan) }) {
-            AbsentItem(text = "Can't find your service?", onClick = {
-                onServiceAbsent("")
-            })
-        }
-    }
-}
-
-@Composable
-fun CategoryName(
-    modifier: Modifier = Modifier,
-    category: CategoryDb,
-    textStyle: TextStyle = MaterialTheme.typography.titleLarge
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        ProvideTextStyle(value = textStyle) {
-            Text(text = category.emoji)
-            Text(text = category.name)
-        }
-    }
-}
-
-@Composable
-fun ServiceVerticalItem(service: ServiceDb, onClick: () -> Unit) {
-    BaseItem(onClick = onClick) {
-        Column(
-            Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            service.logoLink?.let {
-                ServiceSvg(
-                    modifier = Modifier.height(50.dp),
-                    link = it,
-                )
-            }
-            Text(
-                text = service.name,
-                textAlign = TextAlign.Center,
-                maxLines = 1
-            )
-        }
-    }
-}
-
-@Composable
-fun ServiceHorizontalItem(
-    modifier: Modifier = Modifier,
-    service: ServiceDb,
-    cardColors: CardColors = CardDefaults.cardColors(),
-    onClick: (() -> Unit)? = null
-) {
-    BaseItem(modifier = modifier, onClick = onClick, colors = cardColors) {
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                modifier = Modifier.weight(1f),
-                text = service.name,
-                textAlign = TextAlign.Start,
-                maxLines = 1,
-            )
-            service.logoLink?.let {
-                ServiceSvg(
-                    modifier = Modifier
-                        .height(40.dp)
-                        .padding(start = 32.dp)
-                        .weight(1f, false),
-                    link = it,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun ServiceSvg(
-    modifier: Modifier = Modifier,
-    link: String,
-    contentScale: ContentScale = ContentScale.Fit
-) {
-    SubcomposeAsyncImage(
-        modifier = modifier,
-        model = ImageRequest.Builder(LocalContext.current)
-            .data(link)
-            .decoderFactory(SvgDecoder.Factory())
-            .build(),
-        loading = {
-            Surface(
-                modifier = modifier.placeholder3(
-                    true,
-                    shape = SubyShape,
-                    highlight = PlaceholderHighlight.fade()
-                ),
-            ) {}
-        },
-        contentScale = contentScale,
-        contentDescription = ""
-    )
+internal fun OtherServiceOption(onClick: () -> Unit) {
+    AbsentItem(text = "Looking for the other service?", onClick = onClick)
 }
