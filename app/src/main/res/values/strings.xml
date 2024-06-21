@@ -22,4 +22,18 @@
     <string name="unknown">Unknown</string>
     <string name="updating_state">Updating…</string>
     <string name="updated_on">Updated on %1$s</string>
+    <string name="currencies">Currencies</string>
+    <string name="title_subscription">Subscription</string>
+    <string name="delete_btn">Delete</string>
+    <string name="confirm_delete_title">Confirm Deletion</string>
+    <string name="confirm_delete_message">Are you sure you want to delete this subscription?</string>
+    <string name="delete_confirm">Delete</string>
+    <string name="delete_cancel">Cancel</string>
+    <string name="select_currency">Select your Main Currency</string>
+    <string name="confirm">Confirm</string>
+    <string name="custom_services">Custom Services</string>
+    <string name="service_name">Service Name</string>
+    <string name="btn_create_service">Create Service</string>
+    <string name="label_find_a_service">Find a service</string>
+    <string name="btn_add_custom_service">Add Custom Service</string>
 </resources>
