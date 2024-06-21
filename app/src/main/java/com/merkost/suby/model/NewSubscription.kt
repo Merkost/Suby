@@ -1,8 +1,8 @@
 package com.merkost.suby.model
 
-import com.merkost.suby.model.room.Status
-import com.merkost.suby.now
-import com.merkost.suby.toLocalDate
+import com.merkost.suby.model.entity.full.Service
+import com.merkost.suby.utils.now
+import com.merkost.suby.utils.toLocalDate
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 import java.time.format.DateTimeFormatter
@@ -10,8 +10,9 @@ import java.time.format.DateTimeFormatter
 data class NewSubscription(
     val price: String = "",
     val service: Service? = null,
-    val customService: CustomService? = null,
     val period: Period? = null,
+    val customPeriodType: CustomPeriodType? = null,
+    val customPeriodDuration: Long? = null,
     val status: Status? = null,
     val billingDate: Long? = null,
     val description: String = "",
@@ -30,13 +31,13 @@ data class NewSubscription(
             val isPast = endDate.isBefore(currentDate) || endDate.isEqual(currentDate)
 
             val subscriptionEndText = when {
-                status == Status.ACTIVE && isPast -> "Your subscription ended on ${
+                status == Status.ACTIVE && isPast -> "Your subscription renewed on ${
                     endDate.format(
                         formatter
                     )
                 }"
 
-                status == Status.ACTIVE && !isPast -> "Your subscription will end on ${
+                status == Status.ACTIVE && !isPast -> "Your subscription will be renewed on ${
                     endDate.format(
                         formatter
                     )

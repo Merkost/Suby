@@ -27,9 +27,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.merkost.suby.R
 import com.merkost.suby.SubyShape
 import com.merkost.suby.asWindowInsets
 import com.merkost.suby.model.Currency
@@ -45,7 +47,6 @@ fun PickCurrencyScreen(
     onCurrencySelected: (Currency) -> Unit,
     upPress: () -> Unit
 ) {
-    // TODO: search bar
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val mainViewModel = hiltViewModel<MainViewModel>()
@@ -53,7 +54,7 @@ fun PickCurrencyScreen(
         contentWindowInsets = WindowInsets(0.dp),
         topBar = {
             SubyTopAppBar(title = {
-                Text(text = "Currencies")
+                Text(text = stringResource(R.string.currencies))
             }, upPress = upPress, scrollBehavior = scrollBehavior)
         }) {
         LazyColumn(
@@ -65,7 +66,7 @@ fun PickCurrencyScreen(
                 .asPaddingValues(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(Currency.values().sortedBy { it.fullName }) { currency ->
+            items(Currency.entries.sortedBy { it.fullName }) { currency ->
                 CurrencyItem(
                     modifier = Modifier.fillMaxWidth(),
                     currency = currency,
@@ -77,39 +78,41 @@ fun PickCurrencyScreen(
                     }
                 )
             }
+
+            // TODO:  
             item {
-                CurrencyAbsentItem()
+                AbsentItem(text = "Can't find your currency?") {}
             }
         }
     }
 }
 
 @Composable
-fun CurrencyAbsentItem(modifier: Modifier = Modifier) {
+fun AbsentItem(
+    modifier: Modifier = Modifier,
+    text: String,
+    onClick: () -> Unit
+) {
     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = modifier
                 .padding(8.dp)
                 .clip(SubyShape)
-                .clickable {
-                    // TODO:
-                }
+                .clickable { onClick() }
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = "Can't find your currency?",
+                text = text,
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Icon(Icons.Default.Search)
         }
     }
-
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CurrencyItem(modifier: Modifier = Modifier, currency: Currency, onClick: () -> Unit) {
     ElevatedCard(modifier = modifier, onClick = onClick) {

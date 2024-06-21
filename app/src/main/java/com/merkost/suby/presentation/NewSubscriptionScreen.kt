@@ -1,41 +1,39 @@
 package com.merkost.suby.presentation
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Assignment
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.EventRepeat
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.Card
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.InputChip
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -49,33 +47,39 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEachIndexed
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.merkost.suby.R
 import com.merkost.suby.SubyShape
-import com.merkost.suby.formatDateLongToDate
-import com.merkost.suby.model.Category
 import com.merkost.suby.model.Currency
 import com.merkost.suby.model.Period
-import com.merkost.suby.model.Service
+import com.merkost.suby.model.Status
+import com.merkost.suby.presentation.base.BaseItem
 import com.merkost.suby.presentation.base.Icon
-import com.merkost.suby.presentation.base.SubyTextField
+import com.merkost.suby.presentation.base.SaveButton
 import com.merkost.suby.presentation.base.SubyTopAppBar
+import com.merkost.suby.presentation.base.TitleColumn
+import com.merkost.suby.presentation.base.components.ServiceRowItem
+import com.merkost.suby.presentation.sheets.CreateCustomServiceSheet
 import com.merkost.suby.presentation.sheets.SelectServiceSheet
-import com.merkost.suby.presentation.sheets.ServiceItem
+import com.merkost.suby.presentation.states.NewSubscriptionUiState
 import com.merkost.suby.showToast
+import com.merkost.suby.ui.theme.subyColors
 import com.merkost.suby.viewModel.NewSubscriptionViewModel
-import com.merkost.suby.viewModel.UiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewSubscriptionScreen(
     pickedCurrency: Currency?,
     onCurrencyClicked: () -> Unit,
+    onSuggestService: (inputText: String) -> Unit,
     upPress: () -> Unit
 ) {
     val context = LocalContext.current
@@ -83,338 +87,386 @@ fun NewSubscriptionScreen(
     val viewModel = hiltViewModel<NewSubscriptionViewModel>()
     val uiState by viewModel.uiState.collectAsState()
     val mainCurrency by viewModel.mainCurrency.collectAsState()
+    val couldSave by viewModel.couldSave.collectAsState()
+    val customServices by viewModel.customServices.collectAsState()
+    val servicesState by viewModel.servicesState.collectAsState()
     val selectedValues by viewModel.selectedValues.collectAsState()
 
     LaunchedEffect(uiState) {
-        when (val state = uiState) {
-            is UiState.Success -> upPress()
-            is UiState.Error -> context.showToast("Error")
-            else -> {}
+        when (uiState) {
+            is NewSubscriptionUiState.Success -> upPress()
+            is NewSubscriptionUiState.Error -> context.showToast("Error")
+            else -> {
+                // TODO:
+                context.showToast(uiState.toString())
+            }
         }
     }
 
     val currency by remember {
         derivedStateOf { pickedCurrency ?: mainCurrency }
     }
-    val selectedCategory by remember { derivedStateOf { selectedValues.category } }
+    var descriptionEnabled by rememberSaveable { mutableStateOf(false) }
     val selectedPeriod by remember { derivedStateOf { selectedValues.period } }
+    val selectedStatus by remember { derivedStateOf { selectedValues.status } }
+    val billingDate by remember { derivedStateOf { selectedValues.billingDate } }
+    val description by remember { derivedStateOf { selectedValues.description } }
 
-    var selectServiceSheet by remember {
-        mutableStateOf(false)
-    }
-
-    var customCategoryName by rememberSaveable {
-        mutableStateOf("")
-    }
-    var customServiceName by rememberSaveable {
-        mutableStateOf("")
-    }
+    var selectServiceSheet by remember { mutableStateOf(false) }
+    var createCustomServiceSheet by remember { mutableStateOf(false) }
+    val selectServiceSheetState = rememberModalBottomSheetState(true)
+    val createCustomServiceSheetState = rememberModalBottomSheetState(true)
 
     if (selectServiceSheet) {
         ModalBottomSheet(
+            sheetState = selectServiceSheetState,
             onDismissRequest = { selectServiceSheet = false },
-            windowInsets = WindowInsets(0.dp)
+            windowInsets = WindowInsets.statusBars
         ) {
-            SelectServiceSheet(onServiceSelected = { category, service ->
-                viewModel.onServiceSelected(category, service)
-                selectServiceSheet = false
-            })
-        }
-    }
-
-    val datePickerDate = rememberDatePickerState()
-
-    var showDatePicker by rememberSaveable { mutableStateOf(false) }
-    if (showDatePicker) {
-        DatePickerDialog(
-            onDismissRequest = { showDatePicker = false },
-            confirmButton = {
-                TextButton(onClick = { showDatePicker = false }) {
-                    Text("Ok")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) {
-                    Text("Cancel")
-                }
-            }
-        ) {
-            DatePicker(state = datePickerDate, dateValidator = {
-                viewModel.onBillingDateSelected(it)
-                true
-            })
-        }
-    }
-
-
-    Scaffold(contentWindowInsets = WindowInsets.navigationBars, topBar = {
-        SubyTopAppBar(title = {
-            Text(text = "New subscription")
-        }, upPress = upPress)
-    },
-        floatingActionButton = {
-            FloatingActionButton(modifier = Modifier.imePadding(),
-                onClick = {
-                    viewModel.saveNewSubscription(
-                        currency,
-                    )
-                }) {
-                Icon(imageVector = Icons.Default.Done)
-            }
-        }) {
-
-        Column(
-            modifier = Modifier.padding(it),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            val textStyle = MaterialTheme.typography.displaySmall.copy(
-                fontWeight = FontWeight.Bold
+            SelectServiceSheet(
+                customServices = customServices,
+                servicesState = servicesState,
+                onServiceSelected = { service ->
+                    viewModel.onServiceSelected(service)
+                    selectServiceSheet = false
+                },
+                onSuggestService = onSuggestService,
+                onCustomServiceSelected = { service ->
+                    viewModel.onCustomServiceSelected(service)
+                    selectServiceSheet = false
+                },
+                onAddCustomService = {
+                    createCustomServiceSheet = true
+                },
+                onRetryLoadServices = viewModel::onReloadServices
             )
+        }
+    }
 
+    if (createCustomServiceSheet) {
+        ModalBottomSheet(
+            sheetState = createCustomServiceSheetState,
+            onDismissRequest = { createCustomServiceSheet = false },
+            windowInsets = WindowInsets.statusBars
+        ) {
+            CreateCustomServiceSheet(onCreated = { createCustomServiceSheet = false })
+        }
+    }
 
-            Row(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                SubyTextField(
-                    modifier = Modifier
-                        .padding(vertical = 8.dp)
-                        .weight(1f, false),
-                    value = selectedValues.price,
-                    prefix = {
-                        Text(text = currency.symbol, style = textStyle)
-                    },
-                    onValueChange = viewModel::onPriceInput,
-                    textStyle = textStyle,
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(),
-                    shape = SubyShape,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number
-                    ),
-                    placeholder = {
+    Scaffold(topBar = {
+        SubyTopAppBar(
+            title = {
+                Text(text = stringResource(R.string.new_subscription))
+            }, upPress = upPress
+        )
+    }, floatingActionButton = {
+        SaveButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .imePadding(),
+            enabled = couldSave
+        ) {
+            viewModel.saveNewSubscription(currency)
+        }
+
+    }, floatingActionButtonPosition = FabPosition.Center
+    ) {
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(it),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            TitleColumn(modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+                title = stringResource(R.string.title_service),
+                actions = {
+                    AnimatedVisibility(descriptionEnabled.not()) {
                         Text(
-                            text = "0.00",
-                            style = textStyle.copy(color = textStyle.color.copy(0.2f))
+                            stringResource(R.string.add_description),
+                            modifier = Modifier.clickable {
+                                descriptionEnabled = true
+                            },
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.primary
+                            )
                         )
-                    })
-                CurrencyLabel(
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                        .clip(SubyShape)
-                        .clickable { onCurrencyClicked() },
-                    currency,
-                    textStyle,
+                    }
+                }) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+
+                    AnimatedContent(
+                        targetState = selectedValues.service, label = "serviceAnim"
+                    ) { service ->
+                        if (service != null) {
+                            ServiceRowItem(
+                                modifier = Modifier.fillMaxWidth(),
+                                service = service,
+                                showCategory = true,
+                                onClick = {
+                                    selectServiceSheet = true
+                                }
+                            )
+                        } else {
+                            SelectServiceButton(onClick = { selectServiceSheet = true })
+                        }
+                    }
+                }
+            }
+
+            AnimatedVisibility(visible = descriptionEnabled) {
+                DescriptionView(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    description = description,
+                    onDescriptionChanged = viewModel::onDescriptionChanged
                 )
             }
 
-            AnimatedContent(
-                modifier = Modifier,
-                targetState = selectedValues.service,
-                label = "",
-            ) { service ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    service?.let {
-                        Row(
-                            modifier = Modifier,
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            InputChip(
-                                modifier = Modifier,
-                                selected = true,
-                                onClick = { selectServiceSheet = true },
-                                label = {
-                                    Text(
-                                        text = selectedCategory?.categoryName
-                                            ?: service.category.categoryName
-                                    )
-                                },
-                                leadingIcon = {
-                                    Text(text = selectedCategory?.emoji ?: service.category.emoji)
-                                })
+            PriceAndCurrencyRow(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                price = selectedValues.price,
+                flipCurrencyArrow = false,
+                currency = currency,
+                onPriceInput = viewModel::onPriceInput,
+                onCurrencyClicked = onCurrencyClicked
+            )
 
-                            if (service.category == Category.CUSTOM) {
-                                InputChip(
-                                    modifier = Modifier,
-                                    selected = true,
-                                    onClick = { selectServiceSheet = true },
-                                    label = {
-                                        Text(
-                                            text = selectedCategory?.categoryName
-                                                ?: service.category.categoryName
-                                        )
-                                    })
-                            }
+            TitleColumn(modifier = Modifier.padding(horizontal = 16.dp),
+                title = stringResource(R.string.title_billing_date),
+                infoInformation = buildAnnotatedString {
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
+                        append("The date when the most recent payment for your subscription was processed.")
+                        append("\n\n")
+                        append("This is the starting point for calculating the next billing cycle based on the selected period (e.g., monthly, annually).")
+                    }
+                }) {
+                BillingDate(
+                    selectedValues = selectedValues,
+                    billingDate = billingDate,
+                    onBillingDateSelected = viewModel::onBillingDateSelected
+                )
+            }
+
+            TitleColumn(modifier = Modifier.padding(horizontal = 16.dp),
+                title = "Status",
+                infoInformation = buildAnnotatedString {
+                    Status.entries.fastForEachIndexed { i, status ->
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                            append(status.statusName)
                         }
-                        ServiceItem(service) { selectServiceSheet = true }
-                        if (selectedCategory == Category.CUSTOM) {
-                            SubyTextField(
-                                modifier = Modifier.fillMaxWidth(),
-                                label = {
-                                    Text(text = "Category name")
-                                },
-                                value = customCategoryName,
-                                onValueChange = { customCategoryName = it }
-                            )
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
+                            append(" - ")
+                            append(status.description)
                         }
 
-                        if (service == Service.CUSTOM) {
-                            SubyTextField(
-                                modifier = Modifier.fillMaxWidth(),
-                                label = {
-                                    Text(text = "Service name")
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    capitalization = KeyboardCapitalization.Sentences
-                                ),
-                                value = customServiceName,
-                                onValueChange = { customServiceName = it }
-                            )
+                        if (i != Status.entries.lastIndex) {
+                            append("\n\n")
                         }
-                    } ?: run {
-                        SelectServiceItem(onClick = { selectServiceSheet = true })
+                    }
+                }) {
+
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(Status.entries) { status ->
+                        StatusItem(modifier = Modifier.width(IntrinsicSize.Max),
+                            status,
+                            isSelected = selectedStatus == status,
+                            onClick = { viewModel.onStatusClicked(status) })
                     }
                 }
             }
 
-            AnimatedContent(targetState = selectedPeriod, label = "") { period ->
-                period?.let {
-                    Row(
-                        modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-
-                        InputChip(
-                            selected = true,
-                            onClick = viewModel::onResetPeriod,
-                            label = {
-                                Text(text = it.periodName)
-                            }
-                        )
-
-                        if (period == Period.CUSTOM) {
-                            AssistChip(
-                                onClick = { /* TODO: period picker for custom */ },
-                                label = { Text(text = "Billing Cycle") },
-                                leadingIcon = { Icon(imageVector = Icons.Default.EventRepeat) }
-                            )
+            TitleColumn(modifier = Modifier.padding(horizontal = 16.dp),
+                title = "Period",
+                infoInformation = buildAnnotatedString {
+                    Period.entries.forEachIndexed { i, period ->
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                            append(period.periodName)
+                        }
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
+                            append(" - ")
+                            append(period.description)
                         }
 
-                        datePickerDate.selectedDateMillis?.let { selectedDate ->
-                            InputChip(
-                                selected = true,
-                                onClick = { showDatePicker = true },
-                                label = {
-                                    Text(text = selectedDate.formatDateLongToDate())
-                                }
-                            )
-                        } ?: run {
-                            AssistChip(
-                                onClick = { showDatePicker = true },
-                                label = { Text(text = "Billing Date") },
-                                leadingIcon = { Icon(imageVector = Icons.Default.CalendarMonth) }
-                            )
-                        }
-
-                    }
-                } ?: run {
-                    LazyRow(
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(Period.values()) { period ->
-                            InputChip(
-                                selected = period == selectedPeriod,
-                                onClick = { viewModel.onPeriodSelected(period) },
-                                label = {
-                                    Text(text = period.periodName)
-                                }
-                            )
+                        if (i != Period.entries.lastIndex) {
+                            append("\n\n")
                         }
                     }
-                }
+                }) {
+                Period(
+                    selectedPeriod,
+                    onPeriodSelected = viewModel::onPeriodSelected,
+                    onCustomPeriodSelected = viewModel::onCustomPeriodSelected,
+                )
+            }
+
+            Spacer(modifier = Modifier.size(356.dp))
+        }
+    }
+}
+
+@Composable
+fun SelectServiceButton(
+    onClick: () -> Unit
+) {
+    BaseItem(
+        onClick = onClick, modifier = Modifier.fillMaxWidth(),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Select service",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown, tint = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
+
+@Composable
+internal fun PriceAndCurrencyRow(
+    modifier: Modifier = Modifier,
+    price: String,
+    currency: Currency,
+    flipCurrencyArrow: Boolean = false,
+    onPriceInput: ((String) -> Unit)?,
+    onCurrencyClicked: (() -> Unit)? = null,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Max)
+            .then(modifier),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+
+        TitleColumn(
+            title = stringResource(R.string.title_currency), modifier = Modifier.fillMaxHeight()
+
+        ) {
+            CurrencyLabel(
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .clip(SubyShape)
+                    .clickable(onCurrencyClicked != null) { onCurrencyClicked?.let { onCurrencyClicked() } },
+                currency,
+                textStyle = MaterialTheme.typography.displaySmall.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+                flipCurrencyArrow = flipCurrencyArrow,
+                showArrow = onCurrencyClicked != null
+            )
+        }
+
+        TitleColumn(
+            title = stringResource(R.string.title_price), modifier = Modifier.weight(1f, false)
+        ) {
+            PriceField(
+                modifier = Modifier,
+                price = price,
+                currency = currency,
+                onPriceInput = onPriceInput
+            )
+        }
+    }
+}
+
+@Composable
+fun PeriodItem(period: Period, isSelected: Boolean, onClick: () -> Unit) {
+
+    val color by animateColorAsState(
+        targetValue = if (isSelected) MaterialTheme.colorScheme.primary
+        else MaterialTheme.colorScheme.secondaryContainer
+    )
+
+    BaseItem(
+        modifier = Modifier,
+        onClick = onClick,
+        colors = CardDefaults.cardColors(containerColor = color)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(text = period.periodName)
+        }
+    }
+}
+
+@Composable
+fun StatusItem(
+    modifier: Modifier = Modifier, status: Status, isSelected: Boolean, onClick: () -> Unit
+) {
+
+    val color by animateColorAsState(
+        targetValue = if (isSelected) MaterialTheme.colorScheme.primary
+        else MaterialTheme.colorScheme.secondaryContainer
+    )
+
+    Box(modifier = modifier
+        .clip(RoundedCornerShape(12.dp))
+        .clickable { onClick() }) {
+        BaseItem(
+            modifier = Modifier, colors = CardDefaults.cardColors(containerColor = color)
+        ) {
+            Column(
+                modifier = Modifier,
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(imageVector = status.icon)
+                Text(text = status.statusName)
             }
         }
     }
 }
+
 
 @Composable
 fun CurrencyLabel(
     modifier: Modifier = Modifier,
     currency: Currency,
-    textStyle: TextStyle,
+    // FIXME:
+    textStyle: TextStyle = MaterialTheme.typography.titleMedium,
+    showArrow: Boolean = true,
+    flipCurrencyArrow: Boolean = false
 ) {
+
     Row(
-        modifier = modifier.padding(horizontal = 4.dp),
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Text(text = currency.code, style = textStyle)
-        Text(
-            text = currency.flagEmoji,
-            style = MaterialTheme.typography.headlineLarge
-        )
-    }
-}
+        val currencyCodeTextStyle =
+            MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
 
-@Composable
-fun SelectServiceItem(onClick: () -> Unit) {
-    BaseItem(onClick = onClick) {
+        val currencyTextStyle =
+            MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold)
+
+        if (flipCurrencyArrow && showArrow) Icon(Icons.Default.ArrowDropDown)
+
         Column(
-            Modifier
-                .fillMaxWidth(),
+            modifier = Modifier
+                .padding(horizontal = 4.dp)
+                .padding(bottom = 4.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Icon(Icons.Default.Assignment)
-            Text(text = "Select Service")
+            Text(text = currency.flagEmoji, style = currencyTextStyle)
+            Text(
+                text = currency.code, style = currencyCodeTextStyle
+            )
         }
-    }
 
-}
-
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun BaseItem(
-    modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null,
-    onLongClick: (() -> Unit)? = null,
-    content: @Composable () -> Unit
-) {
-    onClick?.let {
-        Card(
-            modifier = modifier,
-        ) {
-            Box(
-                modifier = Modifier
-                    .combinedClickable(
-                        onClick = onClick,
-                        onLongClick = onLongClick,
-                        role = Role.Tab,
-                    )
-                    .padding(16.dp)
-            ) {
-                content()
-            }
-        }
-    } ?: run {
-        Card {
-            Box(modifier = Modifier.padding(16.dp)) {
-                content()
-            }
-        }
+        if (flipCurrencyArrow.not() && showArrow) Icon(Icons.Default.ArrowDropDown)
     }
 }
-
-
-
