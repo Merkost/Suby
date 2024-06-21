@@ -21,8 +21,10 @@ object Destinations {
     const val MAIN_SCREEN = "main"
     const val NEW_SUBSCRIPTION = "new"
 
-    const val CURRENCY_PICK = "currency_pick"
-    const val MAIN_CURRENCY_PICK = "main_currency_pick"
+    @Serializable
+    data class CurrencyPick(
+        val isMainCurrency: Boolean = false
+    )
 
     @Serializable
     data class SubscriptionInfo(
