@@ -14,10 +14,10 @@ interface CurrencyRatesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addCurrencyRates(currencyRatesDb: CurrencyRatesDb): Long
 
-    @Query("SELECT * FROM currency_rates WHERE mainCurrency = :currency")
+    @Query("SELECT * FROM currency_rate WHERE mainCurrency = :currency")
     fun getRatesByCurrency(currency: Currency): Flow<CurrencyRatesDb?>
 
-    @Query("SELECT * FROM currency_rates")
+    @Query("SELECT * FROM currency_rate")
     fun getAllRates(): Flow<List<CurrencyRatesDb>>
 
     @Update(onConflict = OnConflictStrategy.REPLACE)

@@ -8,8 +8,9 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.merkost.suby.model.room.entity.ServiceDb
-import com.merkost.suby.model.room.entity.ServiceWithCategory
+import com.merkost.suby.model.room.entity.related.ServiceWithCategory
 import kotlinx.coroutines.flow.Flow
+import kotlinx.datetime.LocalDateTime
 
 @Dao
 interface ServiceDao {
@@ -41,6 +42,6 @@ interface ServiceDao {
     suspend fun deleteServices(serviceDb: ServiceDb): Int
 
     @Query("SELECT MAX(lastUpdated) FROM service")
-    suspend fun getLastServiceUpdate(): Long?
+    suspend fun getLastServiceUpdate(): LocalDateTime?
 
 }

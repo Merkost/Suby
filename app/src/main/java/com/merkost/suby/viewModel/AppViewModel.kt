@@ -27,18 +27,18 @@ class AppViewModel @Inject constructor(
 
     val isFirstTimeState = MutableStateFlow(true)
 
-    val subscriptions = subscriptionRepository.subscriptionsWithServices
+    val subscriptions = subscriptionRepository.subscriptions
         .stateIn(viewModelScope, SharingStarted.Eagerly, listOf())
 
     val mainCurrency = appSettings.mainCurrency
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Currency.USD)
 
     init {
-            appSettings.isFirstTimeLaunch.zip(subscriptions) { isFirstTimeLaunch, _ ->
-                isFirstTimeState.update { isFirstTimeLaunch }
-                delay(200)
-                isLoading = false
-            }.launchIn(viewModelScope)
+        appSettings.isFirstTimeLaunch.zip(subscriptions) { isFirstTimeLaunch, _ ->
+            isFirstTimeState.update { isFirstTimeLaunch }
+            delay(200)
+            isLoading = false
+        }.launchIn(viewModelScope)
     }
 
     fun updateFirstTimeOpening() {

@@ -2,9 +2,14 @@ package com.merkost.suby.presentation
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,16 +20,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -33,10 +40,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -48,13 +57,14 @@ import com.merkost.suby.SubyShape
 import com.merkost.suby.formatDecimal
 import com.merkost.suby.model.Currency
 import com.merkost.suby.model.Period
-import com.merkost.suby.model.room.entity.SubscriptionWithDetails
+import com.merkost.suby.model.entity.full.Subscription
+import com.merkost.suby.presentation.base.BaseItem
 import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.PlaceholderHighlight
 import com.merkost.suby.presentation.base.SubyTopAppBar
+import com.merkost.suby.presentation.base.components.ServiceSvg
 import com.merkost.suby.presentation.base.fade
 import com.merkost.suby.presentation.base.placeholder3
-import com.merkost.suby.presentation.sheets.ServiceSvg
 import com.merkost.suby.round
 import com.merkost.suby.ui.theme.SubyTheme
 import com.merkost.suby.utils.Constants
@@ -96,7 +106,9 @@ fun SubscriptionsScreen(
         })
     }) {
         AnimatedContent(
-            modifier = Modifier.padding(it), targetState = subscriptions, label = ""
+            modifier = Modifier.padding(it),
+            targetState = subscriptions,
+            label = ""
         ) { subs ->
             if (subs.isEmpty()) {
                 EmptySubscriptions(onAddClicked)
@@ -116,49 +128,50 @@ fun SubscriptionsScreen(
                         )
                     }
 
-                    items(subs) { details ->
+                    items(subs) { subscription ->
                         HorizontalSubscriptionItem(
                             modifier = Modifier
                                 .animateItem(fadeInSpec = null, fadeOutSpec = null)
                                 .animateContentSize(),
-                            sub = details,
+                            subscription = subscription,
                             selectedPeriod = selectedPeriod,
-                            onClick = { onSubscriptionInfo(details.subscription.id) }
+                            onClick = { onSubscriptionInfo(subscription.id) }
                         )
                     }
                 }
-                /*LazyVerticalStaggeredGrid(
-                    modifier = Modifier,
-                    columns = StaggeredGridCells.Fixed(2),
-                    contentPadding = PaddingValues(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalItemSpacing = 8.dp
-                ) {
-                    item(span = StaggeredGridItemSpan.FullLine) {
-                        MainBalance(
-                            totalPrice = totalState,
-                            mainCurrency = mainCurrency,
-                            period = selectedPeriod,
-                            onCurrencyClick = onCurrencyClick,
-                            onUpdateClick = viewModel::onUpdateRatesClicked,
-                            onPeriodClick = viewModel::updateMainPeriod
-                        )
-                    }
-                    items(subs) { subscription ->
-                        SubscriptionItem(
-                            modifier = Modifier
-                                .animateItemPlacement()
-                                .animateContentSize(),
-                            subscription = subscription,
-                            selectedPeriod = selectedPeriod,
-                            onClick = onSubscriptionInfo
-                        )
-                    }
-                }*/
             }
         }
     }
+    /*LazyVerticalStaggeredGrid(
+                modifier = Modifier,
+                columns = StaggeredGridCells.Fixed(2),
+                contentPadding = PaddingValues(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalItemSpacing = 8.dp
+            ) {
+                item(span = StaggeredGridItemSpan.FullLine) {
+                    MainBalance(
+                        totalPrice = totalState,
+                        mainCurrency = mainCurrency,
+                        period = selectedPeriod,
+                        onCurrencyClick = onCurrencyClick,
+                        onUpdateClick = viewModel::onUpdateRatesClicked,
+                        onPeriodClick = viewModel::updateMainPeriod
+                    )
+                }
+                items(subs) { subscription ->
+                    SubscriptionItem(
+                        modifier = Modifier
+                            .animateItemPlacement()
+                            .animateContentSize(),
+                        subscription = subscription,
+                        selectedPeriod = selectedPeriod,
+                        onClick = onSubscriptionInfo
+                    )
+                }
+            }*/
 }
+
 
 @Composable
 fun EmptySubscriptions(onAddClicked: () -> Unit) {
@@ -175,7 +188,7 @@ fun EmptySubscriptions(onAddClicked: () -> Unit) {
             modifier = Modifier.height(350.dp),
         )
 
-        FilledTonalButton(onClick = onAddClicked) {
+        Button(onClick = onAddClicked) {
             Text(text = "Add subscription")
         }
     }
@@ -263,13 +276,11 @@ fun MainBalance(
 @Composable
 fun SubscriptionItem(
     modifier: Modifier,
-    subDetails: SubscriptionWithDetails,
+    subDetails: Subscription,
     selectedPeriod: Period,
     onClick: () -> Unit
 ) {
 
-    val subscription = subDetails.subscription
-    val service = subDetails.serviceWithCategory.service
     BaseItem(
         modifier = modifier, onClick = onClick
     ) {
@@ -278,7 +289,7 @@ fun SubscriptionItem(
             verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            subDetails.serviceWithCategory.service.logoLink?.let {
+            subDetails.serviceLogoUrl?.let {
                 ServiceSvg(
                     modifier = Modifier.height(48.dp), link = it
                 )
@@ -290,7 +301,7 @@ fun SubscriptionItem(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = service.name,
+                    text = subDetails.serviceName,
                     modifier = Modifier.weight(1f, false),
                     maxLines = 1
                 )
@@ -298,16 +309,16 @@ fun SubscriptionItem(
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
                         modifier = Modifier.padding(horizontal = 2.dp),
-                        text = subscription.price.formatDecimal() + subscription.currency.symbol,
+                        text = subDetails.price.formatDecimal() + subDetails.currency.symbol,
                         textAlign = TextAlign.End
                     )
                     AnimatedContent(
                         targetState = selectedPeriod, label = "priceForPeriodAnim"
                     ) { period ->
-                        if (selectedPeriod != subscription.period) Text(
-                            text = "~" + subscription.getPriceForPeriod(
+                        if (selectedPeriod != subDetails.period) Text(
+                            text = "~" + subDetails.getPriceForPeriod(
                                 period
-                            ) + subscription.currency.symbol
+                            ) + subDetails.currency.symbol
                         )
                     }
                 }
@@ -337,89 +348,101 @@ fun SubscriptionItem(
 
 }
 
+
 @Composable
 fun HorizontalSubscriptionItem(
-    modifier: Modifier,
-    sub: SubscriptionWithDetails,
+    modifier: Modifier = Modifier,
+    subscription: Subscription,
     selectedPeriod: Period,
     onClick: () -> Unit
 ) {
-    val subscription = sub.subscription
-    BaseItem(
-        modifier = modifier.animateContentSize(), onClick = onClick
+    Surface(
+        modifier = modifier
+            .animateContentSize(),
+        onClick = onClick,
+        shape = SubyShape,
+        tonalElevation = 2.dp,
+        shadowElevation = 2.dp
     ) {
         Row(
-            modifier = Modifier,
+            modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                sub.serviceWithCategory.service.logoLink?.let {
-                    ServiceSvg(
-                        modifier = Modifier
-                            .height(48.dp)
-                            .widthIn(max = 96.dp), link = it
-                    )
-                } ?: Text(
-                    text = sub.serviceWithCategory.service.name,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.weight(1f, false),
-                    maxLines = 1
+            subscription.serviceLogoUrl?.let {
+                ServiceSvg(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                    link = it
                 )
-                Spacer(modifier = Modifier.size(4.dp))
-                Column(horizontalAlignment = Alignment.End) {
-                    Text(
-                        modifier = Modifier.padding(horizontal = 2.dp),
-                        text = subscription.price.formatDecimal() + subscription.currency.symbol,
-                        textAlign = TextAlign.End
-                    )
-                    AnimatedContent(
-                        targetState = selectedPeriod, label = "priceForPeriodAnim"
-                    ) { period ->
-                        if (selectedPeriod.days != subscription.periodDays) {
-                            Text(
-                                text = "~" + period.let {
-                                    subscription.getPriceForPeriod(it)
-                                        .round() + subscription.currency.symbol
-                                }
-                            )
-                        }
+            } ?: Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .clip(RoundedCornerShape(8.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = subscription.serviceName.take(1),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.titleLarge
+                )
+            }
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = subscription.serviceName,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = subscription.getRemainingDurationString(LocalContext.current),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            Column(
+                horizontalAlignment = Alignment.End
+            ) {
+                Text(
+                    text = "${subscription.price.formatDecimal()}${subscription.currency.symbol}",
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.End,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                AnimatedContent(
+                    targetState = subscription.getPriceForPeriod(selectedPeriod),
+                    transitionSpec = {
+                        fadeIn() togetherWith fadeOut()
+                    },
+                    label = "priceForPeriodAnim"
+                ) { priceForPeriod ->
+                    if (selectedPeriod.days != subscription.periodDays) {
+                        Text(
+                            text = "~${priceForPeriod.round()}${subscription.currency.symbol}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
                     }
                 }
             }
-
-            // TODO:
-
-//                Row(
-//                    modifier = Modifier,
-//                    verticalAlignment = Alignment.CenterVertically
-//                ) {
-//                    Text(
-//                        text = "Renewal ",
-//                        textAlign = TextAlign.End
-//                    )
-//                    Text(
-//                        maxLines = 1,
-//                        overflow = TextOverflow.Ellipsis,
-//                        text = subscription.getRemainingDurationString(context),
-//                        textAlign = TextAlign.End,
-//                        style = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold)
-//                    )
-//                }
-
         }
     }
-
 }
+
 
 @Preview
 @Composable
 fun SubscriptionsScreenPreview() {
     SubyTheme {
-        SubscriptionsScreen({}, {}) {}
+        SubscriptionsScreen({}, {}, { _ -> })
     }
 }

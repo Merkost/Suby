@@ -9,6 +9,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.merkost.suby.model.room.entity.CategoryDb
 import kotlinx.coroutines.flow.Flow
+import kotlinx.datetime.LocalDateTime
 
 @Dao
 interface CategoryDao {
@@ -36,6 +37,6 @@ interface CategoryDao {
     suspend fun deleteCategory(categoryDb: CategoryDb): Int
 
     @Query("SELECT MAX(lastUpdated) FROM category")
-    suspend fun getLastCategoryUpdate(): Long?
+    suspend fun getLastCategoryUpdate(): LocalDateTime?
 
 }

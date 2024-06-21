@@ -5,10 +5,13 @@ import androidx.room.Room
 import com.merkost.suby.model.room.AppDatabase
 import com.merkost.suby.model.room.dao.CategoryDao
 import com.merkost.suby.model.room.dao.CurrencyRatesDao
+import com.merkost.suby.model.room.dao.CustomServiceDao
 import com.merkost.suby.model.room.dao.ServiceDao
 import com.merkost.suby.model.room.dao.SubscriptionDao
 import com.merkost.suby.repository.room.CurrencyRatesRepository
 import com.merkost.suby.repository.room.CurrencyRatesRepositoryImpl
+import com.merkost.suby.repository.room.ServiceRepository
+import com.merkost.suby.repository.room.ServiceRepositoryImpl
 import com.merkost.suby.repository.room.SubscriptionRepository
 import com.merkost.suby.repository.room.SubscriptionRepositoryImpl
 import dagger.Module
@@ -26,6 +29,12 @@ object DatabaseModule {
     @Singleton
     fun provideCategoryDao(appDatabase: AppDatabase): CategoryDao {
         return appDatabase.categoryDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideCustomServiceDao(appDatabase: AppDatabase): CustomServiceDao {
+        return appDatabase.customServiceDao()
     }
 
     @Provides
@@ -48,6 +57,15 @@ object DatabaseModule {
 
     @Provides
     @Singleton
+    fun provideServicesRepository(
+        serviceDao: ServiceDao,
+        customServiceDao: CustomServiceDao
+    ): ServiceRepository {
+        return ServiceRepositoryImpl(serviceDao, customServiceDao)
+    }
+
+    @Provides
+    @Singleton
     fun provideSubscriptionRepository(subscriptionDao: SubscriptionDao): SubscriptionRepository {
         return SubscriptionRepositoryImpl(subscriptionDao)
     }
@@ -65,7 +83,8 @@ object DatabaseModule {
             appContext,
             AppDatabase::class.java,
             "app_database"
-        ).fallbackToDestructiveMigration()
+        )
+            .fallbackToDestructiveMigration()
             .build()
 
         // TODO: Remove fallbackToDestructiveMigration

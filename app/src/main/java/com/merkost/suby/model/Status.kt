@@ -1,4 +1,4 @@
-package com.merkost.suby.model.room
+package com.merkost.suby.model
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cancel

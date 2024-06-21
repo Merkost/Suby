@@ -13,7 +13,7 @@ import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 
 @HiltAndroidApp
-class SubyApplication: Application(), ImageLoaderFactory {
+class SubyApplication : Application(), ImageLoaderFactory {
 
     override fun onCreate() {
         super.onCreate()
@@ -27,6 +27,7 @@ class SubyApplication: Application(), ImageLoaderFactory {
 
     override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)
+            .crossfade(true)
             .memoryCache {
                 MemoryCache.Builder(this)
                     .maxSizePercent(0.20)
