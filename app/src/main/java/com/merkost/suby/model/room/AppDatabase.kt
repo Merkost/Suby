@@ -7,15 +7,23 @@ import com.merkost.suby.model.room.converter.Converters
 import com.merkost.suby.model.room.converter.CurrencyRatesTypeConverter
 import com.merkost.suby.model.room.dao.CategoryDao
 import com.merkost.suby.model.room.dao.CurrencyRatesDao
+import com.merkost.suby.model.room.dao.CustomServiceDao
 import com.merkost.suby.model.room.dao.ServiceDao
 import com.merkost.suby.model.room.dao.SubscriptionDao
 import com.merkost.suby.model.room.entity.CategoryDb
 import com.merkost.suby.model.room.entity.CurrencyRatesDb
+import com.merkost.suby.model.room.entity.CustomServiceDb
 import com.merkost.suby.model.room.entity.ServiceDb
 import com.merkost.suby.model.room.entity.SubscriptionDb
 
 @Database(
-    entities = [ServiceDb::class, CategoryDb::class, SubscriptionDb::class, CurrencyRatesDb::class],
+    entities = [
+        ServiceDb::class,
+        CustomServiceDb::class,
+        CategoryDb::class,
+        SubscriptionDb::class,
+        CurrencyRatesDb::class
+    ],
     version = 1, exportSchema = true
 )
 @TypeConverters(CurrencyRatesTypeConverter::class, Converters::class)
@@ -24,4 +32,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun currencyRatesDao(): CurrencyRatesDao
     abstract fun servicesDao(): ServiceDao
     abstract fun categoryDao(): CategoryDao
+    abstract fun customServiceDao(): CustomServiceDao
 }
