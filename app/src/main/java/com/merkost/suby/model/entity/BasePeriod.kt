@@ -4,6 +4,7 @@ import com.merkost.suby.utils.now
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toKotlinLocalDate
+import timber.log.Timber
 import java.time.temporal.ChronoUnit
 
 data class BasePeriod(

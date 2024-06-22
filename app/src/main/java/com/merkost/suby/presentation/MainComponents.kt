@@ -223,6 +223,7 @@ fun BillingDate(
     }
 
     AnimatedContent(targetState = selectedValues) { values ->
+        // TODO: Improve by extracting the logic to viewModel
         if (values.billingDate != null && values.period != null && values.status != null) {
             values.billingDateInfo?.let {
                 Text(

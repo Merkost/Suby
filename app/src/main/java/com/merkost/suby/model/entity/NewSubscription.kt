@@ -44,7 +44,7 @@ data class NewSubscription(
             val basePeriod = basePeriod ?: return null
 
             val endDate =
-                basePeriod.nextBillingDate(currentDate.toKotlinLocalDate()).toJavaLocalDate()
+                basePeriod.nextBillingDate(billingDate.toLocalDate).toJavaLocalDate()
 
             val isPast = endDate.isBefore(currentDate) || endDate.isEqual(currentDate)
 
