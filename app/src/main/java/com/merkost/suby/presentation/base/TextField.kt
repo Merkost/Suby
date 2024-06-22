@@ -4,6 +4,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
@@ -40,7 +41,9 @@ fun SubyTextField(
     minLines: Int = 1,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = SubyShape,
-    colors: TextFieldColors = TextFieldDefaults.colors()
+    colors: TextFieldColors = TextFieldDefaults.colors().copy(
+        unfocusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+    ),
 ) {
 
     TextField(
@@ -94,7 +97,9 @@ fun SubyTextField(
     minLines: Int = 1,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = SubyShape,
-    colors: TextFieldColors = TextFieldDefaults.colors()
+    colors: TextFieldColors = TextFieldDefaults.colors().copy(
+        unfocusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+    ),
 ) {
 
     TextField(

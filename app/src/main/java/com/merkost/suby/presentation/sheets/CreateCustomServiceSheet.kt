@@ -89,7 +89,6 @@ fun CreateCustomServiceSheet(
             )
         }
 
-
         TitleColumn(title = "Pick a category") {
             AnimatedContent(categories) { categoriesList ->
                 if (categoriesList.size > 1) {
@@ -97,7 +96,7 @@ fun CreateCustomServiceSheet(
                         items = categoriesList,
                         state = pickerState,
                         visibleItemsCount = 3,
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier.padding(vertical = 16.dp),
                         pickerItem = { item, modifier ->
                             CategoryLabel(
                                 modifier = modifier.padding(4.dp),

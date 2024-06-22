@@ -5,7 +5,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -22,7 +21,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
@@ -83,7 +81,6 @@ fun NewSubscriptionScreen(
     upPress: () -> Unit
 ) {
     val context = LocalContext.current
-
     val viewModel = hiltViewModel<NewSubscriptionViewModel>()
     val uiState by viewModel.uiState.collectAsState()
     val mainCurrency by viewModel.mainCurrency.collectAsState()
@@ -171,7 +168,8 @@ fun NewSubscriptionScreen(
             viewModel.saveNewSubscription(currency)
         }
 
-    }, floatingActionButtonPosition = FabPosition.Center
+    },
+        floatingActionButtonPosition = FabPosition.Center
     ) {
         Column(
             modifier = Modifier
@@ -322,7 +320,6 @@ internal fun SelectServiceButton(
             Text(
                 text = stringResource(R.string.select_service),
                 style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
             )
             Icon(
@@ -387,7 +384,7 @@ fun PeriodItem(period: Period, isSelected: Boolean, onClick: () -> Unit) {
 
     val color by animateColorAsState(
         targetValue = if (isSelected) MaterialTheme.colorScheme.primary
-        else MaterialTheme.colorScheme.secondaryContainer
+        else MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
     )
 
     BaseItem(
@@ -408,24 +405,22 @@ fun StatusItem(
 
     val color by animateColorAsState(
         targetValue = if (isSelected) MaterialTheme.colorScheme.primary
-        else MaterialTheme.colorScheme.secondaryContainer
+        else MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
     )
 
-    Box(modifier = modifier
-        .clip(RoundedCornerShape(12.dp))
-        .clickable { onClick() }) {
-        BaseItem(
-            modifier = Modifier, colors = CardDefaults.cardColors(containerColor = color)
+    BaseItem(
+        modifier = modifier, colors = CardDefaults.cardColors(containerColor = color),
+        onClick = onClick
+    ) {
+        Column(
+            modifier = Modifier,
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Column(
-                modifier = Modifier,
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(imageVector = status.icon)
-                Text(text = status.statusName)
-            }
+            Icon(imageVector = status.icon)
+            Text(text = status.statusName)
         }
+
     }
 }
 

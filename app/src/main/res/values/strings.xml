@@ -45,4 +45,7 @@
     <string name="info_billing_date">The date when the most recent payment for your subscription was processed.\n\nThis is the starting point for calculating the next billing cycle based on the selected period (e.g., monthly, annually).</string>
     <string name="title_status">Status</string>
     <string name="title_period">Period</string>
+    <string name="select_payday">Select a payday</string>
+    <string name="press_back_to_exit">Press back again to exit</string>
+    <string name="btn_start_greeting">Let\'s get it started</string>
 </resources>

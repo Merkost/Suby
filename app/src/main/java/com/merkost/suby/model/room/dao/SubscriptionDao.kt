@@ -19,38 +19,48 @@ interface SubscriptionDao {
     suspend fun addSubscription(subscriptionDb: SubscriptionDb): Long
 
     @Transaction
-    @Query("""
+    @Query(
+        """
         SELECT * FROM subscription
         WHERE id = :subId AND isCustomService = 0
-    """)
+    """
+    )
     suspend fun findSubscriptionById(subId: String): SubscriptionDb
 
     @Transaction
-    @Query("""
+    @Query(
+        """
         SELECT * FROM subscription
         WHERE subscription.isCustomService = 0
-    """)
+    """
+    )
     fun getSubscriptionsWithService(): Flow<List<SubscriptionWithDetails>>
 
     @Transaction
-    @Query("""
+    @Query(
+        """
         SELECT * FROM subscription
         WHERE subscription.isCustomService = 1
-    """)
+    """
+    )
     fun getSubscriptionsWithCustomService(): Flow<List<SubscriptionWithCustomDetails>>
 
     @Transaction
-    @Query("""
+    @Query(
+        """
         SELECT * FROM subscription
         WHERE subscription.isCustomService = 0 and subscription.id = :subscriptionId
-    """)
+    """
+    )
     fun getSubscriptionWithService(subscriptionId: Int): Flow<SubscriptionWithDetails>
 
     @Transaction
-    @Query("""
+    @Query(
+        """
         SELECT * FROM subscription
         WHERE subscription.isCustomService = 1 and subscription.id = :subscriptionId
-    """)
+    """
+    )
     fun getSubscriptionWithCustomService(subscriptionId: Int): Flow<SubscriptionWithCustomDetails>
 
     @Query("SELECT * FROM subscription")

@@ -31,49 +31,49 @@ data class NewSubscription(
             val isPast = endDate.isBefore(currentDate) || endDate.isEqual(currentDate)
 
             val subscriptionEndText = when {
-                status == Status.ACTIVE && isPast -> "Your subscription renewed on ${
+                status == Status.ACTIVE && isPast -> "Subscription renewed on ${
                     endDate.format(
                         formatter
                     )
                 }"
 
-                status == Status.ACTIVE && !isPast -> "Your subscription will be renewed on ${
+                status == Status.ACTIVE && !isPast -> "Subscription will be renewed on ${
                     endDate.format(
                         formatter
                     )
                 }"
 
-                status == Status.CANCELED && isPast -> "Your subscription was canceled on ${
+                status == Status.CANCELED && isPast -> "Subscription was canceled on ${
                     endDate.format(
                         formatter
                     )
                 }"
 
-                status == Status.CANCELED && !isPast -> "Your subscription will be canceled on ${
+                status == Status.CANCELED && !isPast -> "Subscription will be canceled on ${
                     endDate.format(
                         formatter
                     )
                 }"
 
-                status == Status.EXPIRED && !isPast -> "Your subscription expires on ${
+                status == Status.EXPIRED && !isPast -> "Subscription expires on ${
                     endDate.format(
                         formatter
                     )
                 }"
 
-                status == Status.EXPIRED && isPast -> "Your subscription expired on ${
+                status == Status.EXPIRED && isPast -> "Subscription expired on ${
                     endDate.format(
                         formatter
                     )
                 }"
 
-                status == Status.TRIAL && isPast -> "Your trial period ended on ${
+                status == Status.TRIAL && isPast -> "Trial period ended on ${
                     endDate.format(
                         formatter
                     )
                 }"
 
-                status == Status.TRIAL && !isPast -> "Your trial period will end on ${
+                status == Status.TRIAL && !isPast -> "Trial period will end on ${
                     endDate.format(
                         formatter
                     )

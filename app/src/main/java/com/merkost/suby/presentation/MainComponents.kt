@@ -17,7 +17,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.rounded.CalendarToday
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
@@ -40,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -106,14 +106,12 @@ fun PriceField(
     ),
     onPriceInput: ((String) -> Unit)? = null,
 ) {
-    val focusRequester = remember {
-        FocusRequester()
-    }
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
 
     SubyTextField(
-        modifier = Modifier
-            .focusRequester(focusRequester)
-            .then(modifier),
+        modifier = modifier
+            .focusRequester(focusRequester),
         value = price,
         readOnly = onPriceInput == null,
         prefix = {
@@ -129,14 +127,13 @@ fun PriceField(
         },
         textStyle = textStyle,
         singleLine = true,
-        colors = TextFieldDefaults.colors(),
         shape = SubyShape,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done
         ),
         keyboardActions = KeyboardActions(
-            onDone = { focusRequester.freeFocus() }
+            onDone = { focusManager.clearFocus() }
         ),
         placeholder = {
             Text(
@@ -156,7 +153,6 @@ fun BillingDate(
     selectedValues: NewSubscription,
     billingDate: Long?,
     onBillingDateSelected: (Long?) -> Unit,
-    isRequired: Boolean = true
 ) {
     val datePickerDate = rememberDatePickerState()
     var showDatePicker by rememberSaveable { mutableStateOf(false) }
@@ -178,21 +174,10 @@ fun BillingDate(
         }
     }
 
-    val backgroundColor = if (billingDate == null && isRequired) {
-        MaterialTheme.colorScheme.error.copy(alpha = 0.1f)
-    } else {
-        MaterialTheme.colorScheme.surfaceVariant
-    }
-
-    val textColor = if (billingDate == null && isRequired) {
-        MaterialTheme.colorScheme.error
-    } else {
-        MaterialTheme.colorScheme.onSurface
-    }
+    val textColor = MaterialTheme.colorScheme.onSurface
 
     BaseItem(
         onClick = { showDatePicker = true },
-        colors = CardDefaults.cardColors(containerColor = backgroundColor),
         modifier = modifier
             .fillMaxWidth()
     ) {
@@ -213,7 +198,7 @@ fun BillingDate(
                     )
                 } else {
                     Text(
-                        text = "Select the payday",
+                        text = stringResource(R.string.select_payday),
                         style = MaterialTheme.typography.bodyLarge,
                         color = textColor
                     )
