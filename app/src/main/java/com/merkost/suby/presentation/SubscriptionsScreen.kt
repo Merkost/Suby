@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -100,7 +101,7 @@ fun SubscriptionsScreen(
                 Text(text = stringResource(R.string.title_subscriptions))
             }
         }, actions = {
-            Button(
+            ElevatedButton(
                 modifier = Modifier.padding(end = 8.dp), onClick = onAddClicked
             ) {
                 Icon(Icons.Default.Add)

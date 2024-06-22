@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
@@ -44,12 +45,7 @@ import com.merkost.suby.presentation.base.components.ServiceLogo
 import com.merkost.suby.utils.BaseViewState
 import com.merkost.suby.utils.dateString
 import com.merkost.suby.viewModel.SubscriptionInfoViewModel
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.toJavaLocalDate
-import kotlinx.datetime.toJavaLocalDateTime
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -100,6 +96,8 @@ fun SubscriptionInfoScreen(subscriptionId: Int, upPress: () -> Unit) {
                             subscription = state.data,
                             onDelete = {
                                 viewModel.deleteSubscription(state.data)
+                                // TODO: Show snackbar and get deletion result
+                                upPress()
                             }
                         )
                     }
@@ -141,7 +139,8 @@ internal fun SubscriptionInfo(
             ServiceLogo(
                 modifier = Modifier
                     .padding(16.dp)
-                    .height(56.dp),
+                    .height(56.dp)
+                    .widthIn(min = 56.dp),
                 service = subscription.toService()
             )
         }

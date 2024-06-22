@@ -51,4 +51,5 @@
     <string name="price">Price</string>
     <string name="renewal_period">Renewal Period</string>
     <string name="next_payment_date">Next Payment Date</string>
+    <string name="support">Support</string>
 </resources>
