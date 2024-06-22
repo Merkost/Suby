@@ -3,8 +3,9 @@ package com.merkost.suby.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.merkost.suby.formatDecimal
-import com.merkost.suby.model.Currency
-import com.merkost.suby.model.Period
+import com.merkost.suby.model.entity.Currency
+import com.merkost.suby.model.entity.Period
+import com.merkost.suby.model.entity.Status
 import com.merkost.suby.repository.datastore.AppSettings
 import com.merkost.suby.repository.datastore.LastTotalPrice
 import com.merkost.suby.repository.room.SubscriptionRepository
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -33,8 +35,9 @@ class MainViewModel @Inject constructor(
     private val getCurrencyRatesUseCase: GetCurrencyRatesUseCase
 ) : ViewModel() {
 
-    val subscriptions = subscriptionRepository.subscriptions
-        .stateIn(viewModelScope, SharingStarted.Eagerly, listOf())
+    val subscriptions = subscriptionRepository.subscriptions.map {
+        it.filter { it.status == Status.ACTIVE }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, listOf())
 
     val mainCurrency = appSettings.mainCurrency
         .stateIn(viewModelScope, SharingStarted.Eagerly, Currency.USD)

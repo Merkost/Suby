@@ -34,7 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.merkost.suby.R
 import com.merkost.suby.SubyShape
 import com.merkost.suby.asWindowInsets
-import com.merkost.suby.model.Currency
+import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.SubyTopAppBar
 import com.merkost.suby.viewModel.MainViewModel

@@ -27,7 +27,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -55,8 +54,8 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.merkost.suby.R
 import com.merkost.suby.SubyShape
 import com.merkost.suby.formatDecimal
-import com.merkost.suby.model.Currency
-import com.merkost.suby.model.Period
+import com.merkost.suby.model.entity.Currency
+import com.merkost.suby.model.entity.Period
 import com.merkost.suby.model.entity.full.Subscription
 import com.merkost.suby.presentation.base.BaseItem
 import com.merkost.suby.presentation.base.DoubleBackPressHandler

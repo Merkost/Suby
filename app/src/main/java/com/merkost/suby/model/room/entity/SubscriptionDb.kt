@@ -1,12 +1,11 @@
 package com.merkost.suby.model.room.entity
 
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.merkost.suby.model.Currency
-import com.merkost.suby.model.CustomPeriodType
-import com.merkost.suby.model.Period
-import com.merkost.suby.model.Status
+import com.merkost.suby.model.entity.Currency
+import com.merkost.suby.model.entity.CustomPeriod
+import com.merkost.suby.model.entity.Period
+import com.merkost.suby.model.entity.Status
 import com.merkost.suby.utils.now
 import kotlinx.datetime.LocalDateTime
 
@@ -22,7 +21,7 @@ data class SubscriptionDb(
     val currency: Currency,
 
     val period: Period,
-    val customPeriodType: CustomPeriodType,
+    val customPeriodType: CustomPeriod,
     val customPeriodDuration: Long,
 
     val status: Status,

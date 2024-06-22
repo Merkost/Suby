@@ -2,10 +2,10 @@ package com.merkost.suby.model.entity.full
 
 import android.content.Context
 import com.merkost.suby.R
-import com.merkost.suby.model.Currency
-import com.merkost.suby.model.CustomPeriodType
-import com.merkost.suby.model.Period
-import com.merkost.suby.model.Status
+import com.merkost.suby.model.entity.Currency
+import com.merkost.suby.model.entity.CustomPeriod
+import com.merkost.suby.model.entity.Period
+import com.merkost.suby.model.entity.Status
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
@@ -29,7 +29,7 @@ data class Subscription(
     val category: Category,
 
     val period: Period,
-    val customPeriodType: CustomPeriodType,
+    val customPeriodType: CustomPeriod,
     val customPeriodDuration: Long,
 
     val status: Status,
@@ -42,13 +42,13 @@ data class Subscription(
     val periodDays: Long
         get() = when (this.period) {
             Period.CUSTOM -> when (this.customPeriodType) {
-                CustomPeriodType.DAYS -> this.customPeriodDuration
-                CustomPeriodType.WEEKS -> this.customPeriodDuration * 7L
-                CustomPeriodType.MONTHS -> this.customPeriodDuration * 30L
-                CustomPeriodType.YEARS -> this.customPeriodDuration * 365L
+                CustomPeriod.DAYS -> this.customPeriodDuration
+                CustomPeriod.WEEKS -> this.customPeriodDuration * 7L
+                CustomPeriod.MONTHS -> this.customPeriodDuration * 30L
+                CustomPeriod.YEARS -> this.customPeriodDuration * 365L
             }
 
-            else -> this.period.days
+            else -> this.period.days.coerceAtLeast(1L)
         }
 
     private val remainingDays: Long

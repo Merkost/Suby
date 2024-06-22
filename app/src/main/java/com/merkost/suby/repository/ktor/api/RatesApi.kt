@@ -1,7 +1,7 @@
 package com.merkost.suby.repository.ktor.api
 
 import com.merkost.suby.CURRENCY_ENDPOINT_FREE
-import com.merkost.suby.model.Currency
+import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.dto.RatesDto
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get

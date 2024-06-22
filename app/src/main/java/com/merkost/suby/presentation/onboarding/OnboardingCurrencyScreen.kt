@@ -27,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.merkost.suby.R
-import com.merkost.suby.model.Currency
+import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.presentation.CurrencyLabel
 import com.merkost.suby.presentation.Picker
 import com.merkost.suby.presentation.base.LogoImage

@@ -1,6 +1,6 @@
 package com.merkost.suby.repository.datastore
 
-import com.merkost.suby.model.Currency
+import com.merkost.suby.model.entity.Currency
 import kotlinx.coroutines.flow.Flow
 
 

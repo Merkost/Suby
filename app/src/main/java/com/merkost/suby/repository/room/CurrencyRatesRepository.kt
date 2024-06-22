@@ -1,6 +1,6 @@
 package com.merkost.suby.repository.room
 
-import com.merkost.suby.model.Currency
+import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.room.entity.CurrencyRatesDb
 import kotlinx.coroutines.flow.Flow
 

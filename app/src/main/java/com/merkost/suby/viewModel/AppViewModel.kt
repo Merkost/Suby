@@ -2,7 +2,7 @@ package com.merkost.suby.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.merkost.suby.model.Currency
+import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.repository.datastore.AppSettings
 import com.merkost.suby.repository.room.SubscriptionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

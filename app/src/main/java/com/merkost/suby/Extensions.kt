@@ -2,30 +2,33 @@ package com.merkost.suby
 
 import android.content.Context
 import android.content.Intent
+import android.icu.text.DateFormat
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Parcelable
 import android.widget.Toast
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.ui.unit.Dp
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import java.text.DecimalFormat
-import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.Date
 import java.util.Locale
 
 val Dp.asWindowInsets: WindowInsets
     get() = WindowInsets(this, this, this, this)
 
-fun Long.dateString(): String {
+fun Long.dateString(dateFormat: Int = DateFormat.MEDIUM): String {
+    val format: DateFormat = DateFormat.getDateInstance(dateFormat, Locale.getDefault())
     val date = Date(this)
-    val sdf = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
-    return sdf.format(date)
+    return format.format(date)
+}
+
+fun LocalDate.dateString(dateFormat: Int = DateFormat.MEDIUM): String {
+    val epochMilli = this.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+    return epochMilli.dateString(dateFormat)
 }
 
 fun Double.formatDecimal(): String {

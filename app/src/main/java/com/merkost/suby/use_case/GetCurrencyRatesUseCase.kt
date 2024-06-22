@@ -1,6 +1,6 @@
 package com.merkost.suby.use_case
 
-import com.merkost.suby.model.Period
+import com.merkost.suby.model.entity.Period
 import com.merkost.suby.model.entity.full.Subscription
 import com.merkost.suby.model.room.entity.CurrencyRatesDb
 import com.merkost.suby.repository.datastore.AppSettings
@@ -10,15 +10,8 @@ import com.merkost.suby.repository.room.SubscriptionRepository
 import com.merkost.suby.utils.Constants
 import com.merkost.suby.utils.now
 import kotlinx.coroutines.flow.first
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atTime
 import kotlinx.datetime.minus
-import kotlinx.datetime.toJavaLocalDate
-import kotlinx.datetime.toKotlinLocalDateTime
-import kotlinx.datetime.toLocalDateTime
 import timber.log.Timber
 
 class GetCurrencyRatesUseCase(

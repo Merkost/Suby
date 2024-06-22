@@ -1,4 +1,4 @@
-package com.merkost.suby.model
+package com.merkost.suby.model.entity
 
 import android.os.Parcelable
 import kotlinx.parcelize.IgnoredOnParcel
@@ -36,7 +36,7 @@ enum class Currency(val fullName: String, val symbol: String, val flagEmoji: Str
         fun find(currencyName: String?): Currency {
             return entries.find {
                 it.name.lowercase() == currencyName?.lowercase()
-            } ?: Currency.USD
+            } ?: USD
         }
 
         fun findOrNull(currencyName: String?): Currency? {

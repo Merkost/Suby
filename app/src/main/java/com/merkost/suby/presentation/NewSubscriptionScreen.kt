@@ -57,9 +57,9 @@ import androidx.compose.ui.util.fastForEachIndexed
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.merkost.suby.R
 import com.merkost.suby.SubyShape
-import com.merkost.suby.model.Currency
-import com.merkost.suby.model.Period
-import com.merkost.suby.model.Status
+import com.merkost.suby.model.entity.Currency
+import com.merkost.suby.model.entity.Period
+import com.merkost.suby.model.entity.Status
 import com.merkost.suby.presentation.base.BaseItem
 import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.SaveButton
@@ -320,7 +320,7 @@ internal fun SelectServiceButton(
             Text(
                 text = stringResource(R.string.select_service),
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.onSurface
             )
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.List,

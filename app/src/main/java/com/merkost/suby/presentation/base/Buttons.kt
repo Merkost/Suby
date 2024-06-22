@@ -81,7 +81,7 @@ fun BaseItem(
         Card(
             modifier = modifier,
             colors = colors,
-            shape = com.merkost.suby.SubyShape,
+            shape = SubyShape,
         ) {
             Box(
                 modifier = Modifier

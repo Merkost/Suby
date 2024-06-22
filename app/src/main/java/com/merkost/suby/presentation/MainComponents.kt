@@ -1,6 +1,7 @@
 package com.merkost.suby.presentation
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,7 +17,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.rounded.CalendarToday
-import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
@@ -26,9 +27,9 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,10 +52,10 @@ import androidx.compose.ui.unit.dp
 import com.merkost.suby.R
 import com.merkost.suby.SubyShape
 import com.merkost.suby.dateString
-import com.merkost.suby.model.Currency
-import com.merkost.suby.model.CustomPeriodType
-import com.merkost.suby.model.NewSubscription
-import com.merkost.suby.model.Period
+import com.merkost.suby.model.entity.Currency
+import com.merkost.suby.model.entity.CustomPeriod
+import com.merkost.suby.model.entity.NewSubscription
+import com.merkost.suby.model.entity.Period
 import com.merkost.suby.presentation.base.BaseItem
 import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.SubyTextField
@@ -68,30 +69,28 @@ fun DescriptionView(
     description: String,
     onDescriptionChanged: ((String) -> Unit)? = null,
 ) {
-    val focusRequester = remember {
-        FocusRequester()
-    }
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
     TitleColumn(
         title = stringResource(id = R.string.title_description),
         modifier = modifier,
     ) {
-        Card {
-            SubyTextField(
-                value = description,
-                readOnly = onDescriptionChanged == null,
-                onValueChange = { newValue ->
-                    onDescriptionChanged?.let { onDescriptionChanged(newValue) }
-                },
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Sentences,
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(onDone = { focusRequester.freeFocus() }),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(focusRequester),
-            )
-        }
+        SubyTextField(
+            value = description,
+            readOnly = onDescriptionChanged == null,
+            onValueChange = { newValue ->
+                onDescriptionChanged?.let { onDescriptionChanged(newValue) }
+            },
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.Sentences,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester),
+        )
+
     }
 }
 
@@ -174,10 +173,24 @@ fun BillingDate(
         }
     }
 
-    val textColor = MaterialTheme.colorScheme.onSurface
+    val iconTint by animateColorAsState(
+        if (selectedValues.billingDate != null) {
+            MaterialTheme.colorScheme.onPrimary
+        } else {
+            MaterialTheme.colorScheme.primary
+        }
+    )
+
+    val color by animateColorAsState(
+        targetValue = if (selectedValues.billingDate != null) MaterialTheme.colorScheme.primary
+        else MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+    )
 
     BaseItem(
         onClick = { showDatePicker = true },
+        colors = CardDefaults.cardColors(
+            containerColor = color,
+        ),
         modifier = modifier
             .fillMaxWidth()
     ) {
@@ -194,18 +207,16 @@ fun BillingDate(
                     Text(
                         text = selectedDate.dateString(),
                         style = MaterialTheme.typography.bodyLarge,
-                        color = textColor
                     )
                 } else {
                     Text(
                         text = stringResource(R.string.select_payday),
                         style = MaterialTheme.typography.bodyLarge,
-                        color = textColor
                     )
                 }
                 Icon(
                     imageVector = Icons.Rounded.CalendarToday,
-                    tint = textColor
+                    tint = iconTint
                 )
             }
         }
@@ -216,9 +227,9 @@ fun BillingDate(
             values.billingDateInfo?.let {
                 Text(
                     text = it,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(8.dp)
+                    modifier = Modifier.padding(4.dp)
                 )
             }
         }
@@ -231,7 +242,7 @@ fun BillingDate(
 fun Period(
     selectedPeriod: Period?,
     onPeriodSelected: (Period) -> Unit,
-    onCustomPeriodSelected: (CustomPeriodType, duration: Long) -> Unit,
+    onCustomPeriodSelected: (CustomPeriod, duration: Long) -> Unit,
 ) {
 
     FlowRow(
@@ -259,10 +270,10 @@ fun Period(
 @Composable
 fun CustomPeriodInput(
     modifier: Modifier = Modifier,
-    onPeriodSelected: (CustomPeriodType, Long) -> Unit,
+    onPeriodSelected: (CustomPeriod, Long) -> Unit,
 ) {
     var number by remember { mutableStateOf("") }
-    var selectedPeriodType by remember { mutableStateOf(CustomPeriodType.DAYS) }
+    var selectedPeriodType by remember { mutableStateOf(CustomPeriod.DAYS) }
 
     var selectionOpened by remember {
         mutableStateOf(false)
@@ -288,7 +299,6 @@ fun CustomPeriodInput(
             placeholder = {
                 Text(
                     "$DEFAULT_CUSTOM_PERIOD",
-                    style = LocalTextStyle.current.copy(color = Color.DarkGray)
                 )
             },
             singleLine = true,
@@ -309,7 +319,8 @@ fun CustomPeriodInput(
                     Text(
                         selectedPeriodType.getTitle(
                             number.toIntOrNull() ?: DEFAULT_CUSTOM_PERIOD.toInt()
-                        )
+                        ),
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Icon(Icons.Default.ArrowDropDown)
                 }
@@ -320,7 +331,7 @@ fun CustomPeriodInput(
                 expanded = selectionOpened,
                 onDismissRequest = { selectionOpened = false }
             ) {
-                CustomPeriodType.entries.forEach { type ->
+                CustomPeriod.entries.forEach { type ->
                     DropdownMenuItem(
                         text = {
                             Text(

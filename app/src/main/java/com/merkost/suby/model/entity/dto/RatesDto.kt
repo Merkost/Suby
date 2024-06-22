@@ -1,6 +1,6 @@
 package com.merkost.suby.model.entity.dto
 
-import com.merkost.suby.model.Currency
+import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.room.entity.CurrencyRatesDb
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable

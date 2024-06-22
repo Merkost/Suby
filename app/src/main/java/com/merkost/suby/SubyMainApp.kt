@@ -15,8 +15,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.merkost.suby.model.Currency
-import com.merkost.suby.model.FeedbackAction
+import com.merkost.suby.model.entity.Currency
+import com.merkost.suby.model.entity.FeedbackAction
 import com.merkost.suby.presentation.FeedbackScreen
 import com.merkost.suby.presentation.NewSubscriptionScreen
 import com.merkost.suby.presentation.PickCurrencyScreen

@@ -1,8 +1,7 @@
 package com.merkost.suby.model.room.converter
 
 import androidx.room.TypeConverter
-import com.merkost.suby.model.Currency
-import kotlinx.serialization.decodeFromString
+import com.merkost.suby.model.entity.Currency
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 

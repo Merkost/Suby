@@ -27,8 +27,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.merkost.suby.SubyShape
-import com.merkost.suby.model.Currency
-import com.merkost.suby.model.NewSubscription
+import com.merkost.suby.model.entity.Currency
+import com.merkost.suby.model.entity.NewSubscription
 import com.merkost.suby.presentation.CurrencyLabel
 import com.merkost.suby.presentation.base.SaveButton
 import com.merkost.suby.presentation.base.SubyTextField

@@ -2,11 +2,11 @@ package com.merkost.suby.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.merkost.suby.model.Currency
-import com.merkost.suby.model.CustomPeriodType
-import com.merkost.suby.model.NewSubscription
-import com.merkost.suby.model.Period
-import com.merkost.suby.model.Status
+import com.merkost.suby.model.entity.Currency
+import com.merkost.suby.model.entity.CustomPeriod
+import com.merkost.suby.model.entity.NewSubscription
+import com.merkost.suby.model.entity.Period
+import com.merkost.suby.model.entity.Status
 import com.merkost.suby.model.entity.full.Service
 import com.merkost.suby.model.room.entity.SubscriptionDb
 import com.merkost.suby.presentation.states.NewSubscriptionUiState
@@ -121,7 +121,7 @@ class NewSubscriptionViewModel @Inject constructor(
                             paymentDate = values.billingDate.toKotlinLocalDateTime(),
                             customPeriodDuration = values.customPeriodDuration
                                 ?: values.period.days,
-                            customPeriodType = values.customPeriodType ?: CustomPeriodType.DAYS,
+                            customPeriodType = values.customPeriodType ?: CustomPeriod.DAYS,
                             description = values.description,
                         )
                         Timber.tag("saveNewSubscription").d(newSubscriptionDb.toString())
@@ -187,7 +187,7 @@ class NewSubscriptionViewModel @Inject constructor(
         getServices()
     }
 
-    fun onCustomPeriodSelected(customPeriodType: CustomPeriodType, duration: Long) {
+    fun onCustomPeriodSelected(customPeriodType: CustomPeriod, duration: Long) {
         selectedValues.update {
             it.copy(
                 customPeriodType = customPeriodType,
