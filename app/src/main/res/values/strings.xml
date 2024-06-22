@@ -36,4 +36,13 @@
     <string name="btn_create_service">Create Service</string>
     <string name="label_find_a_service">Find a service</string>
     <string name="btn_add_custom_service">Add Custom Service</string>
+    <string name="select_service">Select a service</string>
+    <string name="service_required">Service is required</string>
+    <string name="period_required">Period is required</string>
+    <string name="price_required">Price is required</string>
+    <string name="billing_date_required">Billing date is required</string>
+    <string name="error_try_later">Error occured. Please, try again later.</string>
+    <string name="info_billing_date">The date when the most recent payment for your subscription was processed.\n\nThis is the starting point for calculating the next billing cycle based on the selected period (e.g., monthly, annually).</string>
+    <string name="title_status">Status</string>
+    <string name="title_period">Period</string>
 </resources>

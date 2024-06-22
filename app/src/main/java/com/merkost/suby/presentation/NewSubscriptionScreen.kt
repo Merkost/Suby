@@ -25,6 +25,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -71,7 +72,6 @@ import com.merkost.suby.presentation.sheets.CreateCustomServiceSheet
 import com.merkost.suby.presentation.sheets.SelectServiceSheet
 import com.merkost.suby.presentation.states.NewSubscriptionUiState
 import com.merkost.suby.showToast
-import com.merkost.suby.ui.theme.subyColors
 import com.merkost.suby.viewModel.NewSubscriptionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -93,13 +93,14 @@ fun NewSubscriptionScreen(
     val selectedValues by viewModel.selectedValues.collectAsState()
 
     LaunchedEffect(uiState) {
-        when (uiState) {
+        when (val state = uiState) {
             is NewSubscriptionUiState.Success -> upPress()
-            is NewSubscriptionUiState.Error -> context.showToast("Error")
-            else -> {
-                // TODO:
-                context.showToast(uiState.toString())
+            is NewSubscriptionUiState.Error -> context.showToast(R.string.error_try_later)
+            is NewSubscriptionUiState.Requirement -> {
+                context.showToast(state.stringResId)
             }
+
+            else -> {}
         }
     }
 
@@ -200,7 +201,6 @@ fun NewSubscriptionScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-
                     AnimatedContent(
                         targetState = selectedValues.service, label = "serviceAnim"
                     ) { service ->
@@ -241,9 +241,7 @@ fun NewSubscriptionScreen(
                 title = stringResource(R.string.title_billing_date),
                 infoInformation = buildAnnotatedString {
                     withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
-                        append("The date when the most recent payment for your subscription was processed.")
-                        append("\n\n")
-                        append("This is the starting point for calculating the next billing cycle based on the selected period (e.g., monthly, annually).")
+                        append(stringResource(R.string.info_billing_date))
                     }
                 }) {
                 BillingDate(
@@ -254,7 +252,7 @@ fun NewSubscriptionScreen(
             }
 
             TitleColumn(modifier = Modifier.padding(horizontal = 16.dp),
-                title = "Status",
+                title = stringResource(R.string.title_status),
                 infoInformation = buildAnnotatedString {
                     Status.entries.fastForEachIndexed { i, status ->
                         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
@@ -264,7 +262,6 @@ fun NewSubscriptionScreen(
                             append(" - ")
                             append(status.description)
                         }
-
                         if (i != Status.entries.lastIndex) {
                             append("\n\n")
                         }
@@ -282,7 +279,7 @@ fun NewSubscriptionScreen(
             }
 
             TitleColumn(modifier = Modifier.padding(horizontal = 16.dp),
-                title = "Period",
+                title = stringResource(R.string.title_period),
                 infoInformation = buildAnnotatedString {
                     Period.entries.forEachIndexed { i, period ->
                         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
@@ -311,7 +308,7 @@ fun NewSubscriptionScreen(
 }
 
 @Composable
-fun SelectServiceButton(
+internal fun SelectServiceButton(
     onClick: () -> Unit
 ) {
     BaseItem(
@@ -323,13 +320,14 @@ fun SelectServiceButton(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Select service",
+                text = stringResource(R.string.select_service),
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
             )
             Icon(
-                imageVector = Icons.Default.ArrowDropDown, tint = MaterialTheme.colorScheme.primary
+                imageVector = Icons.AutoMirrored.Filled.List,
+                tint = MaterialTheme.colorScheme.primary
             )
         }
     }

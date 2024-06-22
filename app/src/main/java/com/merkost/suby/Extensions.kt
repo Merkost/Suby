@@ -51,6 +51,10 @@ fun Context.showToast(text: String) {
     Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
 }
 
+fun Context.showToast(textId: Int) {
+    Toast.makeText(this, textId, Toast.LENGTH_SHORT).show()
+}
+
 fun Double.round(): String {
     val roundedValue = (this * 100.0).toInt() / 100.0
     return roundedValue.toString()

@@ -89,22 +89,22 @@ class NewSubscriptionViewModel @Inject constructor(
             val values = selectedValues.value
             when {
                 values.service == null -> {
-                    _uiState.update { NewSubscriptionUiState.ServiceRequired }
+                    _uiState.update { NewSubscriptionUiState.Requirement.ServiceRequired }
                     return@launch
                 }
 
                 values.period == null -> {
-                    _uiState.update { NewSubscriptionUiState.PeriodRequired }
+                    _uiState.update { NewSubscriptionUiState.Requirement.PeriodRequired }
                     return@launch
                 }
 
                 values.price.toDoubleOrNull() == null -> {
-                    _uiState.update { NewSubscriptionUiState.PriceRequired }
+                    _uiState.update { NewSubscriptionUiState.Requirement.PriceRequired }
                     return@launch
                 }
 
                 values.billingDate == null -> {
-                    _uiState.update { NewSubscriptionUiState.BillingDateRequired }
+                    _uiState.update { NewSubscriptionUiState.Requirement.BillingDateRequired }
                     return@launch
                 }
 
@@ -129,8 +129,7 @@ class NewSubscriptionViewModel @Inject constructor(
                         subscriptionRepository.addSubscription(newSubscriptionDb)
                         _uiState.update { NewSubscriptionUiState.Success }
                     }.onFailure { e ->
-                        Timber.tag("saveNewSubscription").d(e.message.orEmpty())
-                        e.fillInStackTrace()
+                        Timber.tag("saveNewSubscription").e(e)
                         _uiState.update { NewSubscriptionUiState.Error }
                         return@launch
                     }
