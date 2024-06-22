@@ -26,6 +26,7 @@ import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.merkost.suby.SubyShape
 import com.merkost.suby.model.entity.full.Service
+import com.merkost.suby.presentation.base.BaseItem
 import com.merkost.suby.presentation.base.PlaceholderHighlight
 import com.merkost.suby.presentation.base.fade
 import com.merkost.suby.presentation.base.placeholder3
@@ -107,31 +108,30 @@ fun ServiceItem(
     service: Service,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        ServiceLogo(
-            modifier = Modifier
-                .size(64.dp),
-            service = service
-        )
+    BaseItem {
 
-        Column(
-            modifier = Modifier.weight(1f)
+        Row(
+            modifier = modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                text = service.name,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+            ServiceLogo(
+                modifier = Modifier
+                    .size(64.dp),
+                service = service
             )
+//
+//            Text(
+//                text = service.name,
+//                style = MaterialTheme.typography.titleLarge,
+//                color = MaterialTheme.colorScheme.onSurface,
+//                maxLines = 2,
+//                overflow = TextOverflow.Ellipsis
+//            )
         }
     }
+
 }
 
 @Composable

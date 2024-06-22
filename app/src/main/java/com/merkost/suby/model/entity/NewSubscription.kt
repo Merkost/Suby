@@ -1,13 +1,12 @@
 package com.merkost.suby.model.entity
 
-import com.merkost.suby.dateString
 import com.merkost.suby.model.entity.full.Service
 import com.merkost.suby.utils.Constants.DEFAULT_CUSTOM_PERIOD
+import com.merkost.suby.utils.dateString
 import com.merkost.suby.utils.now
 import com.merkost.suby.utils.toLocalDate
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
-import kotlinx.datetime.toKotlinLocalDate
 import timber.log.Timber
 
 data class NewSubscription(
@@ -25,7 +24,10 @@ data class NewSubscription(
         get() {
             return kotlin.runCatching {
                 if (period == Period.CUSTOM) {
-                    BasePeriod(customPeriodType!!.chronoUnit, customPeriodDuration ?: DEFAULT_CUSTOM_PERIOD)
+                    BasePeriod(
+                        customPeriodType!!.chronoUnit,
+                        customPeriodDuration ?: DEFAULT_CUSTOM_PERIOD
+                    )
                 } else {
                     BasePeriod(period!!.chronoUnit, period.chronoUnitDuration)
                 }
@@ -44,7 +46,7 @@ data class NewSubscription(
             val basePeriod = basePeriod ?: return null
 
             val endDate =
-                basePeriod.nextBillingDate(currentDate.toKotlinLocalDate()).toJavaLocalDate()
+                basePeriod.nextBillingDate(billingDate.toLocalDate).toJavaLocalDate()
 
             val isPast = endDate.isBefore(currentDate) || endDate.isEqual(currentDate)
 

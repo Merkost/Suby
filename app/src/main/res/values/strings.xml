@@ -48,4 +48,7 @@
     <string name="select_payday">Select a payday</string>
     <string name="press_back_to_exit">Press back again to exit</string>
     <string name="btn_start_greeting">Let\'s get it started</string>
+    <string name="price">Price</string>
+    <string name="renewal_period">Renewal Period</string>
+    <string name="next_payment_date">Next Payment Date</string>
 </resources>

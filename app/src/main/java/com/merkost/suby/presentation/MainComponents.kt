@@ -51,7 +51,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.merkost.suby.R
 import com.merkost.suby.SubyShape
-import com.merkost.suby.dateString
+import com.merkost.suby.utils.dateString
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.CustomPeriod
 import com.merkost.suby.model.entity.NewSubscription
@@ -223,6 +223,7 @@ fun BillingDate(
     }
 
     AnimatedContent(targetState = selectedValues) { values ->
+        // TODO: Improve by extracting the logic to viewModel
         if (values.billingDate != null && values.period != null && values.status != null) {
             values.billingDateInfo?.let {
                 Text(

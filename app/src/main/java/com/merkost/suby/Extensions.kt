@@ -10,26 +10,18 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.ui.unit.Dp
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
 import java.text.DecimalFormat
+import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
 val Dp.asWindowInsets: WindowInsets
     get() = WindowInsets(this, this, this, this)
-
-fun Long.dateString(dateFormat: Int = DateFormat.MEDIUM): String {
-    val format: DateFormat = DateFormat.getDateInstance(dateFormat, Locale.getDefault())
-    val date = Date(this)
-    return format.format(date)
-}
-
-fun LocalDate.dateString(dateFormat: Int = DateFormat.MEDIUM): String {
-    val epochMilli = this.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
-    return epochMilli.dateString(dateFormat)
-}
 
 fun Double.formatDecimal(): String {
     val formatter = DecimalFormat("#.##").apply {
