@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
@@ -18,11 +19,30 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.merkost.suby.R
+import com.merkost.suby.SubyShape
+
+@Composable
+fun SubyButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    enabled: Boolean = true,
+    shape: Shape = SubyShape,
+    onClick: () -> Unit
+) {
+    Button(modifier = modifier, enabled = enabled, onClick = onClick, shape = shape) {
+        Text(
+            modifier = Modifier.padding(8.dp),
+            text = text,
+            style = MaterialTheme.typography.titleMedium
+        )
+    }
+}
 
 @Composable
 fun SaveButton(modifier: Modifier = Modifier, enabled: Boolean, onClick: () -> Unit) {
@@ -37,7 +57,10 @@ fun SaveButton(modifier: Modifier = Modifier, enabled: Boolean, onClick: () -> U
                 contentDescription = ""
             )
             Spacer(Modifier.size(4.dp))
-            Text(text = "Save", style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold))
+            Text(
+                text = "Save",
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+            )
         }
     }
 }
