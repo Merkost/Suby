@@ -59,6 +59,7 @@ import com.merkost.suby.model.Currency
 import com.merkost.suby.model.Period
 import com.merkost.suby.model.entity.full.Subscription
 import com.merkost.suby.presentation.base.BaseItem
+import com.merkost.suby.presentation.base.DoubleBackPressHandler
 import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.PlaceholderHighlight
 import com.merkost.suby.presentation.base.SubyTopAppBar
@@ -86,6 +87,8 @@ fun SubscriptionsScreen(
 
     val selectedPeriod by viewModel.period.collectAsState()
 
+    DoubleBackPressHandler(true)
+
     Scaffold(contentWindowInsets = WindowInsets(0.dp), topBar = {
         SubyTopAppBar(title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -98,7 +101,7 @@ fun SubscriptionsScreen(
                 Text(text = stringResource(R.string.title_subscriptions))
             }
         }, actions = {
-            FilledTonalButton(
+            Button(
                 modifier = Modifier.padding(end = 8.dp), onClick = onAddClicked
             ) {
                 Icon(Icons.Default.Add)
