@@ -52,4 +52,5 @@
     <string name="renewal_period">Renewal Period</string>
     <string name="next_payment_date">Next Payment Date</string>
     <string name="support">Support</string>
+    <string name="btn_add_first_subscription">Add a subscription</string>
 </resources>
