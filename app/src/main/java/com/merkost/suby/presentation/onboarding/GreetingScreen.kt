@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.Button
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -26,14 +26,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.merkost.suby.R
-import com.merkost.suby.SubyShape
 import com.merkost.suby.presentation.base.LogoImage
 import com.merkost.suby.presentation.base.SubyButton
 import com.merkost.suby.ui.theme.SubyTheme
-import com.merkost.suby.viewModel.AppViewModel
 
 @Composable
 fun GreetingScreen(onContinueClick: () -> Unit) {
@@ -93,8 +90,9 @@ fun GreetingScreen(onContinueClick: () -> Unit) {
             ) {
                 SubyButton(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.BottomCenter),
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth(),
+                    shape = CircleShape,
                     onClick = {
                         onContinueClick()
                     },
