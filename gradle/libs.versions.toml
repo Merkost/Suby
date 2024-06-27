@@ -1,5 +1,5 @@
 [versions]
-agp = "8.6.0-alpha05"
+agp = "8.6.0-alpha07"
 kotlin = "2.0.0"
 core-ktx = "1.13.1"
 junit = "4.13.2"
@@ -11,11 +11,11 @@ compose-bom = "2024.06.00"
 coil = "2.5.0"
 lottie = "6.4.1"
 supabase = "1.3.0"
-navigation = "2.8.0-beta03"
+navigation = "2.8.0-beta04"
 accompanist = "0.34.0"
 room = "2.6.1"
 ksp = "2.0.0-1.0.21"
-dagger-hilt = "2.50"
+dagger-hilt = "2.51.1"
 hilt = "1.2.0"
 ktor = "2.3.3"
 secrets = "2.0.1"
@@ -61,7 +61,7 @@ ktor-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation"
 ktor-serialization = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-logging = { group = "io.ktor", name = "ktor-client-logging-jvm", version.ref = "ktor" }
 
-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 
