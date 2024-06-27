@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -31,7 +31,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.merkost.suby.R
 import com.merkost.suby.SubyShape
 import com.merkost.suby.model.entity.full.Category
-import com.merkost.suby.model.room.entity.CategoryDb
 import com.merkost.suby.presentation.VerticalPicker
 import com.merkost.suby.presentation.base.SubyTextField
 import com.merkost.suby.presentation.base.TitleColumn
@@ -53,13 +52,15 @@ fun CreateCustomServiceSheet(
     val context = LocalContext.current
 
     LaunchedEffect(uiState) {
-        when(uiState) {
+        when (uiState) {
             CustomServiceUiState.Success -> {
                 onCreated()
             }
+
             CustomServiceUiState.ServiceNameRequired -> {
                 Toast.makeText(context, "Service name is required", Toast.LENGTH_SHORT).show()
             }
+
             CustomServiceUiState.CategoryRequired -> {
                 Toast.makeText(context, "Category is required", Toast.LENGTH_SHORT).show()
             }
@@ -68,46 +69,61 @@ fun CreateCustomServiceSheet(
         }
     }
 
-    Column(
-        modifier = Modifier.padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(
-            text = "Create Custom Service",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
-        )
+    Box(modifier = Modifier
+        .padding(16.dp)) {
 
-        TitleColumn(title = "What's your service?") {
-            SubyTextField(
-                value = customServiceData.name,
-                onValueChange = viewModel::setServiceName,
-                modifier = Modifier
-                    .fillMaxWidth(),
-                singleLine = true,
-                placeholder = { Text(stringResource(R.string.service_name)) }
+
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top)
+        ) {
+
+            Text(
+                text = "Create a custom service",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold
             )
-        }
 
-        TitleColumn(title = "Pick a category") {
-            AnimatedContent(categories) { categoriesList ->
-                if (categoriesList.size > 1) {
-                    VerticalPicker(
-                        items = categoriesList,
-                        state = pickerState,
-                        visibleItemsCount = 3,
-                        modifier = Modifier.padding(vertical = 16.dp),
-                        pickerItem = { item, modifier ->
-                            CategoryLabel(
-                                modifier = modifier.padding(4.dp),
-                                category = item,
-                            )
-                        }
-                    )
+            TitleColumn(title = "What's your service?") {
+                SubyTextField(
+                    value = customServiceData.name,
+                    onValueChange = viewModel::setServiceName,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    singleLine = true,
+                    placeholder = { Text(stringResource(R.string.service_name)) }
+                )
+            }
+
+            TitleColumn(title = "Pick a category") {
+                AnimatedContent(categories) { categoriesList ->
+                    if (categoriesList.size > 1) {
+                        VerticalPicker(
+                            items = categoriesList,
+                            state = pickerState,
+                            visibleItemsCount = 3,
+                            modifier = Modifier.padding(vertical = 16.dp),
+                            pickerItem = { item, modifier ->
+                                CategoryLabel(
+                                    modifier = modifier.padding(4.dp),
+                                    category = item,
+                                )
+                            }
+                        )
+                    }
                 }
             }
 
-        }
+            Button(
+                onClick = {
+                    viewModel.createCustomService(pickerState.selectedItem)
+                },
+                modifier = Modifier
+                    .fillMaxWidth(),
+                enabled = customServiceData.name.isNotBlank()
+            ) {
+                Text(stringResource(R.string.btn_create_service))
+            }
 
 //        Text(
 //            text = "Pick a color:",
@@ -119,18 +135,10 @@ fun CreateCustomServiceSheet(
 //            onColorSelected = { selectedColor = it }
 //        )
 //
-        Spacer(modifier = Modifier.weight(1f))
 
-        Button(
-            onClick = {
-                    viewModel.createCustomService(pickerState.selectedItem)
-            },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = customServiceData.name.isNotBlank()
-        ) {
-            Text(stringResource(R.string.btn_create_service))
         }
     }
+
 }
 
 @Composable
