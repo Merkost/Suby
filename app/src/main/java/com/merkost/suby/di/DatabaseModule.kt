@@ -58,8 +58,7 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideServicesRepository(
-        serviceDao: ServiceDao,
-        customServiceDao: CustomServiceDao
+        serviceDao: ServiceDao, customServiceDao: CustomServiceDao
     ): ServiceRepository {
         return ServiceRepositoryImpl(serviceDao, customServiceDao)
     }
@@ -80,9 +79,7 @@ object DatabaseModule {
     @Singleton
     fun provideAppDatabase(@ApplicationContext appContext: Context): AppDatabase {
         return Room.databaseBuilder(
-            appContext,
-            AppDatabase::class.java,
-            "app_database"
+            appContext, AppDatabase::class.java, "app_database.db"
         )
             .fallbackToDestructiveMigration()
             .build()
