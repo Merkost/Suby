@@ -5,10 +5,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -24,12 +27,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.merkost.suby.R
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.presentation.CurrencyLabel
-import com.merkost.suby.presentation.Picker
+import com.merkost.suby.presentation.HorizontalPicker
 import com.merkost.suby.presentation.base.LogoImage
 import com.merkost.suby.presentation.base.SubyButton
 import com.merkost.suby.presentation.rememberPickerState
@@ -77,35 +81,45 @@ fun OnboardingCurrencyScreen(onCurrencySelected: (Currency) -> Unit) {
         ) {
             Column(
                 modifier = Modifier
-                    .align(Alignment.Center),
-                verticalArrangement = Arrangement.spacedBy(64.dp),
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
                     text = stringResource(id = R.string.select_currency),
-                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.displaySmall.copy(
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Start
+                    ),
                     color = MaterialTheme.colorScheme.onBackground
                 )
 
-                Picker(
+                // TODO: Fix the huge padding issue
+                HorizontalPicker(
                     items = Currency.entries,
                     state = pickerState,
                     visibleItemsCount = 5,
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier,
                     pickerItem = { item, modifier ->
                         CurrencyLabel(
-                            modifier = modifier.padding(8.dp),
+                            modifier = modifier
+                                .padding(vertical = 6.dp)
+                                .padding(horizontal = 8.dp),
                             currency = item,
                             showArrow = false
                         )
                     }
                 )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
             }
 
             SubyButton(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth(),
+                shape = CircleShape,
                 onClick = {
                     selectedCurrency = pickerState.selectedItem
                     selectedCurrency?.let {

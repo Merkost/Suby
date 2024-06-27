@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
@@ -61,7 +62,7 @@ class PickerState<T> {
 }
 
 @Composable
-fun <T> Picker(
+fun <T> HorizontalPicker(
     items: List<T>,
     state: PickerState<T> = rememberPickerState(),
     modifier: Modifier = Modifier,
@@ -70,7 +71,6 @@ fun <T> Picker(
     dividerColor: Color = LocalContentColor.current,
     pickerItem: @Composable (item: T, modifier: Modifier) -> Unit
 ) {
-
     val visibleItemsMiddle = visibleItemsCount / 2
     val listScrollCount = items.size
     val listScrollMiddle = listScrollCount / 2
@@ -106,7 +106,7 @@ fun <T> Picker(
     }
 
     Box(modifier = modifier) {
-        LazyRow(
+        LazyRow (
             state = listState,
             flingBehavior = flingBehavior,
             verticalAlignment = Alignment.CenterVertically,
@@ -147,11 +147,11 @@ fun <T> Picker(
 
         Box(
             modifier = Modifier
-                .offset(x = itemWidthDp * (visibleItemsMiddle + 1) - itemWidthDp)
+                .align(Alignment.Center)
                 .height(itemHeightDp)
                 .width(itemWidthDp)
                 .border(
-                    2.dp, dividerColor, RoundedCornerShape(16.dp)
+                    2.dp, dividerColor, SubyShape
                 )
         )
     }
