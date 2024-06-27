@@ -26,10 +26,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -69,6 +69,7 @@ import com.merkost.suby.presentation.base.placeholder3
 import com.merkost.suby.round
 import com.merkost.suby.ui.theme.SubyTheme
 import com.merkost.suby.utils.Constants
+import com.merkost.suby.viewModel.AppViewModel
 import com.merkost.suby.viewModel.MainViewModel
 import com.merkost.suby.viewModel.TotalPrice
 import kotlinx.datetime.toJavaLocalDate
@@ -80,8 +81,9 @@ fun SubscriptionsScreen(
     onCurrencyClick: () -> Unit,
     onSubscriptionInfo: (subscriptionId: Int) -> Unit,
 ) {
+    val appViewModel = hiltViewModel<AppViewModel>()
     val viewModel = hiltViewModel<MainViewModel>()
-    val subscriptions by viewModel.subscriptions.collectAsState()
+    val subscriptions by appViewModel.subscriptions.collectAsState()
     val mainCurrency by viewModel.mainCurrency.collectAsState()
     val totalState by viewModel.total.collectAsState()
 
@@ -101,7 +103,7 @@ fun SubscriptionsScreen(
                 Text(text = stringResource(R.string.title_subscriptions))
             }
         }, actions = {
-            ElevatedButton(
+            OutlinedButton(
                 modifier = Modifier.padding(end = 8.dp), onClick = onAddClicked
             ) {
                 Icon(Icons.Default.Add)
@@ -192,7 +194,7 @@ fun EmptySubscriptions(onAddClicked: () -> Unit) {
         )
 
         Button(onClick = onAddClicked) {
-            Text(text = "Add subscription")
+            Text(text = stringResource(R.string.btn_add_first_subscription))
         }
     }
 }

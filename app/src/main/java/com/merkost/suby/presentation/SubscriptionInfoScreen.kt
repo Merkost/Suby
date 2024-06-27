@@ -139,7 +139,7 @@ internal fun SubscriptionInfo(
             ServiceLogo(
                 modifier = Modifier
                     .padding(16.dp)
-                    .height(56.dp)
+                    .height(48.dp)
                     .widthIn(min = 56.dp),
                 service = subscription.toService()
             )
