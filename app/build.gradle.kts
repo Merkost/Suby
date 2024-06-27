@@ -27,7 +27,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -89,11 +89,10 @@ dependencies {
     implementation(platform(libs.supabase.bom))
     implementation(libs.supabase.database)
     implementation(libs.supabase.storage)
-    ksp(libs.room.compiler)
     implementation(libs.timber)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
-    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
     implementation(libs.room.ktx)
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation)

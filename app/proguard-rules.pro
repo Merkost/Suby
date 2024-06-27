@@ -19,3 +19,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-dontwarn org.slf4j.impl.StaticLoggerBinder
+
+-keep class * extends androidx.room.RoomDatabase
+-keep class com.merkost.suby.model.** { *; }
