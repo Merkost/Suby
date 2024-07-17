@@ -1,6 +1,6 @@
 # Suby: Subscription Manager (Beta)
 
-![Suby Logo](screenshots/ic_launcher-playstore-beta.png)
+<img src="screenshots/ic_launcher-playstore-beta.png" alt="Suby Logo" width="150">
 
 Suby (beta) is designed to help you effortlessly manage all your subscriptions in one place. Whether it’s streaming services, fitness apps, or any other recurring payments, Suby keeps you organized and in control.
 
@@ -21,11 +21,14 @@ Simplify your life and take control of your subscriptions with Suby.
 
 ## Screenshots
 
-![Screenshot 1](screenshots/0.png)
-![Screenshot 2](screenshots/1.png)
-![Screenshot 3](screenshots/2.png)
-![Screenshot 4](screenshots/3.png)
-![Screenshot 5](screenshots/4.png)
+<p float="left">
+  <img src="screenshots/0.png" alt="Screenshot 1" width="150" />
+  <img src="screenshots/1.png" alt="Screenshot 2" width="150" />
+  <img src="screenshots/2.png" alt="Screenshot 3" width="150" />
+  <img src="screenshots/3.png" alt="Screenshot 4" width="150" />
+  <img src="screenshots/4.png" alt="Screenshot 5" width="150" />
+  <img src="screenshots/5.png" alt="Screenshot 6" width="150" />
+</p>
 
 ## Installation
 
