@@ -39,7 +39,7 @@ We are currently in beta and would love to hear your feedback! Please reach out 
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed - see the [LICENSE](LICENSE) file for details.
 
 ---
 
