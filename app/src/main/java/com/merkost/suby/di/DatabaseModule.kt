@@ -2,6 +2,9 @@ package com.merkost.suby.di
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+import com.merkost.suby.di.Migrations.MIGRATION_1_2
 import com.merkost.suby.model.room.AppDatabase
 import com.merkost.suby.model.room.dao.CategoryDao
 import com.merkost.suby.model.room.dao.CurrencyRatesDao
@@ -81,10 +84,41 @@ object DatabaseModule {
         return Room.databaseBuilder(
             appContext, AppDatabase::class.java, "app_database.db"
         )
-            .fallbackToDestructiveMigration()
+            .addMigrations(MIGRATION_1_2)
             .build()
 
         // TODO: Remove fallbackToDestructiveMigration
 
+    }
+}
+
+object Migrations {
+    val MIGRATION_1_2 = object : Migration(1, 2) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("""
+            CREATE TABLE IF NOT EXISTS service_new (
+                id INTEGER PRIMARY KEY NOT NULL,
+                name TEXT NOT NULL,
+                categoryId INTEGER NOT NULL,
+                logoName TEXT,
+                createdAt TEXT NOT NULL,
+                lastUpdated TEXT NOT NULL,
+                FOREIGN KEY(categoryId) REFERENCES category(id) ON DELETE CASCADE
+            )
+        """.trimIndent())
+
+            db.execSQL("""
+            INSERT INTO service_new (id, name, categoryId, createdAt, lastUpdated)
+            SELECT id, name, categoryId, createdAt, lastUpdated FROM service
+        """.trimIndent())
+
+            db.execSQL("DROP TABLE service")
+
+            db.execSQL("ALTER TABLE service_new RENAME TO service")
+
+            db.execSQL("""
+            CREATE INDEX IF NOT EXISTS index_service_categoryId ON service(categoryId)
+        """.trimIndent())
+        }
     }
 }

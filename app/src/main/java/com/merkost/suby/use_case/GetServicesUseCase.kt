@@ -1,5 +1,6 @@
 package com.merkost.suby.use_case
 
+import com.merkost.suby.BuildConfig
 import com.merkost.suby.model.entity.dto.CategoryDto
 import com.merkost.suby.model.entity.dto.ServiceDto
 import com.merkost.suby.model.entity.full.Service
@@ -33,7 +34,7 @@ class GetServicesUseCase(
         val needToUpdateServices = currentTime - lastServiceUpdate > updateThreshold
         val needToUpdateCategories = currentTime - lastCategoryUpdate > updateThreshold
 
-        if (needToUpdateServices || needToUpdateCategories) {
+        if (needToUpdateServices || needToUpdateCategories || BuildConfig.DEBUG) {
             val categories = loadCategories()
             val services = loadServices()
 

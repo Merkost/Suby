@@ -17,8 +17,8 @@ data class ServiceDto(
     @SerialName("category_id")
     val categoryId: Int,
 
-    @SerialName("logo_id")
-    val logoId: String?,
+    @SerialName("logo_name")
+    val logoName: String? = null,
 
     @SerialName("created_at")
     @Serializable(with = ZonedDateTimeSerializer::class)

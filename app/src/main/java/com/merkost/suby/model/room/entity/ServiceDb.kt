@@ -27,17 +27,14 @@ data class ServiceDb(
     val id: Int,
     val name: String,
     val categoryId: Int,
-    val logoId: String?,
+    val logoName: String?,
     val createdAt: LocalDateTime,
     val lastUpdated: LocalDateTime = LocalDateTime.now(),
 ) {
 
-    private val logoPath: String
-        get() = name.replace(' ', '_') + "_logo.svg"
-
     val logoLink: String?
-        get() = logoId?.let {
-            runCatching { supaClient.storage["service_logo"].publicUrl(logoPath) }
+        get() = logoName?.let {
+            runCatching { supaClient.storage["service_logo"].publicUrl(it) }
                 .getOrElse {
                     Timber.w(it, "Failed to get logo link for service $name")
                     null

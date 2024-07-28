@@ -10,6 +10,4 @@ plugins {
     alias(libs.plugins.googleServices) apply false
     alias(libs.plugins.firebasePerformance) apply false
     alias(libs.plugins.firebaseCrashlytics) apply false
-
-
 }

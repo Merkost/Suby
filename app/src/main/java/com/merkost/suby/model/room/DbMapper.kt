@@ -21,7 +21,7 @@ object DbMapper {
         name = it.name,
         categoryId = it.categoryId,
         createdAt = it.createdAt.toLocalDateTime().toKotlinLocalDateTime(),
-        logoId = it.logoId
+        logoName = it.logoName?.trim()
     )
 
 }
