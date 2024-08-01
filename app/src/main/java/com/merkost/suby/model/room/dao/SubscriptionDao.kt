@@ -22,15 +22,6 @@ interface SubscriptionDao {
     @Query(
         """
         SELECT * FROM subscription
-        WHERE id = :subId AND isCustomService = 0
-    """
-    )
-    suspend fun findSubscriptionById(subId: String): SubscriptionDb
-
-    @Transaction
-    @Query(
-        """
-        SELECT * FROM subscription
         WHERE subscription.isCustomService = 0
     """
     )

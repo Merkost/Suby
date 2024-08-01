@@ -298,9 +298,7 @@ fun CustomPeriodInput(
                 onPeriodSelected(selectedPeriodType, it.toLongOrNull() ?: DEFAULT_CUSTOM_PERIOD)
             },
             placeholder = {
-                Text(
-                    "$DEFAULT_CUSTOM_PERIOD",
-                )
+                Text("$DEFAULT_CUSTOM_PERIOD",)
             },
             singleLine = true,
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),

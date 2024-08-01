@@ -18,7 +18,7 @@ android {
     defaultConfig {
         applicationId = "com.merkost.suby"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 2
         versionName = "0.1.1"
 
@@ -28,10 +28,15 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
+            isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
+
+            buildConfigField("String", "SUPABASE_API_KEY", findProperty("SUPABASE_API_KEY").toString())
+            buildConfigField("String", "SUPABASE_ID", findProperty("SUPABASE_ID").toString())
         }
         debug {
             buildConfigField("String", "SUPABASE_API_KEY", findProperty("SUPABASE_API_KEY").toString())
