@@ -19,7 +19,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import coil.decode.SvgDecoder
@@ -31,6 +30,7 @@ import com.merkost.suby.presentation.base.PlaceholderHighlight
 import com.merkost.suby.presentation.base.fade
 import com.merkost.suby.presentation.base.placeholder3
 import com.merkost.suby.utils.toEpochMillis
+import timber.log.Timber
 import java.text.DateFormat
 import java.util.Date
 
@@ -41,6 +41,8 @@ fun ServiceSvg(
     link: String,
     contentScale: ContentScale = ContentScale.Fit
 ) {
+    Timber.tag("ServiceLogo").d("Link: $link")
+
     SubcomposeAsyncImage(
         modifier = modifier,
         model = ImageRequest.Builder(LocalContext.current.applicationContext)

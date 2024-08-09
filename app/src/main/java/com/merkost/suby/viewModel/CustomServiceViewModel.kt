@@ -1,5 +1,7 @@
 package com.merkost.suby.viewModel
 
+import com.merkost.suby.utils.ImageFileManager
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.merkost.suby.model.entity.full.Category
@@ -7,7 +9,6 @@ import com.merkost.suby.model.entity.full.toCategory
 import com.merkost.suby.model.room.AppDatabase
 import com.merkost.suby.model.room.dao.CategoryDao
 import com.merkost.suby.model.room.entity.CustomServiceDb
-import com.merkost.suby.use_case.GetServicesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,7 +23,7 @@ import javax.inject.Inject
 class CustomServiceViewModel @Inject constructor(
     private val appDatabase: AppDatabase,
     private val categoryDao: CategoryDao,
-    private val getServicesUseCase: GetServicesUseCase,
+    private val imageFileManager: ImageFileManager,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<CustomServiceUiState?>(null)
@@ -38,12 +39,21 @@ class CustomServiceViewModel @Inject constructor(
         _customServiceData.update { it.copy(name = newName) }
     }
 
+    fun setImageUri(uri: Uri) {
+        _customServiceData.value = _customServiceData.value.copy(imageUri = uri)
+    }
+
     private fun saveNewCustomService(serviceName: String, selectedCategoryId: Int) {
         viewModelScope.launch {
+
+
+
             val customService = CustomServiceDb(
                 name = serviceName,
                 categoryId = selectedCategoryId,
-//                emoji = null,
+                imageUri = customServiceData.value.imageUri?.let {
+                    imageFileManager.saveImageToInternalStorage(it, serviceName)
+                }
             )
             appDatabase.customServiceDao().addCustomService(customService)
             _uiState.update { CustomServiceUiState.Success }
@@ -80,4 +90,5 @@ sealed class CustomServiceUiState {
 
 data class CustomServiceData(
     val name: String = "",
+    val imageUri: Uri? = null,
 )

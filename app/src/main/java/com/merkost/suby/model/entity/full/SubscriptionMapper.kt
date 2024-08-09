@@ -9,7 +9,7 @@ fun SubscriptionWithCustomDetails.toSubscription() =
 
         serviceId = subscription.serviceId,
         serviceName = serviceWithCategory.customService.name,
-        serviceLogoUrl = null,
+        serviceLogoUrl = serviceWithCategory.customService.imageUri,
         serviceCreatedAt = serviceWithCategory.customService.createdAt,
         serviceLastUpdated = serviceWithCategory.customService.lastUpdated,
         isCustomService = true,

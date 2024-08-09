@@ -24,4 +24,5 @@ data class CustomServiceDb(
     val categoryId: Int,
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val lastUpdated: LocalDateTime = LocalDateTime.now(),
+    val imageUri: String? = null
 )

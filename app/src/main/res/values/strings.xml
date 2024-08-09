@@ -53,4 +53,5 @@
     <string name="next_payment_date">Next Payment Date</string>
     <string name="support">Support</string>
     <string name="btn_add_first_subscription">Add a subscription</string>
+    <string name="create_custom_service">Create a custom service</string>
 </resources>

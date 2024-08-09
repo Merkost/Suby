@@ -1,7 +1,11 @@
 package com.merkost.suby.presentation.sheets
 
+import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -11,6 +15,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
@@ -23,11 +28,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.rememberAsyncImagePainter
 import com.merkost.suby.R
 import com.merkost.suby.SubyShape
 import com.merkost.suby.model.entity.full.Category
@@ -69,17 +76,17 @@ fun CreateCustomServiceSheet(
         }
     }
 
-    Box(modifier = Modifier
-        .padding(16.dp)) {
-
-
+    Box(
+        modifier = Modifier
+            .padding(16.dp)
+    ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top)
         ) {
 
             Text(
-                text = "Create a custom service",
+                text = stringResource(R.string.create_custom_service),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -114,6 +121,13 @@ fun CreateCustomServiceSheet(
                 }
             }
 
+            TitleColumn(title = "Add a logo") {
+                ImagePicker(
+                    selectedImage = customServiceData.imageUri,
+                    onImageSelected = viewModel::setImageUri
+                )
+            }
+
             Button(
                 onClick = {
                     viewModel.createCustomService(pickerState.selectedItem)
@@ -139,6 +153,38 @@ fun CreateCustomServiceSheet(
         }
     }
 
+}
+
+@Composable
+fun ImagePicker(
+    selectedImage: Uri?,
+    onImageSelected: (Uri) -> Unit
+) {
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let(onImageSelected)
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(150.dp)
+            .background(Color.Gray, shape = SubyShape)
+            .clickable { launcher.launch("image/*") },
+        contentAlignment = Alignment.Center
+    ) {
+        selectedImage?.let {
+            Image(
+                painter = rememberAsyncImagePainter(model = it),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        } ?: Text(
+            text = "Tap to select an image",
+            color = Color.White,
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
 }
 
 @Composable

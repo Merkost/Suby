@@ -5,6 +5,7 @@ import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.merkost.suby.di.Migrations.MIGRATION_1_2
+import com.merkost.suby.di.Migrations.MIGRATION_2_3
 import com.merkost.suby.model.room.AppDatabase
 import com.merkost.suby.model.room.dao.CategoryDao
 import com.merkost.suby.model.room.dao.CurrencyRatesDao
@@ -84,7 +85,7 @@ object DatabaseModule {
         return Room.databaseBuilder(
             appContext, AppDatabase::class.java, "app_database.db"
         )
-            .addMigrations(MIGRATION_1_2)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
             .build()
 
         // TODO: Remove fallbackToDestructiveMigration
@@ -119,6 +120,12 @@ object Migrations {
             db.execSQL("""
             CREATE INDEX IF NOT EXISTS index_service_categoryId ON service(categoryId)
         """.trimIndent())
+        }
+    }
+
+    val MIGRATION_2_3 = object : Migration(2,3) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE custom_service ADD COLUMN imageUri TEXT")
         }
     }
 }

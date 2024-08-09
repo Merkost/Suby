@@ -13,7 +13,7 @@ plugins {
 
 android {
     namespace = "com.merkost.suby"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.merkost.suby"

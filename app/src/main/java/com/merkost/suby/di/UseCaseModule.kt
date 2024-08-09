@@ -1,5 +1,7 @@
 package com.merkost.suby.di
 
+import com.merkost.suby.utils.ImageFileManager
+import android.content.Context
 import com.merkost.suby.model.room.dao.CategoryDao
 import com.merkost.suby.model.room.dao.ServiceDao
 import com.merkost.suby.repository.datastore.AppSettings
@@ -13,11 +15,19 @@ import com.merkost.suby.use_case.GetServicesUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
 object UseCaseModule {
+
+    @Provides
+    fun provideImageFileManager(
+        @ApplicationContext context: Context
+    ): ImageFileManager {
+        return ImageFileManager(context)
+    }
 
     @Provides
     fun provideGetCurrencyRatesUseCase(

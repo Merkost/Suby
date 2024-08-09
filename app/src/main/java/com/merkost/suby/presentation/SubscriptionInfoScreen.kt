@@ -58,10 +58,6 @@ fun SubscriptionInfoScreen(subscriptionId: Int, upPress: () -> Unit) {
         viewModel.loadSubscription(subscriptionId)
     }
 
-    val name by remember(uiState) {
-        mutableStateOf((uiState as? BaseViewState.Success)?.data?.serviceName)
-    }
-
     Scaffold(
         topBar = {
             SubyTopAppBar(
