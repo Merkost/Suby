@@ -4,10 +4,8 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.kotlinParcelize)
-    alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlinSerialization)
-    alias(libs.plugins.secrets)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.googleServices)
     alias(libs.plugins.firebaseCrashlytics)
@@ -43,7 +41,7 @@ android {
         }
         debug {
             versionNameSuffix = ".debug"
-            applicationIdSuffix = ".debug"
+//            applicationIdSuffix = ".debug"
             buildConfigField("String", "SUPABASE_API_KEY", findProperty("SUPABASE_API_KEY").toString())
             buildConfigField("String", "SUPABASE_ID", findProperty("SUPABASE_ID").toString())
         }
