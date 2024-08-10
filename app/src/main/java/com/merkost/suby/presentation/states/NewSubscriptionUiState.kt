@@ -13,6 +13,7 @@ sealed class NewSubscriptionUiState {
         data object PeriodRequired : Requirement(R.string.period_required)
         data object PriceRequired : Requirement(R.string.price_required)
         data object BillingDateRequired : Requirement(R.string.billing_date_required)
+        data object StatusRequired : Requirement(R.string.status_required)
     }
 
     data object Success : NewSubscriptionUiState()

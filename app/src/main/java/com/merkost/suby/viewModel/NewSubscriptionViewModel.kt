@@ -108,6 +108,11 @@ class NewSubscriptionViewModel @Inject constructor(
                     return@launch
                 }
 
+                values.status == null -> {
+                    _uiState.update { NewSubscriptionUiState.Requirement.StatusRequired }
+                    return@launch
+                }
+
                 else -> {
                     runCatching {
                         val period = values.basePeriod ?: run {
@@ -119,7 +124,7 @@ class NewSubscriptionViewModel @Inject constructor(
                             serviceId = values.service.id,
                             durationDays = values.period.days,
                             isCustomService = values.service.isCustomService,
-                            status = Status.ACTIVE,
+                            status = values.status,
                             currency = currency,
                             price = values.price.toDouble(),
                             paymentDate = values.billingDate.toKotlinLocalDateTime(),

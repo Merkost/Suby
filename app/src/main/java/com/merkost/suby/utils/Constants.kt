@@ -10,6 +10,7 @@ object Constants {
     val SUBY_UPDATE_THRESHOLD = 2.days
     const val DEFAULT_CUSTOM_PERIOD: Long = 1
 
+//    todo: Add multiple data formats as a setting
     val dataFormat: DateTimeFormatter
         get() {
             val dateFormatString = "dd/MM/yyyy"

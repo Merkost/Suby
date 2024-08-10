@@ -2,9 +2,15 @@
     <string name="app_name">Suby</string>
     <string name="add_new_currency">Add new currency</string>
     <string name="add_new_currency_question">What currency do you want us to add?</string>
+
     <string name="today">today</string>
     <string name="tomorrow">tomorrow</string>
     <string name="after_days">in %d days</string>
+    <string name="trial_more_days">%1$d more days</string>
+    <string name="trial_ended_on">ended on %1$s</string>
+    <string name="canceled_on">on %1$s</string>
+    <string name="expired_on">on %1$s</string>
+
     <string name="add_new_service">Add new service</string>
     <string name="add_new_service_question">What service do you want to add?</string>
     <string name="categories">Categories</string>
@@ -55,4 +61,9 @@
     <string name="btn_add_first_subscription">Add a subscription</string>
     <string name="create_custom_service">Create a custom service</string>
     <string name="btn_save">Save</string>
+    <string name="filter_by">Filter By</string>
+    <string name="sort_by">Sort By</string>
+    <string name="status_required">Status is required</string>
+    <string name="no_subscriptions_by_filter">No subscriptions found</string>
+    <string name="reset_filters">Reset Filters</string>
 </resources>

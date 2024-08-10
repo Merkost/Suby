@@ -6,6 +6,12 @@ import com.merkost.suby.formatDecimal
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.Period
 import com.merkost.suby.model.entity.Status
+import com.merkost.suby.model.entity.full.Subscription
+import com.merkost.suby.presentation.FilterOption
+import com.merkost.suby.presentation.FilterOption.*
+import com.merkost.suby.presentation.SelectedSortState
+import com.merkost.suby.presentation.SortDirection
+import com.merkost.suby.presentation.SortOption
 import com.merkost.suby.repository.datastore.AppSettings
 import com.merkost.suby.repository.datastore.LastTotalPrice
 import com.merkost.suby.repository.room.SubscriptionRepository
@@ -14,12 +20,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -35,14 +41,78 @@ class MainViewModel @Inject constructor(
     private val getCurrencyRatesUseCase: GetCurrencyRatesUseCase
 ) : ViewModel() {
 
-    val subscriptions = subscriptionRepository.subscriptions.map {
-        it.filter { it.status == Status.ACTIVE }
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, listOf())
+    val subscriptions = subscriptionRepository.subscriptions
+        .stateIn(viewModelScope, SharingStarted.Eagerly, listOf())
 
     val mainCurrency = appSettings.mainCurrency
         .stateIn(viewModelScope, SharingStarted.Eagerly, Currency.USD)
 
     val period = MutableStateFlow(Period.MONTHLY)
+
+    private val _sortState =
+        MutableStateFlow(SelectedSortState(SortOption.BILLING_DATE, SortDirection.ASCENDING))
+    val sortState: StateFlow<SelectedSortState> = _sortState
+
+    private val _selectedFilters = MutableStateFlow<List<FilterOption>>(listOf(ALL))
+    val selectedFilters: StateFlow<List<FilterOption>> = _selectedFilters
+
+    val filteredAndSortedSubscriptions: StateFlow<List<Subscription>> = combine(
+        subscriptions,
+        sortState,
+        selectedFilters
+    ) { subscriptions, sortState, selectedFilters ->
+        var filteredSubscriptions = subscriptions
+
+        if (selectedFilters.isNotEmpty() && !selectedFilters.contains(ALL)) {
+            filteredSubscriptions = filteredSubscriptions.filter { subscription ->
+                selectedFilters.any { filter ->
+                    when (filter) {
+                        ACTIVE -> subscription.status == Status.ACTIVE
+                        EXPIRED -> subscription.status == Status.EXPIRED
+                        CANCELLED -> subscription.status == Status.CANCELED
+                        TRIAL -> subscription.status == Status.TRIAL
+                        ALL -> true
+                    }
+                }
+            }
+        }
+
+        filteredSubscriptions = when (sortState.selectedOption) {
+            SortOption.NAME -> {
+                if (sortState.direction == SortDirection.ASCENDING) {
+                    filteredSubscriptions.sortedBy { it.serviceName }
+                } else {
+                    filteredSubscriptions.sortedByDescending { it.serviceName }
+                }
+            }
+            SortOption.PRICE -> {
+                if (sortState.direction == SortDirection.ASCENDING) {
+                    filteredSubscriptions.sortedBy { it.price }
+                } else {
+                    filteredSubscriptions.sortedByDescending { it.price }
+                }
+            }
+            SortOption.BILLING_DATE -> {
+                filteredSubscriptions.sortedWith(
+                    compareBy<Subscription> { it.status }
+                        .thenBy { it.paymentDate }
+                        .let {
+                            if (sortState.direction == SortDirection.DESCENDING) it.reversed() else it
+                        }
+                )
+            }
+
+            SortOption.STATUS -> {
+                if (sortState.direction == SortDirection.ASCENDING) {
+                    filteredSubscriptions.sortedBy { it.status }
+                } else {
+                    filteredSubscriptions.sortedByDescending { it.status }
+                }
+            }
+        }
+
+        filteredSubscriptions
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, listOf())
 
     private val _total = MutableStateFlow(TotalPrice())
     val total = _total.asStateFlow()
@@ -123,6 +193,43 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun toggleFilter(filter: FilterOption) {
+        viewModelScope.launch {
+            _selectedFilters.value = if (filter == ALL) {
+                listOf(ALL)
+            } else {
+                val currentFilters = _selectedFilters.value
+                val updatedFilters = if (currentFilters.contains(filter)) {
+                    currentFilters - filter
+                } else {
+                    currentFilters + filter
+                }
+
+                if (updatedFilters.isEmpty()) {
+                    listOf(ALL)
+                } else {
+                    updatedFilters.filter { it != ALL }
+                }
+            }
+        }
+    }
+
+
+    fun selectSortOption(sortOption: SortOption) {
+        viewModelScope.launch {
+            if (_sortState.value.selectedOption == sortOption) {
+                // Toggle between ASCENDING and DESCENDING
+                _sortState.value = _sortState.value.copy(
+                    direction = if (_sortState.value.direction == SortDirection.ASCENDING)
+                        SortDirection.DESCENDING else SortDirection.ASCENDING
+                )
+            } else {
+                // Select a new sort option and default to ASCENDING
+                _sortState.value = SelectedSortState(sortOption, SortDirection.ASCENDING)
+            }
+        }
+    }
+
     fun onUpdateRatesClicked() {
         viewModelScope.launch {
             updateRates()
@@ -137,6 +244,10 @@ class MainViewModel @Inject constructor(
 
     fun updateMainPeriod() {
         period.update { period.value.nextMain() }
+    }
+
+    fun onFiltersReset() {
+        _selectedFilters.update { listOf(ALL) }
     }
 }
 

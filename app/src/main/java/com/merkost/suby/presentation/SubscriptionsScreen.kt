@@ -6,12 +6,16 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,6 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -30,9 +35,14 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,21 +64,24 @@ import com.merkost.suby.SubyShape
 import com.merkost.suby.formatDecimal
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.Period
+import com.merkost.suby.model.entity.Status
 import com.merkost.suby.model.entity.full.Subscription
 import com.merkost.suby.presentation.base.DoubleBackPressHandler
 import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.PlaceholderHighlight
 import com.merkost.suby.presentation.base.SubyTopAppBar
+import com.merkost.suby.presentation.base.components.EmptyStateView
 import com.merkost.suby.presentation.base.components.ServiceNameImage
 import com.merkost.suby.presentation.base.components.ServiceSvg
 import com.merkost.suby.presentation.base.fade
 import com.merkost.suby.presentation.base.placeholder3
 import com.merkost.suby.round
 import com.merkost.suby.ui.theme.SubyTheme
+import com.merkost.suby.utils.hasSubscriptions
 import com.merkost.suby.utils.toRelativeTimeString
-import com.merkost.suby.viewModel.AppViewModel
 import com.merkost.suby.viewModel.MainViewModel
 import com.merkost.suby.viewModel.TotalPrice
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,9 +90,10 @@ fun SubscriptionsScreen(
     onCurrencyClick: () -> Unit,
     onSubscriptionInfo: (subscriptionId: Int) -> Unit,
 ) {
-    val appViewModel = hiltViewModel<AppViewModel>()
     val viewModel = hiltViewModel<MainViewModel>()
-    val subscriptions by appViewModel.subscriptions.collectAsState()
+
+    val hasSubscriptions by hasSubscriptions()
+    val subscriptions by viewModel.filteredAndSortedSubscriptions.collectAsState()
     val mainCurrency by viewModel.mainCurrency.collectAsState()
     val totalState by viewModel.total.collectAsState()
 
@@ -108,10 +122,10 @@ fun SubscriptionsScreen(
     }) {
         AnimatedContent(
             modifier = Modifier.padding(it),
-            targetState = subscriptions,
+            targetState = hasSubscriptions,
             label = ""
-        ) { subs ->
-            if (subs.isEmpty()) {
+        ) { hasSubs ->
+            if (hasSubs.not()) {
                 EmptySubscriptions(onAddClicked)
             } else {
                 LazyColumn(
@@ -129,7 +143,11 @@ fun SubscriptionsScreen(
                         )
                     }
 
-                    items(subs) { subscription ->
+                    item {
+                        Sorting(viewModel)
+                    }
+
+                    items(subscriptions, key = { it.id }) { subscription ->
                         HorizontalSubscriptionItem(
                             modifier = Modifier
                                 .animateItem(fadeInSpec = null, fadeOutSpec = null)
@@ -139,38 +157,59 @@ fun SubscriptionsScreen(
                             onClick = { onSubscriptionInfo(subscription.id) }
                         )
                     }
+
+                    if (subscriptions.isEmpty()) {
+                        item {
+                            EmptyStateView(
+                                modifier = Modifier.fillMaxSize(),
+                                message = stringResource(R.string.no_subscriptions_by_filter),
+                                onResetFilters = viewModel::onFiltersReset
+                            )
+                        }
+                    }
                 }
             }
         }
     }
-    /*LazyVerticalStaggeredGrid(
-                modifier = Modifier,
-                columns = StaggeredGridCells.Fixed(2),
-                contentPadding = PaddingValues(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalItemSpacing = 8.dp
-            ) {
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    MainBalance(
-                        totalPrice = totalState,
-                        mainCurrency = mainCurrency,
-                        period = selectedPeriod,
-                        onCurrencyClick = onCurrencyClick,
-                        onUpdateClick = viewModel::onUpdateRatesClicked,
-                        onPeriodClick = viewModel::updateMainPeriod
-                    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun Sorting(viewModel: MainViewModel) {
+    val selectedFilters by viewModel.selectedFilters.collectAsState()
+    val sortState by viewModel.sortState.collectAsState()
+
+    val sheetState = rememberModalBottomSheetState()
+    var isBottomSheetOpened by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        TinySortFilterRow(
+            selectedFilters = selectedFilters,
+            selectedSort = sortState,
+            onSortClick = {
+                isBottomSheetOpened = true
+            },
+            onFilterClick = {
+                isBottomSheetOpened = true
+            },
+            onFiltersReset = viewModel::onFiltersReset
+        )
+
+        if (isBottomSheetOpened) SortFilterBottomSheet(
+            sheetState = sheetState,
+            selectedFilters = selectedFilters,
+            selectedSortState = sortState,
+            onFilterSelected = { filter -> viewModel.toggleFilter(filter) },
+            onSortSelected = { sortOption, _ -> viewModel.selectSortOption(sortOption) },
+            onDismissRequest = {
+                scope.launch {
+                    sheetState.hide()
+                    isBottomSheetOpened = false
                 }
-                items(subs) { subscription ->
-                    SubscriptionItem(
-                        modifier = Modifier
-                            .animateItemPlacement()
-                            .animateContentSize(),
-                        subscription = subscription,
-                        selectedPeriod = selectedPeriod,
-                        onClick = onSubscriptionInfo
-                    )
-                }
-            }*/
+            }
+        )
+    }
 }
 
 
@@ -204,7 +243,7 @@ fun MainBalance(
     onUpdateClick: () -> Unit,
     onPeriodClick: () -> Unit,
 ) {
-    Column(modifier = Modifier.padding(bottom = 12.dp)) {
+    Column(modifier = Modifier) {
         Row(modifier = Modifier
             .clip(SubyShape)
             .clickable { onPeriodClick() }
@@ -264,7 +303,9 @@ fun MainBalance(
                 )
             } else if (state.lastUpdated != null) {
                 Text(
-                    modifier = Modifier.clickable { onUpdateClick() },
+                    modifier = Modifier
+                        .clip(SubyShape)
+                        .clickable { onUpdateClick() },
                     text = stringResource(
                         R.string.updated,
                         state.lastUpdated.toRelativeTimeString()
@@ -283,79 +324,131 @@ fun HorizontalSubscriptionItem(
     selectedPeriod: Period,
     onClick: () -> Unit
 ) {
-    Surface(
-        modifier = modifier
-            .animateContentSize(),
-        onClick = onClick,
-        shape = SubyShape,
-        tonalElevation = 2.dp,
-        shadowElevation = 2.dp
-    ) {
-        Row(
-            modifier = Modifier.padding(14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+    Box(modifier = modifier) {
+        Surface(
+            modifier = Modifier
+                .animateContentSize()
+                .fillMaxWidth(),
+            onClick = onClick,
+            shape = SubyShape,
+            tonalElevation = 2.dp,
+            shadowElevation = 2.dp
         ) {
-            subscription.serviceLogoUrl?.let {
-                ServiceSvg(
+            Row(
+                modifier = Modifier.padding(14.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                subscription.serviceLogoUrl?.let {
+                    ServiceSvg(
+                        modifier = Modifier
+                            .size(52.dp)
+                            .clip(RoundedCornerShape(8.dp)),
+                        link = it
+                    )
+                } ?: ServiceNameImage(
+                    modifier = Modifier.size(52.dp),
+                    name = subscription.serviceName,
+                )
+
+                Column(
                     modifier = Modifier
-                        .size(48.dp)
-                        .clip(RoundedCornerShape(8.dp)),
-                    link = it
-                )
-            } ?: ServiceNameImage(
-                modifier = Modifier.size(48.dp),
-                name = subscription.serviceName,
-            )
-
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = subscription.serviceName,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = subscription.getRemainingDurationString(LocalContext.current),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-
-            Column(
-                horizontalAlignment = Alignment.End
-            ) {
-                Text(
-                    text = "${subscription.price.formatDecimal()}${subscription.currency.symbol}",
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.End,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                AnimatedContent(
-                    targetState = subscription.getPriceForPeriod(selectedPeriod),
-                    transitionSpec = {
-                        fadeIn() togetherWith fadeOut()
-                    },
-                    label = "priceForPeriodAnim"
-                ) { priceForPeriod ->
-                    if (selectedPeriod.days != subscription.periodDays) {
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = subscription.serviceName,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Row(
+                        modifier = Modifier,
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        if (subscription.status != Status.ACTIVE) {
+                            StatusBubble(
+                                modifier = Modifier,
+                                status = subscription.status
+                            )
+                        }
                         Text(
-                            text = "~${priceForPeriod.round()}${subscription.currency.symbol}",
+                            text = subscription.getRemainingDurationString(LocalContext.current),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
+                }
+
+                Column(
+                    horizontalAlignment = Alignment.End,
+                ) {
+                    Text(
+                        text = "${subscription.price.formatDecimal()}${subscription.currency.symbol}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.End,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+
+                    AnimatedContent(
+                        targetState = subscription.getPriceForPeriod(selectedPeriod),
+                        transitionSpec = {
+                            fadeIn() togetherWith fadeOut()
+                        },
+                        label = "priceForPeriodAnim"
+                    ) { priceForPeriod ->
+                        if (selectedPeriod.days != subscription.periodDays) {
+                            Column {
+                                Spacer(modifier = Modifier.size(8.dp))
+                                Text(
+                                    text = "~${priceForPeriod.round()}${subscription.currency.symbol}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                                )
+                            }
+                        }
+                    }
+
                 }
             }
         }
     }
 }
 
+@Composable
+fun StatusBubble(
+    modifier: Modifier = Modifier,
+    status: Status
+) {
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(12.dp))
+            .background(status.color.copy(alpha = 0.1f))
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(8.dp)
+                .clip(CircleShape)
+                .background(status.color)
+        )
+
+        Text(
+            text = status.statusName,
+            style = MaterialTheme.typography.bodySmall,
+            color = status.color,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
 
 @Preview
 @Composable

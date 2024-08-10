@@ -89,7 +89,6 @@ object DatabaseModule {
             .build()
 
         // TODO: Remove fallbackToDestructiveMigration
-
     }
 }
 

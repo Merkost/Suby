@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
                 android.graphics.Color.TRANSPARENT
             )
         )
-        val splashScreen = installSplashScreen().setKeepOnScreenCondition { viewModel.isLoading }
+        val splashScreen = installSplashScreen()
 
         setContent {
             SubyTheme {

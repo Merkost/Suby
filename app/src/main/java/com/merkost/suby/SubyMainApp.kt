@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -26,16 +25,14 @@ import com.merkost.suby.presentation.onboarding.GreetingScreen
 import com.merkost.suby.presentation.onboarding.OnboardingCurrencyScreen
 import com.merkost.suby.utils.Arguments
 import com.merkost.suby.utils.Destinations
-import com.merkost.suby.viewModel.AppViewModel
+import com.merkost.suby.utils.isFirstTimeState
 import com.merkost.suby.viewModel.OnboardingViewModel
 
 @Composable
 fun SubyMainApp() {
     val navController = rememberNavController()
 
-    val viewModel: AppViewModel = hiltViewModel()
-    val isFirstTime by viewModel.isFirstTimeState.collectAsState()
-
+    val isFirstTime by isFirstTimeState()
     val startDestination = if (isFirstTime) Destinations.GREETING else Destinations.MAIN_SCREEN
 //    val startDestination = Destinations.GREETING
     Scaffold(

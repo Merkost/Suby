@@ -24,11 +24,11 @@ enum class Status(
         "Active",
         "for subscriptions that are currently ongoing and for which you are regularly being charged. "
     ),
-    CANCELED(
-        Icons.Outlined.Cancel,
-        Color.StatusRed,
-        "Canceled",
-        "for subscriptions that you have actively discontinued before their expiration date."
+    TRIAL(
+        Icons.Outlined.Timelapse,
+        Color.StatusYellow,
+        "Trial",
+        "for subscriptions that are in their trial period."
     ),
     EXPIRED(
         Icons.Outlined.DoNotDisturbOn,
@@ -36,10 +36,10 @@ enum class Status(
         "Expired",
         "for subscriptions that have reached their end date and are no longer active, but haven't been formally canceled."
     ),
-    TRIAL(
-        Icons.Outlined.Timelapse,
-        Color.StatusYellow,
-        "Trial",
-        "for subscriptions that are in their trial period."
-    );
+    CANCELED(
+        Icons.Outlined.Cancel,
+        Color.StatusRed,
+        "Canceled",
+        "for subscriptions that you have actively discontinued before their expiration date."
+    ),
 }
