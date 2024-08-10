@@ -54,4 +54,5 @@
     <string name="support">Support</string>
     <string name="btn_add_first_subscription">Add a subscription</string>
     <string name="create_custom_service">Create a custom service</string>
+    <string name="btn_save">Save</string>
 </resources>
