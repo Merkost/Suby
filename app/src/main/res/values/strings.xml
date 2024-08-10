@@ -21,7 +21,7 @@
     <string name="title_subscriptions">Subscriptions</string>
     <string name="unknown">Unknown</string>
     <string name="updating_state">Updating…</string>
-    <string name="updated_on">Updated on %1$s</string>
+    <string name="updated">Updated %1$s</string>
     <string name="currencies">Currencies</string>
     <string name="title_subscription">Subscription</string>
     <string name="delete_btn">Delete</string>

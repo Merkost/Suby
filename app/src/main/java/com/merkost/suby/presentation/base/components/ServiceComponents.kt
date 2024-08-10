@@ -83,7 +83,7 @@ fun ServiceLogo(
 }
 
 @Composable
-fun ServiceNameImage(modifier: Modifier, shape: Shape, name: String) {
+fun ServiceNameImage(modifier: Modifier, shape: Shape = SubyShape, name: String) {
     Box(
         modifier = modifier
             .clip(shape)

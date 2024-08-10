@@ -110,18 +110,21 @@ class NewSubscriptionViewModel @Inject constructor(
 
                 else -> {
                     runCatching {
+                        val period = values.basePeriod ?: run {
+                            _uiState.update { NewSubscriptionUiState.Requirement.PeriodRequired }
+                            return@launch
+                        }
+
                         val newSubscriptionDb = SubscriptionDb(
                             serviceId = values.service.id,
                             durationDays = values.period.days,
-                            period = values.period,
                             isCustomService = values.service.isCustomService,
                             status = Status.ACTIVE,
                             currency = currency,
                             price = values.price.toDouble(),
                             paymentDate = values.billingDate.toKotlinLocalDateTime(),
-                            customPeriodDuration = values.customPeriodDuration
-                                ?: values.period.days,
-                            customPeriodType = values.customPeriodType ?: CustomPeriod.DAYS,
+                            periodType = period.periodType,
+                            periodDuration = period.duration,
                             description = values.description,
                         )
                         Timber.tag("saveNewSubscription").d(newSubscriptionDb.toString())

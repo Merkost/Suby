@@ -23,9 +23,8 @@ fun SubscriptionWithCustomDetails.toSubscription() =
             createdAt = serviceWithCategory.category.createdAt,
             lastUpdated = serviceWithCategory.category.lastUpdated
         ),
-        period = subscription.period,
-        customPeriodType = subscription.customPeriodType,
-        customPeriodDuration = subscription.customPeriodDuration,
+        periodType = subscription.periodType,
+        periodDuration = subscription.periodDuration,
         status = subscription.status,
         paymentDate = subscription.paymentDate,
         createdDate = subscription.createdDate,
@@ -54,9 +53,8 @@ fun SubscriptionWithDetails.toSubscription() =
             createdAt = serviceWithCategory.category.createdAt,
             lastUpdated = serviceWithCategory.category.lastUpdated
         ),
-        period = subscription.period,
-        customPeriodType = subscription.customPeriodType,
-        customPeriodDuration = subscription.customPeriodDuration,
+        periodType = subscription.periodType,
+        periodDuration = subscription.periodDuration,
         status = subscription.status,
         paymentDate = subscription.paymentDate,
         createdDate = subscription.createdDate,

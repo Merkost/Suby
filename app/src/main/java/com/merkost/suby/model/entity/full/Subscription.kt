@@ -6,6 +6,7 @@ import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.CustomPeriod
 import com.merkost.suby.model.entity.Period
 import com.merkost.suby.model.entity.Status
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
@@ -28,9 +29,8 @@ data class Subscription(
 
     val category: Category,
 
-    val period: Period,
-    val customPeriodType: CustomPeriod,
-    val customPeriodDuration: Long,
+    val periodType: CustomPeriod,
+    val periodDuration: Long,
 
     val status: Status,
     val paymentDate: LocalDateTime,
@@ -40,26 +40,22 @@ data class Subscription(
     val description: String,
 ) {
     val periodDays: Long
-        get() = when (this.period) {
-            Period.CUSTOM -> when (this.customPeriodType) {
-                CustomPeriod.DAYS -> this.customPeriodDuration
-                CustomPeriod.WEEKS -> this.customPeriodDuration * 7L
-                CustomPeriod.MONTHS -> this.customPeriodDuration * 30L
-                CustomPeriod.YEARS -> this.customPeriodDuration * 365L
-            }
-
-            else -> this.period.days.coerceAtLeast(1L)
+        get() = when (this.periodType) {
+            CustomPeriod.DAYS -> this.periodDuration
+            CustomPeriod.WEEKS -> this.periodDuration * 7L
+            CustomPeriod.MONTHS -> this.periodDuration * 30L
+            CustomPeriod.YEARS -> this.periodDuration * 365L
         }
 
     private val remainingDays: Long
         get() {
-            val currentTimeMillis = System.currentTimeMillis().milliseconds
-            val initialRemainingDays =
-                (paymentDate.toInstant(TimeZone.currentSystemDefault())
-                    .toEpochMilliseconds().milliseconds + durationDays.days - currentTimeMillis).inWholeDays
-            val elapsedPeriods = (initialRemainingDays / durationDays) + 1
-            val remainingDays = initialRemainingDays - (elapsedPeriods - 1) * durationDays
-            return kotlin.math.abs(remainingDays)
+            val currentDateMillis = Clock.System.now().toEpochMilliseconds().milliseconds
+            val paymentDateMillis = paymentDate.toInstant(TimeZone.currentSystemDefault())
+                .toEpochMilliseconds().milliseconds
+            val totalRemainingMillis =
+                paymentDateMillis + periodDays.days.inWholeMilliseconds.milliseconds - currentDateMillis
+            val totalRemainingDays = totalRemainingMillis.inWholeDays
+            return if (totalRemainingDays < 0) 0 else totalRemainingDays
         }
 
     fun getRemainingDurationString(context: Context): String {

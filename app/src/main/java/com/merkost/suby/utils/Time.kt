@@ -7,9 +7,11 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
+import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDateTime
 import kotlinx.datetime.toLocalDateTime
 import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 import java.util.Date
 import java.util.Locale
 
@@ -46,4 +48,19 @@ fun java.time.LocalDate.dateString(dateFormat: Int = DateFormat.MEDIUM): String 
     return epochMilli.dateString(dateFormat)
 }
 
+fun LocalDateTime.toRelativeTimeString(): String {
+    val now = LocalDateTime.now().toJavaLocalDateTime()
+    val minutesBetween = ChronoUnit.MINUTES.between(this.toJavaLocalDateTime(), now)
+    val daysBetween = ChronoUnit.DAYS.between(this.toJavaLocalDateTime(), now)
 
+    return when {
+        minutesBetween < 5 -> "Just now"
+        daysBetween < 1 -> "Today"
+        daysBetween == 1L -> "Yesterday"
+        daysBetween < 7 -> "$daysBetween days ago"
+        else -> {
+            val weeksBetween = ChronoUnit.WEEKS.between(this.toJavaLocalDateTime(), now)
+            if (weeksBetween == 1L) "Last week" else "$weeksBetween weeks ago"
+        }
+    }
+}

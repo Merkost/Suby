@@ -19,17 +19,24 @@ data class NewSubscription(
     val billingDate: Long? = null,
     val description: String = "",
 ) {
-
     val basePeriod: BasePeriod?
         get() {
             return kotlin.runCatching {
                 if (period == Period.CUSTOM) {
-                    BasePeriod(
-                        customPeriodType!!.chronoUnit,
-                        customPeriodDuration ?: DEFAULT_CUSTOM_PERIOD
-                    )
+                    val type = customPeriodType ?: CustomPeriod.DAYS
+                    val duration = customPeriodDuration ?: 1L
+                    BasePeriod(type, duration)
                 } else {
-                    BasePeriod(period!!.chronoUnit, period.chronoUnitDuration)
+                    when (period) {
+                        Period.DAILY -> BasePeriod(CustomPeriod.DAYS, 1L)
+                        Period.WEEKLY -> BasePeriod(CustomPeriod.WEEKS, 1L)
+                        Period.BI_WEEKLY -> BasePeriod(CustomPeriod.WEEKS, 2L)
+                        Period.MONTHLY -> BasePeriod(CustomPeriod.MONTHS, 1L)
+                        Period.QUARTERLY -> BasePeriod(CustomPeriod.MONTHS, 3L)
+                        Period.SEMI_ANNUAL -> BasePeriod(CustomPeriod.MONTHS, 6L)
+                        Period.ANNUAL -> BasePeriod(CustomPeriod.YEARS, 1L)
+                        else -> BasePeriod(CustomPeriod.DAYS, 1L) // Default case
+                    }
                 }
             }.onFailure {
                 Timber.tag("NewSubscription").e(it, "Error getting base period")

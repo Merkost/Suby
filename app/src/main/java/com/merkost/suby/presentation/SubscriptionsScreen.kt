@@ -6,14 +6,11 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -58,21 +55,20 @@ import com.merkost.suby.formatDecimal
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.Period
 import com.merkost.suby.model.entity.full.Subscription
-import com.merkost.suby.presentation.base.BaseItem
 import com.merkost.suby.presentation.base.DoubleBackPressHandler
 import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.PlaceholderHighlight
 import com.merkost.suby.presentation.base.SubyTopAppBar
+import com.merkost.suby.presentation.base.components.ServiceNameImage
 import com.merkost.suby.presentation.base.components.ServiceSvg
 import com.merkost.suby.presentation.base.fade
 import com.merkost.suby.presentation.base.placeholder3
 import com.merkost.suby.round
 import com.merkost.suby.ui.theme.SubyTheme
-import com.merkost.suby.utils.Constants
+import com.merkost.suby.utils.toRelativeTimeString
 import com.merkost.suby.viewModel.AppViewModel
 import com.merkost.suby.viewModel.MainViewModel
 import com.merkost.suby.viewModel.TotalPrice
-import kotlinx.datetime.toJavaLocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -232,7 +228,6 @@ fun MainBalance(
             val textStyle =
                 MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.ExtraBold)
 
-
             Text(
                 modifier = Modifier
                     .weight(1f, false)
@@ -271,8 +266,8 @@ fun MainBalance(
                 Text(
                     modifier = Modifier.clickable { onUpdateClick() },
                     text = stringResource(
-                        R.string.updated_on,
-                        state.lastUpdated.date.toJavaLocalDate().format(Constants.dataFormat)
+                        R.string.updated,
+                        state.lastUpdated.toRelativeTimeString()
                     ),
                     style = MaterialTheme.typography.labelSmall
                 )
@@ -280,82 +275,6 @@ fun MainBalance(
         }
     }
 }
-
-@Composable
-fun SubscriptionItem(
-    modifier: Modifier,
-    subDetails: Subscription,
-    selectedPeriod: Period,
-    onClick: () -> Unit
-) {
-
-    BaseItem(
-        modifier = modifier, onClick = onClick
-    ) {
-        Column(
-            modifier = Modifier,
-            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            subDetails.serviceLogoUrl?.let {
-                ServiceSvg(
-                    modifier = Modifier.height(48.dp), link = it
-                )
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = subDetails.serviceName,
-                    modifier = Modifier.weight(1f, false),
-                    maxLines = 1
-                )
-                Spacer(modifier = Modifier.size(4.dp))
-                Column(horizontalAlignment = Alignment.End) {
-                    Text(
-                        modifier = Modifier.padding(horizontal = 2.dp),
-                        text = subDetails.price.formatDecimal() + subDetails.currency.symbol,
-                        textAlign = TextAlign.End
-                    )
-                    AnimatedContent(
-                        targetState = selectedPeriod, label = "priceForPeriodAnim"
-                    ) { period ->
-                        if (selectedPeriod != subDetails.period) Text(
-                            text = "~" + subDetails.getPriceForPeriod(
-                                period
-                            ) + subDetails.currency.symbol
-                        )
-                    }
-                }
-            }
-
-            // TODO:  
-
-//                Row(
-//                    modifier = Modifier,
-//                    verticalAlignment = Alignment.CenterVertically
-//                ) {
-//                    Text(
-//                        text = "Renewal ",
-//                        textAlign = TextAlign.End
-//                    )
-//                    Text(
-//                        maxLines = 1,
-//                        overflow = TextOverflow.Ellipsis,
-//                        text = subscription.getRemainingDurationString(context),
-//                        textAlign = TextAlign.End,
-//                        style = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold)
-//                    )
-//                }
-
-        }
-    }
-
-}
-
 
 @Composable
 fun HorizontalSubscriptionItem(
@@ -373,7 +292,7 @@ fun HorizontalSubscriptionItem(
         shadowElevation = 2.dp
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(14.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -384,19 +303,10 @@ fun HorizontalSubscriptionItem(
                         .clip(RoundedCornerShape(8.dp)),
                     link = it
                 )
-            } ?: Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = subscription.serviceName.take(1),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.titleLarge
-                )
-            }
+            } ?: ServiceNameImage(
+                modifier = Modifier.size(48.dp),
+                name = subscription.serviceName,
+            )
 
             Column(
                 modifier = Modifier.weight(1f)

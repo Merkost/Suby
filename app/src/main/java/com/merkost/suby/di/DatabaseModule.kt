@@ -96,7 +96,8 @@ object DatabaseModule {
 object Migrations {
     val MIGRATION_1_2 = object : Migration(1, 2) {
         override fun migrate(db: SupportSQLiteDatabase) {
-            db.execSQL("""
+            db.execSQL(
+                """
             CREATE TABLE IF NOT EXISTS service_new (
                 id INTEGER PRIMARY KEY NOT NULL,
                 name TEXT NOT NULL,
@@ -106,26 +107,98 @@ object Migrations {
                 lastUpdated TEXT NOT NULL,
                 FOREIGN KEY(categoryId) REFERENCES category(id) ON DELETE CASCADE
             )
-        """.trimIndent())
+        """.trimIndent()
+            )
 
-            db.execSQL("""
+            db.execSQL(
+                """
             INSERT INTO service_new (id, name, categoryId, createdAt, lastUpdated)
             SELECT id, name, categoryId, createdAt, lastUpdated FROM service
-        """.trimIndent())
+        """.trimIndent()
+            )
 
             db.execSQL("DROP TABLE service")
 
             db.execSQL("ALTER TABLE service_new RENAME TO service")
 
-            db.execSQL("""
+            db.execSQL(
+                """
             CREATE INDEX IF NOT EXISTS index_service_categoryId ON service(categoryId)
-        """.trimIndent())
+        """.trimIndent()
+            )
         }
     }
 
-    val MIGRATION_2_3 = object : Migration(2,3) {
+    val MIGRATION_2_3 = object : Migration(2, 3) {
         override fun migrate(db: SupportSQLiteDatabase) {
             db.execSQL("ALTER TABLE custom_service ADD COLUMN imageUri TEXT")
+
+            db.execSQL("ALTER TABLE subscription ADD COLUMN periodType TEXT NOT NULL DEFAULT 'DAYS'")
+            db.execSQL("ALTER TABLE subscription ADD COLUMN periodDuration INTEGER NOT NULL DEFAULT 1")
+
+            db.execSQL(
+                """
+            UPDATE subscription SET periodType = 
+            CASE period
+                WHEN 'DAILY' THEN 'DAYS'
+                WHEN 'WEEKLY' THEN 'WEEKS'
+                WHEN 'BI_WEEKLY' THEN 'WEEKS'
+                WHEN 'MONTHLY' THEN 'MONTHS'
+                WHEN 'QUARTERLY' THEN 'MONTHS'
+                WHEN 'SEMI_ANNUAL' THEN 'MONTHS'
+                WHEN 'ANNUAL' THEN 'YEARS'
+                WHEN 'CUSTOM' THEN customPeriodType
+            END
+        """
+            )
+
+            db.execSQL(
+                """
+            UPDATE subscription SET periodDuration = 
+            CASE period
+                WHEN 'DAILY' THEN 1
+                WHEN 'WEEKLY' THEN 1
+                WHEN 'BI_WEEKLY' THEN 2
+                WHEN 'MONTHLY' THEN 1
+                WHEN 'QUARTERLY' THEN 3
+                WHEN 'SEMI_ANNUAL' THEN 6
+                WHEN 'ANNUAL' THEN 1
+                WHEN 'CUSTOM' THEN customPeriodDuration
+            END
+        """
+            )
+
+            db.execSQL(
+                """
+            CREATE TABLE subscription_new (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                serviceId INTEGER NOT NULL,
+                isCustomService INTEGER NOT NULL,
+                price REAL NOT NULL,
+                currency TEXT NOT NULL,
+                periodType TEXT NOT NULL,
+                periodDuration INTEGER NOT NULL,
+                status TEXT NOT NULL,
+                paymentDate TEXT NOT NULL,
+                createdDate TEXT NOT NULL,
+                durationDays INTEGER NOT NULL,
+                description TEXT NOT NULL
+            )
+        """
+            )
+
+            db.execSQL(
+                """
+            INSERT INTO subscription_new (id, serviceId, isCustomService, price, currency, periodType, periodDuration, status, paymentDate, createdDate, durationDays, description)
+            SELECT id, serviceId, isCustomService, price, currency, periodType, periodDuration, status, paymentDate, createdDate, durationDays, description
+            FROM subscription
+        """
+            )
+
+            db.execSQL("DROP TABLE subscription")
+
+            db.execSQL("ALTER TABLE subscription_new RENAME TO subscription")
+
         }
     }
 }

@@ -20,9 +20,8 @@ data class SubscriptionDb(
     val price: Double,
     val currency: Currency,
 
-    val period: Period,
-    val customPeriodType: CustomPeriod,
-    val customPeriodDuration: Long,
+    val periodType: CustomPeriod,
+    val periodDuration: Long,
 
     val status: Status,
     val paymentDate: LocalDateTime,
