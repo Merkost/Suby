@@ -12,12 +12,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,11 +29,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -57,6 +66,7 @@ fun CreateCustomServiceSheet(
     val pickerState = rememberPickerState<Category>()
 
     val context = LocalContext.current
+    val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(uiState) {
         when (uiState) {
@@ -78,6 +88,7 @@ fun CreateCustomServiceSheet(
 
     Box(
         modifier = Modifier
+            .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
         Column(
@@ -92,14 +103,30 @@ fun CreateCustomServiceSheet(
             )
 
             TitleColumn(title = "What's your service?") {
-                SubyTextField(
-                    value = customServiceData.name,
-                    onValueChange = viewModel::setServiceName,
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    singleLine = true,
-                    placeholder = { Text(stringResource(R.string.service_name)) }
-                )
+                Row(
+                    modifier = Modifier.height(IntrinsicSize.Max),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    SubyTextField(
+                        value = customServiceData.name,
+                        onValueChange = viewModel::setServiceName,
+                        modifier = Modifier
+                            .weight(1f, true)
+                            .focusRequester(focusRequester),
+                        singleLine = true,
+                        placeholder = { Text(stringResource(R.string.service_name)) }
+                    )
+
+                    ImagePicker(
+                        modifier = Modifier
+                            .height(56.dp)
+                            .aspectRatio(1f),
+                        selectedImage = customServiceData.imageUri,
+                        onImageSelected = viewModel::setImageUri
+                    )
+
+                }
             }
 
             TitleColumn(title = "Pick a category") {
@@ -119,13 +146,6 @@ fun CreateCustomServiceSheet(
                         )
                     }
                 }
-            }
-
-            TitleColumn(title = "Add a logo") {
-                ImagePicker(
-                    selectedImage = customServiceData.imageUri,
-                    onImageSelected = viewModel::setImageUri
-                )
             }
 
             Button(
@@ -157,33 +177,39 @@ fun CreateCustomServiceSheet(
 
 @Composable
 fun ImagePicker(
+    modifier: Modifier,
     selectedImage: Uri?,
-    onImageSelected: (Uri) -> Unit
+    onImageSelected: (Uri) -> Unit,
+    placeholderResId: Int = R.drawable.add_photo_placeholder
 ) {
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let(onImageSelected)
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(150.dp)
-            .background(Color.Gray, shape = SubyShape)
+        modifier = modifier
             .clickable { launcher.launch("image/*") },
         contentAlignment = Alignment.Center
     ) {
-        selectedImage?.let {
+        if (selectedImage != null) {
             Image(
-                painter = rememberAsyncImagePainter(model = it),
+                painter = rememberAsyncImagePainter(model = selectedImage),
                 contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(SubyShape),
                 contentScale = ContentScale.Crop
             )
-        } ?: Text(
-            text = "Tap to select an image",
-            color = Color.White,
-            style = MaterialTheme.typography.bodyMedium
-        )
+        } else {
+            Image(
+                painter = painterResource(id = placeholderResId),
+                contentDescription = "Placeholder Image",
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentScale = ContentScale.Crop,
+                colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(MaterialTheme.colorScheme.onSurface)
+            )
+        }
     }
 }
 

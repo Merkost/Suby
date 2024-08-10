@@ -22,8 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CustomServiceViewModel @Inject constructor(
     private val appDatabase: AppDatabase,
-    private val categoryDao: CategoryDao,
     private val imageFileManager: ImageFileManager,
+    categoryDao: CategoryDao,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<CustomServiceUiState?>(null)
@@ -45,18 +45,16 @@ class CustomServiceViewModel @Inject constructor(
 
     private fun saveNewCustomService(serviceName: String, selectedCategoryId: Int) {
         viewModelScope.launch {
-
-
-
             val customService = CustomServiceDb(
                 name = serviceName,
                 categoryId = selectedCategoryId,
                 imageUri = customServiceData.value.imageUri?.let {
-                    imageFileManager.saveImageToInternalStorage(it, serviceName)
+                    imageFileManager.saveCustomServiceImageToInternalStorage(it, serviceName)
                 }
             )
             appDatabase.customServiceDao().addCustomService(customService)
             _uiState.update { CustomServiceUiState.Success }
+            _customServiceData.update { CustomServiceData() }
         }
     }
 

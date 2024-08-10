@@ -58,6 +58,10 @@ fun ServiceSvg(
                 ),
             )
         },
+        onError = {
+            //todo: Check if it is java.io.FileNotFoundException
+            Timber.tag("ServiceLogo").e(it.result.throwable)
+        },
         contentScale = contentScale,
         contentDescription = ""
     )
@@ -75,14 +79,19 @@ fun ServiceLogo(
                 .clip(shape),
             link = it
         )
-    } ?: Box(
+    } ?: ServiceNameImage(modifier = modifier, shape = shape, name = service.name)
+}
+
+@Composable
+fun ServiceNameImage(modifier: Modifier, shape: Shape, name: String) {
+    Box(
         modifier = modifier
             .clip(shape)
             .background(MaterialTheme.colorScheme.surfaceVariant),
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = service.name.take(1),
+            text = name.take(1),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.headlineSmall
         )

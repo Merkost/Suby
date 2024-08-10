@@ -2,15 +2,17 @@ package com.merkost.suby.utils
 
 import android.content.Context
 import android.net.Uri
+import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 class ImageFileManager(private val context: Context) {
 
-    fun saveImageToInternalStorage(uri: Uri, serviceName: String): String? {
+    fun saveCustomServiceImageToInternalStorage(uri: Uri, serviceName: String): String? {
         val contentResolver = context.contentResolver
         val mimeType = contentResolver.getType(uri)
         val fileExtension = getFileExtension(mimeType) ?: return null
@@ -23,8 +25,11 @@ class ImageFileManager(private val context: Context) {
         val dateFormat = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
         val date = dateFormat.format(Date())
 
+        val customImagesDir = File(context.filesDir, "custom_service_images")
+        if (!customImagesDir.exists()) { customImagesDir.mkdirs() }
+
         val fileName = "${safeServiceName}_$date.$fileExtension"
-        val file = File(context.filesDir, fileName)
+        val file = File(customImagesDir, fileName)
 
         return try {
             contentResolver.openInputStream(uri)?.use { inputStream ->
@@ -34,7 +39,7 @@ class ImageFileManager(private val context: Context) {
             }
             file.absolutePath
         } catch (e: IOException) {
-            e.printStackTrace()
+            Timber.tag("ImageFileManager").e(e)
             null
         }
     }
