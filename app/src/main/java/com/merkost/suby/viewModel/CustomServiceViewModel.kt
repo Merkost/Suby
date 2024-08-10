@@ -85,6 +85,10 @@ class CustomServiceViewModel @Inject constructor(
         }
 
     }
+
+    fun resetUiState() {
+        _uiState.update { null }
+    }
 }
 
 sealed class CustomServiceUiState {

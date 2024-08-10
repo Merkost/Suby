@@ -40,6 +40,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -71,6 +72,7 @@ import com.merkost.suby.presentation.sheets.SelectServiceSheet
 import com.merkost.suby.presentation.states.NewSubscriptionUiState
 import com.merkost.suby.showToast
 import com.merkost.suby.viewModel.NewSubscriptionViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,6 +83,7 @@ fun NewSubscriptionScreen(
     upPress: () -> Unit
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     val viewModel = hiltViewModel<NewSubscriptionViewModel>()
     val uiState by viewModel.uiState.collectAsState()
     val mainCurrency by viewModel.mainCurrency.collectAsState()
@@ -134,7 +137,10 @@ fun NewSubscriptionScreen(
                     selectServiceSheet = false
                 },
                 onAddCustomService = {
-                    createCustomServiceSheet = true
+                    coroutineScope.launch {
+                        createCustomServiceSheet = true
+                        createCustomServiceSheetState.show()
+                    }
                 },
                 onRetryLoadServices = viewModel::onReloadServices
             )
@@ -142,12 +148,24 @@ fun NewSubscriptionScreen(
     }
 
     if (createCustomServiceSheet) {
+
         ModalBottomSheet(
             sheetState = createCustomServiceSheetState,
-            onDismissRequest = { createCustomServiceSheet = false },
+            onDismissRequest = {
+                coroutineScope.launch {
+                    createCustomServiceSheetState.hide()
+                    createCustomServiceSheet = false
+                }
+            },
             windowInsets = WindowInsets.statusBars
         ) {
-            CreateCustomServiceSheet(onCreated = { createCustomServiceSheet = false })
+            CreateCustomServiceSheet(
+                onCreated = {
+                coroutineScope.launch {
+                    createCustomServiceSheetState.hide()
+                    createCustomServiceSheet = false
+                }
+            })
         }
     }
 

@@ -76,6 +76,7 @@ fun CreateCustomServiceSheet(
         when (uiState) {
             CustomServiceUiState.Success -> {
                 onCreated()
+                viewModel.resetUiState()
             }
 
             CustomServiceUiState.ServiceNameRequired -> {
