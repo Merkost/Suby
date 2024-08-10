@@ -233,23 +233,26 @@ fun MainBalance(
                 MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.ExtraBold)
 
 
-            Column {
-                Text(
-                    modifier = Modifier.placeholder3(
+            Text(
+                modifier = Modifier
+                    .weight(1f, false)
+                    .placeholder3(
                         totalPrice.isLoading,
                         shape = SubyShape,
                         highlight = PlaceholderHighlight.fade()
                     ),
-                    text = buildString {
-                        append(totalPrice.total ?: stringResource(R.string.unknown))
-                        append(totalPrice.currency.symbol)
-                    },
-                    style = textStyle
-                )
-            }
+                text = buildString {
+                    append(totalPrice.total ?: stringResource(R.string.unknown))
+                    append(totalPrice.currency.symbol)
+                },
+                style = textStyle,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
 
             CurrencyLabel(
                 modifier = Modifier
+                    .padding(start = 8.dp)
                     .clip(SubyShape)
                     .clickable { onCurrencyClick() },
                 currency = mainCurrency,
