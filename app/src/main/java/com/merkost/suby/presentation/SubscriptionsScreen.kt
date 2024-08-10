@@ -75,6 +75,7 @@ import com.merkost.suby.presentation.base.components.ServiceNameImage
 import com.merkost.suby.presentation.base.components.ServiceSvg
 import com.merkost.suby.presentation.base.fade
 import com.merkost.suby.presentation.base.placeholder3
+import com.merkost.suby.presentation.base.rotatingOnClick
 import com.merkost.suby.round
 import com.merkost.suby.ui.theme.SubyTheme
 import com.merkost.suby.utils.hasSubscriptions
@@ -105,7 +106,7 @@ fun SubscriptionsScreen(
         SubyTopAppBar(title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(
-                    modifier = Modifier.size(45.dp),
+                    modifier = Modifier.size(45.dp).rotatingOnClick(onClick = {}),
                     painter = painterResource(id = R.drawable.suby_logo_white),
                     contentDescription = "",
                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface)
