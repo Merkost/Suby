@@ -79,10 +79,10 @@ fun PickCurrencyScreen(
                 )
             }
 
-            // TODO:  
-            item {
-                AbsentItem(text = "Can't find your currency?") {}
-            }
+            // TODO:  Add a view to ask for a currency to be added to the list
+//            item {
+//                AbsentItem(text = "Can't find your currency?") {}
+//            }
         }
     }
 }
