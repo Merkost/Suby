@@ -239,6 +239,11 @@ internal fun ServicesList(
             items(services) {
                 ServiceRowItem(service = it, onClick = { onServiceSelected(it) })
             }
+            item {
+                OtherServiceOption(onClick = {
+                    onSuggestService(searchString)
+                })
+            }
         }
     }
 

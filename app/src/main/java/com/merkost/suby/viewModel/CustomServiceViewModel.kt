@@ -1,14 +1,15 @@
 package com.merkost.suby.viewModel
 
-import com.merkost.suby.utils.ImageFileManager
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.merkost.suby.model.Analytics
 import com.merkost.suby.model.entity.full.Category
 import com.merkost.suby.model.entity.full.toCategory
 import com.merkost.suby.model.room.AppDatabase
 import com.merkost.suby.model.room.dao.CategoryDao
 import com.merkost.suby.model.room.entity.CustomServiceDb
+import com.merkost.suby.utils.ImageFileManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -40,7 +41,8 @@ class CustomServiceViewModel @Inject constructor(
     }
 
     fun setImageUri(uri: Uri) {
-        _customServiceData.value = _customServiceData.value.copy(imageUri = if (uri == Uri.EMPTY) null else uri)
+        _customServiceData.value =
+            _customServiceData.value.copy(imageUri = if (uri == Uri.EMPTY) null else uri)
     }
 
     private fun saveNewCustomService(serviceName: String, selectedCategoryId: Int) {
@@ -53,6 +55,11 @@ class CustomServiceViewModel @Inject constructor(
                 }
             )
             appDatabase.customServiceDao().addCustomService(customService)
+            Analytics.logCreatedCustomService(
+                serviceName,
+                categories.value.firstOrNull() { it.id == selectedCategoryId }?.name.orEmpty()
+            )
+
             _uiState.update { CustomServiceUiState.Success }
             _customServiceData.update { CustomServiceData() }
         }

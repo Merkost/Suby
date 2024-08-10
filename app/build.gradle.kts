@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
@@ -9,6 +11,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.googleServices)
     alias(libs.plugins.firebaseCrashlytics)
+    alias(libs.plugins.firebasePerformance)
 }
 
 android {
@@ -39,6 +42,8 @@ android {
             buildConfigField("String", "SUPABASE_ID", findProperty("SUPABASE_ID").toString())
         }
         debug {
+            versionNameSuffix = ".debug"
+            applicationIdSuffix = ".debug"
             buildConfigField("String", "SUPABASE_API_KEY", findProperty("SUPABASE_API_KEY").toString())
             buildConfigField("String", "SUPABASE_ID", findProperty("SUPABASE_ID").toString())
         }
@@ -56,7 +61,6 @@ android {
     }
     composeCompiler {
         enableStrongSkippingMode = true
-
         reportsDestination = layout.buildDirectory.dir("compose_compiler")
     }
     packaging {
@@ -66,6 +70,12 @@ android {
     }
     ksp {
         arg("room.schemaLocation", "$projectDir/schemas")
+    }
+
+    applicationVariants.configureEach {
+        outputs.configureEach {
+            (this as? BaseVariantOutputImpl)?.outputFileName = "Suby_${versionName}($versionCode).apk"
+        }
     }
 }
 
@@ -97,6 +107,8 @@ dependencies {
     implementation(libs.timber)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.perf)
     ksp(libs.room.compiler)
     implementation(libs.room.ktx)
     implementation(libs.hilt.android)

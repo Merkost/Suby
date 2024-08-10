@@ -2,6 +2,7 @@ package com.merkost.suby.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.merkost.suby.model.Analytics
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.CustomPeriod
 import com.merkost.suby.model.entity.NewSubscription
@@ -135,6 +136,14 @@ class NewSubscriptionViewModel @Inject constructor(
                         Timber.tag("saveNewSubscription").d(newSubscriptionDb.toString())
 
                         subscriptionRepository.addSubscription(newSubscriptionDb)
+                        Analytics.logAddedSubscription(
+                            serviceName = values.service.name,
+                            price = values.price,
+                            currency = currency,
+                            values.service.isCustomService,
+                            values.period,
+                            values.status,
+                        )
                         _uiState.update { NewSubscriptionUiState.Success }
                     }.onFailure { e ->
                         Timber.tag("saveNewSubscription").e(e)
