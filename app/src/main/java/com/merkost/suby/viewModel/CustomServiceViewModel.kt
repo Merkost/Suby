@@ -40,7 +40,7 @@ class CustomServiceViewModel @Inject constructor(
     }
 
     fun setImageUri(uri: Uri) {
-        _customServiceData.value = _customServiceData.value.copy(imageUri = uri)
+        _customServiceData.value = _customServiceData.value.copy(imageUri = if (uri == Uri.EMPTY) null else uri)
     }
 
     private fun saveNewCustomService(serviceName: String, selectedCategoryId: Int) {

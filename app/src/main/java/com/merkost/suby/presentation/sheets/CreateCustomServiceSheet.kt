@@ -12,16 +12,18 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -42,12 +44,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.merkost.suby.R
 import com.merkost.suby.SubyShape
 import com.merkost.suby.model.entity.full.Category
 import com.merkost.suby.presentation.VerticalPicker
+import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.SubyTextField
 import com.merkost.suby.presentation.base.TitleColumn
 import com.merkost.suby.presentation.rememberPickerState
@@ -104,7 +108,6 @@ fun CreateCustomServiceSheet(
 
             TitleColumn(title = "What's your service?") {
                 Row(
-                    modifier = Modifier.height(IntrinsicSize.Max),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
@@ -120,7 +123,7 @@ fun CreateCustomServiceSheet(
 
                     ImagePicker(
                         modifier = Modifier
-                            .height(56.dp)
+                            .size(56.dp)
                             .aspectRatio(1f),
                         selectedImage = customServiceData.imageUri,
                         onImageSelected = viewModel::setImageUri
@@ -187,28 +190,51 @@ fun ImagePicker(
     }
 
     Box(
-        modifier = modifier
-            .clickable { launcher.launch("image/*") },
+        modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
         if (selectedImage != null) {
-            Image(
-                painter = rememberAsyncImagePainter(model = selectedImage),
-                contentDescription = null,
+            Icon(
+                imageVector = Icons.Outlined.Close,
+                tint = Color.White,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .clip(SubyShape),
-                contentScale = ContentScale.Crop
+                    .align(Alignment.TopEnd)
+                    .offset(x = 3.dp, y = -3.dp)
+                    .size(20.dp)
+                    .clip(CircleShape)
+                    .clickable {
+                        onImageSelected(Uri.EMPTY)
+                    }
+                    .background(Color.Black.copy(alpha = 0.6f), shape = CircleShape) // Background circle for better visibility
+                    .padding(3.dp)
+                    .zIndex(1f)
+
             )
-        } else {
-            Image(
-                painter = painterResource(id = placeholderResId),
-                contentDescription = "Placeholder Image",
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentScale = ContentScale.Crop,
-                colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(MaterialTheme.colorScheme.onSurface)
-            )
+        }
+
+        Box(
+            modifier = Modifier
+                .clip(SubyShape)
+                .clickable { launcher.launch("image/*") }
+        ) {
+            if (selectedImage != null) {
+                Image(
+                    painter = rememberAsyncImagePainter(model = selectedImage),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Image(
+                    painter = painterResource(id = placeholderResId),
+                    contentDescription = "Placeholder Image",
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                    colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(MaterialTheme.colorScheme.onSurface)
+                )
+            }
         }
     }
 }
