@@ -44,3 +44,4 @@ This project is licensed - see the [LICENSE](LICENSE) file for details.
 ---
 
 Simplify your life and take control of your subscriptions with Suby.
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X8X6WJA6R)
