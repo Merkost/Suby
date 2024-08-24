@@ -1,17 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Main Theme -->
-    <style name="Theme.Suby" parent="Theme.Material3.DayNight">
-
-    </style>
-
+    <!-- Splash Screen Theme for Dark Mode -->
     <style name="Theme.Suby.Splash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/splash_background_light</item>
-
-        <item name="windowSplashScreenAnimatedIcon">@drawable/suby_logo_black</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/suby_logo_white</item>
 
         <item name="windowSplashScreenIconBackgroundColor">@android:color/transparent</item>
-
         <item name="windowSplashScreenAnimationDuration">300</item>
 
         <item name="postSplashScreenTheme">@style/Theme.Suby</item>
