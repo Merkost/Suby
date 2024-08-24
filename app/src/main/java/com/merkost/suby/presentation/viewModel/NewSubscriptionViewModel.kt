@@ -3,10 +3,9 @@ package com.merkost.suby.presentation.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.merkost.suby.model.Analytics
+import com.merkost.suby.model.entity.BasePeriod
 import com.merkost.suby.model.entity.Currency
-import com.merkost.suby.model.entity.CustomPeriod
 import com.merkost.suby.model.entity.NewSubscription
-import com.merkost.suby.model.entity.Period
 import com.merkost.suby.model.entity.Status
 import com.merkost.suby.model.entity.full.Service
 import com.merkost.suby.model.room.entity.SubscriptionDb
@@ -116,10 +115,7 @@ class NewSubscriptionViewModel @Inject constructor(
 
                 else -> {
                     runCatching {
-                        val period = values.basePeriod ?: run {
-                            _uiState.update { NewSubscriptionUiState.Requirement.PeriodRequired }
-                            return@launch
-                        }
+                        val period = values.period
 
                         val newSubscriptionDb = SubscriptionDb(
                             serviceId = values.service.id,
@@ -183,7 +179,7 @@ class NewSubscriptionViewModel @Inject constructor(
     }
 
 
-    fun onPeriodSelected(period: Period) {
+    fun onPeriodSelected(period: BasePeriod) {
         selectedValues.update { it.copy(period = period) }
     }
 
@@ -201,15 +197,6 @@ class NewSubscriptionViewModel @Inject constructor(
 
     fun onReloadServices() {
         getServices()
-    }
-
-    fun onCustomPeriodSelected(customPeriodType: CustomPeriod, duration: Long) {
-        selectedValues.update {
-            it.copy(
-                customPeriodType = customPeriodType,
-                customPeriodDuration = duration
-            )
-        }
     }
 }
 

@@ -16,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubyTopAppBar(
-    title: @Composable () -> Unit,
+    title: @Composable () -> Unit = {},
     modifier: Modifier = Modifier,
     upPress: (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},

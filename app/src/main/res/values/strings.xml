@@ -18,11 +18,7 @@
     <string name="feedback_general_success">The request has been sent successfully</string>
     <string name="feedback_general_failure">Failed to sent the request</string>
     <string name="new_subscription">New subscription</string>
-    <string name="title_service">Service</string>
-    <string name="title_billing_date">Billing date</string>
-    <string name="title_price">Price</string>
     <string name="title_currency">Currency</string>
-    <string name="title_description">Description</string>
     <string name="add_description">Add description</string>
     <string name="title_subscriptions">Subscriptions</string>
     <string name="unknown">Unknown</string>
@@ -42,15 +38,12 @@
     <string name="btn_create_service">Create Service</string>
     <string name="label_find_a_service">Find a service</string>
     <string name="btn_add_custom_service">Add Custom Service</string>
-    <string name="select_service">Select a service</string>
     <string name="service_required">Service is required</string>
     <string name="period_required">Period is required</string>
     <string name="price_required">Price is required</string>
     <string name="billing_date_required">Billing date is required</string>
     <string name="error_try_later">Error occured. Please, try again later.</string>
     <string name="info_billing_date">The date when the most recent payment for your subscription was processed.\n\nThis is the starting point for calculating the next billing cycle based on the selected period (e.g., monthly, annually).</string>
-    <string name="title_status">Status</string>
-    <string name="title_period">Period</string>
     <string name="select_payday">Select a payday</string>
     <string name="press_back_to_exit">Press back again to exit</string>
     <string name="btn_start_greeting">Let\'s get it started</string>
@@ -66,4 +59,35 @@
     <string name="status_required">Status is required</string>
     <string name="no_subscriptions_by_filter">No subscriptions found</string>
     <string name="reset_filters">Reset Filters</string>
+
+
+    <!-- General Screen Titles -->
+    <string name="edit_subscription">Edit Subscription</string>
+
+    <!-- Labels -->
+    <string name="title_service">Service</string>
+    <string name="title_price">Price</string>
+    <string name="title_period">Billing Period</string>
+    <string name="title_billing_date">Billing Date</string>
+    <string name="title_status">Status</string>
+    <string name="title_description">Description</string>
+
+    <!-- Prompts and Inputs -->
+    <string name="select_service">Select Service</string>
+    <string name="enter_price">Enter Price</string>
+    <string name="enter_description">Enter Description</string>
+
+    <!-- Buttons -->
+    <string name="btn_retry">Retry</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="cancel">Cancel</string>
+    <string name="subscription_not_found">Subscription not found</string>
+
+    <!-- Errors -->
+    <string name="error_network">No Internet Connection. Please check your network and try again.</string>
+    <string name="error_unknown">Something went wrong. Please try again later.</string>
+
+    <!-- Toasts -->
+    <string name="toast_subscription_deleted">The subsription has been deleted successfully</string>
+    <string name="subscription_saved">Subscription has been updated</string>
 </resources>

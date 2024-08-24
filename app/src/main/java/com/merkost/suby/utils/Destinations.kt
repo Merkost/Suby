@@ -30,6 +30,11 @@ object Destinations {
     data class SubscriptionInfo(
         val subscriptionId: Int,
     )
+
+    @Serializable
+    data class EditSubscription(
+        val subscriptionId: Int,
+    )
 }
 
 object Arguments {

@@ -3,8 +3,8 @@ package com.merkost.suby.model
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
 import com.google.firebase.analytics.logEvent
+import com.merkost.suby.model.entity.BasePeriod
 import com.merkost.suby.model.entity.Currency
-import com.merkost.suby.model.entity.Period
 import com.merkost.suby.model.entity.Status
 
 object Analytics {
@@ -20,7 +20,7 @@ object Analytics {
         price: String,
         currency: Currency,
         isCustom: Boolean,
-        period: Period,
+        period: BasePeriod,
         status: Status
     ) {
         analytics.logEvent("added_subscription") {

@@ -1,48 +1,20 @@
 package com.merkost.suby.model.entity
 
 import com.merkost.suby.model.entity.full.Service
-import com.merkost.suby.utils.Constants.DEFAULT_CUSTOM_PERIOD
 import com.merkost.suby.utils.dateString
 import com.merkost.suby.utils.now
 import com.merkost.suby.utils.toLocalDate
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
-import timber.log.Timber
 
 data class NewSubscription(
     val price: String = "",
     val service: Service? = null,
-    val period: Period? = null,
-    val customPeriodType: CustomPeriod? = null,
-    val customPeriodDuration: Long? = null,
+    val period: BasePeriod? = null,
     val status: Status? = null,
     val billingDate: Long? = null,
     val description: String = "",
 ) {
-    val basePeriod: BasePeriod?
-        get() {
-            return kotlin.runCatching {
-                if (period == Period.CUSTOM) {
-                    val type = customPeriodType ?: CustomPeriod.DAYS
-                    val duration = customPeriodDuration ?: 1L
-                    BasePeriod(type, duration)
-                } else {
-                    when (period) {
-                        Period.DAILY -> BasePeriod(CustomPeriod.DAYS, 1L)
-                        Period.WEEKLY -> BasePeriod(CustomPeriod.WEEKS, 1L)
-                        Period.BI_WEEKLY -> BasePeriod(CustomPeriod.WEEKS, 2L)
-                        Period.MONTHLY -> BasePeriod(CustomPeriod.MONTHS, 1L)
-                        Period.QUARTERLY -> BasePeriod(CustomPeriod.MONTHS, 3L)
-                        Period.SEMI_ANNUAL -> BasePeriod(CustomPeriod.MONTHS, 6L)
-                        Period.ANNUAL -> BasePeriod(CustomPeriod.YEARS, 1L)
-                        else -> BasePeriod(CustomPeriod.DAYS, 1L) // Default case
-                    }
-                }
-            }.onFailure {
-                Timber.tag("NewSubscription").e(it, "Error getting base period")
-            }.getOrNull()
-        }
-
     val billingDateInfo: String?
         get() {
             if (billingDate == null || period == null || status == null) {
@@ -50,10 +22,9 @@ data class NewSubscription(
             }
 
             val currentDate = LocalDate.now().toJavaLocalDate()
-            val basePeriod = basePeriod ?: return null
 
             val endDate =
-                basePeriod.nextBillingDate(billingDate.toLocalDate).toJavaLocalDate()
+                period.nextBillingDate(billingDate.toLocalDate).toJavaLocalDate()
 
             val isPast = endDate.isBefore(currentDate) || endDate.isEqual(currentDate)
 
@@ -62,7 +33,7 @@ data class NewSubscription(
             val subscriptionEndText = when {
                 status == Status.ACTIVE && isPast -> {
                     val nextBillingDate =
-                        basePeriod.nextBillingDateFromToday(billingDate.toLocalDate)
+                        period.nextBillingDateFromToday(billingDate.toLocalDate)
                             .toJavaLocalDate()
                     "Subscription renews on ${nextBillingDate.dateString()}"
                 }

@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.merkost.suby.model.room.entity.PartialSubscriptionDb
 import com.merkost.suby.model.room.entity.SubscriptionDb
 import com.merkost.suby.model.room.entity.related.SubscriptionWithCustomDetails
 import com.merkost.suby.model.room.entity.related.SubscriptionWithDetails
@@ -60,8 +61,8 @@ interface SubscriptionDao {
     @Query("SELECT * FROM subscription WHERE id = :subscriptionId")
     suspend fun getSubscriptionById(subscriptionId: Int): SubscriptionDb
 
-    @Update
-    suspend fun updateSubscriptionDetails(subscriptionDb: SubscriptionDb): Int
+    @Update(entity = SubscriptionDb::class)
+    suspend fun updateSubscriptionDetails(partialSubscriptionDb: PartialSubscriptionDb): Int
 
     @Delete
     suspend fun deleteSubscription(subscriptionDb: SubscriptionDb): Int

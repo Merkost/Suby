@@ -2,12 +2,14 @@ package com.merkost.suby.model.entity.full
 
 import android.content.Context
 import com.merkost.suby.R
+import com.merkost.suby.domain.ui.EditableSubscription
 import com.merkost.suby.model.entity.BasePeriod
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.Period
 import com.merkost.suby.model.entity.Status
 import com.merkost.suby.utils.Constants
 import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.daysUntil
@@ -38,6 +40,9 @@ data class Subscription(
     val createdDate: LocalDateTime = java.time.LocalDateTime.now().toKotlinLocalDateTime(),
     val description: String,
 ) {
+
+    val nextPaymentDate: LocalDate
+        get() = period.nextBillingDateFromToday(paymentDate.date)
 
     val remainingDays: Long
         get() {
@@ -85,4 +90,16 @@ data class Subscription(
             lastUpdated = serviceLastUpdated,
             category = category,
         )
+
+    fun toEditableSubscription() = EditableSubscription(
+        id = id,
+        name = serviceName,
+        description = description,
+        price = price,
+        currency = currency,
+        period = period,
+        status = status,
+        service = toService(),
+        billingDate = paymentDate,
+    )
 }

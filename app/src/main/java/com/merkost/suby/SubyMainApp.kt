@@ -18,15 +18,16 @@ import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.FeedbackAction
 import com.merkost.suby.presentation.onboarding.GreetingScreen
 import com.merkost.suby.presentation.onboarding.OnboardingCurrencyScreen
+import com.merkost.suby.presentation.screens.EditSubscriptionScreen
 import com.merkost.suby.presentation.screens.FeedbackScreen
 import com.merkost.suby.presentation.screens.NewSubscriptionScreen
 import com.merkost.suby.presentation.screens.PickCurrencyScreen
-import com.merkost.suby.presentation.screens.SubscriptionInfoScreen
+import com.merkost.suby.presentation.screens.SubscriptionDetailsScreen
 import com.merkost.suby.presentation.screens.SubscriptionsScreen
+import com.merkost.suby.presentation.viewModel.OnboardingViewModel
 import com.merkost.suby.utils.Arguments
 import com.merkost.suby.utils.Destinations
 import com.merkost.suby.utils.isFirstTimeState
-import com.merkost.suby.presentation.viewModel.OnboardingViewModel
 
 @Composable
 fun SubyMainApp() {
@@ -107,10 +108,33 @@ private fun NavGraphBuilder.NavGraph(
         )
     }
 
+    composable<Destinations.EditSubscription> {
+        val subscriptionId = it.toRoute<Destinations.EditSubscription>().subscriptionId
+        EditSubscriptionScreen(
+            subscriptionId = subscriptionId,
+            onSave = {
+                navController.popBackStack()
+            },
+            onCancel = {
+                navController.popBackStack()
+            },
+                    pickedCurrency = it.savedStateHandle.get<Currency>(Arguments.CURRENCY),
+            onCurrencyClicked = { navController.navigate(Destinations.CurrencyPick(false)) },
+        )
+
+    }
+
     composable<Destinations.SubscriptionInfo> {
-        SubscriptionInfoScreen(
-            subscriptionId = it.toRoute<Destinations.SubscriptionInfo>().subscriptionId,
-            upPress = upPress
+        val subscriptionInfo = it.toRoute<Destinations.SubscriptionInfo>()
+        SubscriptionDetailsScreen(
+            upPress = upPress,
+            onEditClick = {
+                navController.navigate(
+                    Destinations.EditSubscription(
+                        subscriptionInfo.subscriptionId
+                    )
+                )
+            }
         )
     }
 

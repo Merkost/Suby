@@ -78,7 +78,6 @@ fun PriceSheet(
                             .clip(SubyShape)
                             .clickable { onCurrencyClicked() },
                         currency,
-                        textStyle,
                         showArrow = false,
                         flipCurrencyArrow = false
                     )

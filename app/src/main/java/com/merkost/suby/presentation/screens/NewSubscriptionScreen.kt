@@ -49,7 +49,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
@@ -58,6 +57,7 @@ import androidx.compose.ui.util.fastForEachIndexed
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.merkost.suby.R
 import com.merkost.suby.SubyShape
+import com.merkost.suby.model.entity.BasePeriod
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.Period
 import com.merkost.suby.model.entity.Status
@@ -74,9 +74,10 @@ import com.merkost.suby.presentation.base.components.ServiceRowItem
 import com.merkost.suby.presentation.sheets.CreateCustomServiceSheet
 import com.merkost.suby.presentation.sheets.SelectServiceSheet
 import com.merkost.suby.presentation.states.NewSubscriptionUiState
-import com.merkost.suby.showToast
 import com.merkost.suby.presentation.viewModel.NewSubscriptionViewModel
+import com.merkost.suby.showToast
 import kotlinx.coroutines.launch
+import kotlin.reflect.KFunction1
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -165,11 +166,11 @@ fun NewSubscriptionScreen(
         ) {
             CreateCustomServiceSheet(
                 onCreated = {
-                coroutineScope.launch {
-                    createCustomServiceSheetState.hide()
-                    createCustomServiceSheet = false
-                }
-            })
+                    coroutineScope.launch {
+                        createCustomServiceSheetState.hide()
+                        createCustomServiceSheet = false
+                    }
+                })
         }
     }
 
@@ -257,72 +258,112 @@ fun NewSubscriptionScreen(
                 onCurrencyClicked = onCurrencyClicked
             )
 
-            TitleColumn(modifier = Modifier.padding(horizontal = 16.dp),
-                title = stringResource(R.string.title_billing_date),
-                infoInformation = buildAnnotatedString {
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
-                        append(stringResource(R.string.info_billing_date))
-                    }
-                }) {
-                BillingDate(
-                    selectedValues = selectedValues,
-                    billingDate = billingDate,
-                    onBillingDateSelected = viewModel::onBillingDateSelected
-                )
-            }
+            BillingDateComponent(
+                billingDate = billingDate,
+                billingDateInfo = selectedValues.billingDateInfo,
+                onBillingDateSelected = viewModel::onBillingDateSelected
+            )
 
-            TitleColumn(modifier = Modifier.padding(horizontal = 16.dp),
-                title = stringResource(R.string.title_status),
-                infoInformation = buildAnnotatedString {
-                    Status.entries.fastForEachIndexed { i, status ->
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                            append(status.statusName)
-                        }
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
-                            append(" - ")
-                            append(status.description)
-                        }
-                        if (i != Status.entries.lastIndex) {
-                            append("\n\n")
-                        }
-                    }
-                }) {
+            StatusComponent(
+                selectedStatus = selectedStatus,
+                onStatusClicked = viewModel::onStatusClicked
+            )
 
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(Status.entries) { status ->
-                        StatusItem(modifier = Modifier.width(IntrinsicSize.Max),
-                            status,
-                            isSelected = selectedStatus == status,
-                            onClick = { viewModel.onStatusClicked(status) })
-                    }
-                }
-            }
-
-            TitleColumn(modifier = Modifier.padding(horizontal = 16.dp),
-                title = stringResource(R.string.title_period),
-                infoInformation = buildAnnotatedString {
-                    Period.entries.forEachIndexed { i, period ->
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                            append(period.periodName)
-                        }
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
-                            append(" - ")
-                            append(period.description)
-                        }
-
-                        if (i != Period.entries.lastIndex) {
-                            append("\n\n")
-                        }
-                    }
-                }) {
-                Period(
-                    selectedPeriod,
-                    onPeriodSelected = viewModel::onPeriodSelected,
-                    onCustomPeriodSelected = viewModel::onCustomPeriodSelected,
-                )
-            }
+            PeriodComponent(
+                selectedPeriod = selectedPeriod,
+                onPeriodSelected = viewModel::onPeriodSelected
+            )
 
             Spacer(modifier = Modifier.size(356.dp))
+        }
+    }
+}
+
+@Composable
+fun BillingDateComponent(
+    billingDate: Long?,
+    billingDateInfo: String?,
+    onBillingDateSelected: KFunction1<Long?, Unit>
+) {
+    TitleColumn(modifier = Modifier.padding(horizontal = 16.dp),
+        title = stringResource(R.string.title_billing_date),
+        infoInformation = buildAnnotatedString {
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
+                append(stringResource(R.string.info_billing_date))
+            }
+        }) {
+        BillingDate(
+            billingDate = billingDate,
+            onBillingDateSelected = onBillingDateSelected
+        )
+        AnimatedContent(targetState = billingDateInfo) { info ->
+            info?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(4.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun PeriodComponent(
+    selectedPeriod: BasePeriod?,
+    onPeriodSelected: KFunction1<BasePeriod, Unit>,
+) {
+    TitleColumn(modifier = Modifier.padding(horizontal = 16.dp),
+        title = stringResource(R.string.title_period),
+        infoInformation = buildAnnotatedString {
+            Period.entries.forEachIndexed { i, period ->
+                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                    append(period.periodName)
+                }
+                withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
+                    append(" - ")
+                    append(period.description)
+                }
+
+                if (i != Period.entries.lastIndex) {
+                    append("\n\n")
+                }
+            }
+        }) {
+        Period(
+            selectedPeriod,
+            onPeriodSelected = onPeriodSelected,
+        )
+    }
+}
+
+@Composable
+fun StatusComponent(selectedStatus: Status?, onStatusClicked: KFunction1<Status, Unit>) {
+    TitleColumn(modifier = Modifier.padding(horizontal = 16.dp),
+        title = stringResource(R.string.title_status),
+        infoInformation = buildAnnotatedString {
+            Status.entries.fastForEachIndexed { i, status ->
+                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                    append(status.statusName)
+                }
+                withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
+                    append(" - ")
+                    append(status.description)
+                }
+                if (i != Status.entries.lastIndex) {
+                    append("\n\n")
+                }
+            }
+        }) {
+
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(Status.entries) { status ->
+                StatusItem(modifier = Modifier.width(IntrinsicSize.Max),
+                    status,
+                    isSelected = selectedStatus == status,
+                    onClick = { onStatusClicked(status) })
+            }
         }
     }
 }
@@ -380,9 +421,6 @@ internal fun PriceAndCurrencyRow(
                     .clip(SubyShape)
                     .clickable(onCurrencyClicked != null) { onCurrencyClicked?.let { onCurrencyClicked() } },
                 currency,
-                textStyle = MaterialTheme.typography.displaySmall.copy(
-                    fontWeight = FontWeight.Bold
-                ),
                 flipCurrencyArrow = flipCurrencyArrow,
                 showArrow = onCurrencyClicked != null
             )
@@ -451,8 +489,6 @@ fun StatusItem(
 fun CurrencyLabel(
     modifier: Modifier = Modifier,
     currency: Currency,
-    // FIXME:
-    textStyle: TextStyle = MaterialTheme.typography.titleMedium,
     showArrow: Boolean = true,
     flipCurrencyArrow: Boolean = false
 ) {
@@ -462,8 +498,7 @@ fun CurrencyLabel(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        val currencyCodeTextStyle =
-            MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+        val textStyle = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
 
         val currencyTextStyle =
             MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold)
@@ -478,7 +513,7 @@ fun CurrencyLabel(
         ) {
             Text(text = currency.flagEmoji, style = currencyTextStyle)
             Text(
-                text = currency.code, style = currencyCodeTextStyle
+                text = currency.code, style = textStyle
             )
         }
 
