@@ -10,6 +10,7 @@ activity-compose = "1.9.1"
 compose-bom = "2024.08.00"
 coil = "2.7.0"
 lottie = "6.5.0"
+material = "1.12.0"
 supabase = "2.5.4"
 navigation = "2.8.0-rc01"
 accompanist = "0.34.0"
@@ -38,6 +39,7 @@ espresso-core = { group = "androidx.test.espresso", name = "espresso-core", vers
 lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+material = { module = "com.google.android.material:material", version.ref = "material" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 ui = { group = "androidx.compose.ui", name = "ui" }
 # for lerp func
