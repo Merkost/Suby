@@ -1,4 +1,4 @@
-package com.merkost.suby.presentation
+package com.merkost.suby.presentation.screens
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
@@ -66,6 +66,8 @@ import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.Period
 import com.merkost.suby.model.entity.Status
 import com.merkost.suby.model.entity.full.Subscription
+import com.merkost.suby.presentation.SortFilterBottomSheet
+import com.merkost.suby.presentation.TinySortFilterRow
 import com.merkost.suby.presentation.base.DoubleBackPressHandler
 import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.PlaceholderHighlight
@@ -106,7 +108,9 @@ fun SubscriptionsScreen(
         SubyTopAppBar(title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(
-                    modifier = Modifier.size(45.dp).rotatingOnClick(onClick = {}),
+                    modifier = Modifier
+                        .size(45.dp)
+                        .rotatingOnClick(onClick = {}),
                     painter = painterResource(id = R.drawable.suby_logo_white),
                     contentDescription = "",
                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface)

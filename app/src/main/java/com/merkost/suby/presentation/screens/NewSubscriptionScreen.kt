@@ -1,4 +1,4 @@
-package com.merkost.suby.presentation
+package com.merkost.suby.presentation.screens
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -61,6 +61,10 @@ import com.merkost.suby.SubyShape
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.Period
 import com.merkost.suby.model.entity.Status
+import com.merkost.suby.presentation.BillingDate
+import com.merkost.suby.presentation.DescriptionView
+import com.merkost.suby.presentation.Period
+import com.merkost.suby.presentation.PriceField
 import com.merkost.suby.presentation.base.BaseItem
 import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.SaveButton

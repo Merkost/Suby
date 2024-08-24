@@ -37,9 +37,9 @@ import androidx.compose.ui.unit.dp
 import com.merkost.suby.R
 import com.merkost.suby.SubyShape
 import com.merkost.suby.model.entity.full.Service
-import com.merkost.suby.presentation.AbsentItem
 import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.components.ServiceRowItem
+import com.merkost.suby.presentation.screens.AbsentItem
 import com.merkost.suby.utils.BaseViewState
 import kotlinx.coroutines.launch
 

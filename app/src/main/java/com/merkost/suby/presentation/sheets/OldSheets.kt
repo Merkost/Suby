@@ -29,10 +29,10 @@ import androidx.compose.ui.unit.dp
 import com.merkost.suby.SubyShape
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.NewSubscription
-import com.merkost.suby.presentation.CurrencyLabel
 import com.merkost.suby.presentation.base.SaveButton
 import com.merkost.suby.presentation.base.SubyTextField
 import com.merkost.suby.presentation.base.TitleColumn
+import com.merkost.suby.presentation.screens.CurrencyLabel
 import com.merkost.suby.viewModel.NewSubscriptionViewModel
 
 @Composable

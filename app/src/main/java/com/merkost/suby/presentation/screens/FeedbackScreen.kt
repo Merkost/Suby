@@ -1,4 +1,4 @@
-package com.merkost.suby.presentation
+package com.merkost.suby.presentation.screens
 
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
