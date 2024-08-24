@@ -11,25 +11,26 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -46,10 +47,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -73,17 +76,16 @@ import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.PlaceholderHighlight
 import com.merkost.suby.presentation.base.SubyTopAppBar
 import com.merkost.suby.presentation.base.components.EmptyStateView
-import com.merkost.suby.presentation.base.components.ServiceNameImage
-import com.merkost.suby.presentation.base.components.ServiceSvg
+import com.merkost.suby.presentation.base.components.ServiceLogo
 import com.merkost.suby.presentation.base.fade
 import com.merkost.suby.presentation.base.placeholder3
 import com.merkost.suby.presentation.base.rotatingOnClick
+import com.merkost.suby.presentation.viewModel.MainViewModel
+import com.merkost.suby.presentation.viewModel.TotalPrice
 import com.merkost.suby.round
 import com.merkost.suby.ui.theme.SubyTheme
 import com.merkost.suby.utils.hasSubscriptions
 import com.merkost.suby.utils.toRelativeTimeString
-import com.merkost.suby.presentation.viewModel.MainViewModel
-import com.merkost.suby.presentation.viewModel.TotalPrice
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -155,7 +157,7 @@ fun SubscriptionsScreen(
                     items(subscriptions, key = { it.id }) { subscription ->
                         HorizontalSubscriptionItem(
                             modifier = Modifier
-                                .animateItem(fadeInSpec = null, fadeOutSpec = null)
+                                .animateItem()
                                 .animateContentSize(),
                             subscription = subscription,
                             selectedPeriod = selectedPeriod,
@@ -295,7 +297,6 @@ fun MainBalance(
                     .clip(SubyShape)
                     .clickable { onCurrencyClick() },
                 currency = mainCurrency,
-                textStyle = LocalTextStyle.current,
                 flipCurrencyArrow = false
             )
         }
@@ -344,16 +345,9 @@ fun HorizontalSubscriptionItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                subscription.serviceLogoUrl?.let {
-                    ServiceSvg(
-                        modifier = Modifier
-                            .size(52.dp)
-                            .clip(RoundedCornerShape(8.dp)),
-                        link = it
-                    )
-                } ?: ServiceNameImage(
-                    modifier = Modifier.size(52.dp),
-                    name = subscription.serviceName,
+                ServiceLogo(
+                    modifier = Modifier.size(54.dp),
+                    service = subscription.toService()
                 )
 
                 Column(
@@ -428,26 +422,33 @@ fun HorizontalSubscriptionItem(
 @Composable
 fun StatusBubble(
     modifier: Modifier = Modifier,
-    status: Status
+    status: Status,
+    backgroundColor: Color = status.color.copy(alpha = 0.1f),
+    padding: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.spacedBy(4.dp),
+    textStyle: TextStyle = MaterialTheme.typography.bodySmall
 ) {
     Row(
         modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
-            .background(status.color.copy(alpha = 0.1f))
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+            .clip(SubyShape)
+            .background(backgroundColor)
+            .padding(padding)
+            .height(IntrinsicSize.Min),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = horizontalArrangement
     ) {
         Box(
             modifier = Modifier
-                .size(8.dp)
+                .aspectRatio(1f)
+                .padding(2.dp)
+                .heightIn(max = 4.dp)
                 .clip(CircleShape)
                 .background(status.color)
         )
 
         Text(
             text = status.statusName,
-            style = MaterialTheme.typography.bodySmall,
+            style = textStyle,
             color = status.color,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
