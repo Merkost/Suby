@@ -3,6 +3,7 @@ package com.merkost.suby.repository.room
 import com.merkost.suby.model.entity.full.Subscription
 import com.merkost.suby.model.entity.full.toSubscription
 import com.merkost.suby.model.room.dao.SubscriptionDao
+import com.merkost.suby.model.room.entity.PartialSubscriptionDb
 import com.merkost.suby.model.room.entity.SubscriptionDb
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -38,9 +39,9 @@ class SubscriptionRepositoryImpl(private val subscriptionDao: SubscriptionDao) :
         }
     }
 
-    override suspend fun updateSubscription(newSubscriptionDb: SubscriptionDb) {
+    override suspend fun updateSubscription(update: PartialSubscriptionDb) {
         withContext(Dispatchers.IO) {
-            subscriptionDao.updateSubscriptionDetails(newSubscriptionDb)
+            subscriptionDao.updateSubscriptionDetails(update)
         }
     }
 

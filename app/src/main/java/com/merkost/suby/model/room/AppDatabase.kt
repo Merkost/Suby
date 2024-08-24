@@ -13,6 +13,7 @@ import com.merkost.suby.model.room.dao.SubscriptionDao
 import com.merkost.suby.model.room.entity.CategoryDb
 import com.merkost.suby.model.room.entity.CurrencyRatesDb
 import com.merkost.suby.model.room.entity.CustomServiceDb
+import com.merkost.suby.model.room.entity.PartialSubscriptionDb
 import com.merkost.suby.model.room.entity.ServiceDb
 import com.merkost.suby.model.room.entity.SubscriptionDb
 
@@ -22,6 +23,7 @@ import com.merkost.suby.model.room.entity.SubscriptionDb
         CustomServiceDb::class,
         CategoryDb::class,
         SubscriptionDb::class,
+        PartialSubscriptionDb::class,
         CurrencyRatesDb::class
     ],
     version = 4, exportSchema = true

@@ -235,6 +235,24 @@ object Migrations {
             db.execSQL("DROP TABLE subscription")
 
             db.execSQL("ALTER TABLE subscription_new RENAME TO subscription")
+
+
+            // Create the new table for PartialSubscriptionDb
+            db.execSQL(
+                """
+            CREATE TABLE IF NOT EXISTS PartialSubscriptionDb (
+                id INTEGER PRIMARY KEY NOT NULL,
+                price REAL NOT NULL,
+                currency TEXT NOT NULL,
+                periodType TEXT NOT NULL,
+                periodDuration INTEGER NOT NULL,
+                status TEXT NOT NULL,
+                description TEXT NOT NULL,
+                paymentDate TEXT NOT NULL
+            )
+            """.trimIndent()
+            )
         }
     }
+
 }
