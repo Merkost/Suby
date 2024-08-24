@@ -1,5 +1,6 @@
 package com.merkost.suby.model.entity.full
 
+import com.merkost.suby.model.entity.BasePeriod
 import com.merkost.suby.model.room.entity.related.SubscriptionWithCustomDetails
 import com.merkost.suby.model.room.entity.related.SubscriptionWithDetails
 
@@ -23,12 +24,13 @@ fun SubscriptionWithCustomDetails.toSubscription() =
             createdAt = serviceWithCategory.category.createdAt,
             lastUpdated = serviceWithCategory.category.lastUpdated
         ),
-        periodType = subscription.periodType,
-        periodDuration = subscription.periodDuration,
+        period = BasePeriod(
+            type = subscription.periodType,
+            duration = subscription.periodDuration
+        ),
         status = subscription.status,
         paymentDate = subscription.paymentDate,
         createdDate = subscription.createdDate,
-        durationDays = subscription.durationDays,
         description = subscription.description
     )
 
@@ -53,11 +55,12 @@ fun SubscriptionWithDetails.toSubscription() =
             createdAt = serviceWithCategory.category.createdAt,
             lastUpdated = serviceWithCategory.category.lastUpdated
         ),
-        periodType = subscription.periodType,
-        periodDuration = subscription.periodDuration,
+        period = BasePeriod(
+            type = subscription.periodType,
+            duration = subscription.periodDuration
+        ),
         status = subscription.status,
         paymentDate = subscription.paymentDate,
         createdDate = subscription.createdDate,
-        durationDays = subscription.durationDays,
         description = subscription.description
     )

@@ -123,13 +123,12 @@ class NewSubscriptionViewModel @Inject constructor(
 
                         val newSubscriptionDb = SubscriptionDb(
                             serviceId = values.service.id,
-                            durationDays = values.period.days,
                             isCustomService = values.service.isCustomService,
                             status = values.status,
                             currency = currency,
                             price = values.price.toDouble(),
                             paymentDate = values.billingDate.toKotlinLocalDateTime(),
-                            periodType = period.periodType,
+                            periodType = period.type,
                             periodDuration = period.duration,
                             description = values.description,
                         )

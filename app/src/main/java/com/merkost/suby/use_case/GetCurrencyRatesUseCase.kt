@@ -82,12 +82,14 @@ class GetCurrencyRatesUseCase(
         subscription: Subscription,
         targetPeriod: Period
     ): Double {
+        val daysInSubscriptionPeriod = subscription.period.toApproximateDays()
         val daysInTargetPeriod = targetPeriod.days
-        val daysInSubscriptionPeriod = subscription.periodDays
+        if (daysInSubscriptionPeriod <= 0) {
+            throw IllegalArgumentException("Invalid subscription period duration: $daysInSubscriptionPeriod")
+        }
         val pricePerDay = subscription.price / daysInSubscriptionPeriod
         val result = pricePerDay * daysInTargetPeriod
-
         if (result.isFinite()) return result
-        else throw Throwable("Subscription cost calculation error: $subscription, $targetPeriod")
+        else throw IllegalStateException("Subscription cost calculation error: $subscription, $targetPeriod")
     }
 }

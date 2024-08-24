@@ -6,6 +6,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.merkost.suby.di.Migrations.MIGRATION_1_2
 import com.merkost.suby.di.Migrations.MIGRATION_2_3
+import com.merkost.suby.di.Migrations.MIGRATION_3_4
 import com.merkost.suby.model.room.AppDatabase
 import com.merkost.suby.model.room.dao.CategoryDao
 import com.merkost.suby.model.room.dao.CurrencyRatesDao
@@ -85,7 +86,7 @@ object DatabaseModule {
         return Room.databaseBuilder(
             appContext, AppDatabase::class.java, "app_database.db"
         )
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
             .build()
 
         // TODO: Remove fallbackToDestructiveMigration
@@ -198,6 +199,42 @@ object Migrations {
 
             db.execSQL("ALTER TABLE subscription_new RENAME TO subscription")
 
+        }
+    }
+
+    val MIGRATION_3_4 = object : Migration(3, 4) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                """
+            CREATE TABLE IF NOT EXISTS subscription_new (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                serviceId INTEGER NOT NULL,
+                isCustomService INTEGER NOT NULL,
+                price REAL NOT NULL,
+                currency TEXT NOT NULL,
+                periodType TEXT NOT NULL,
+                periodDuration INTEGER NOT NULL,
+                status TEXT NOT NULL,
+                paymentDate TEXT NOT NULL,
+                createdDate TEXT NOT NULL,
+                description TEXT NOT NULL
+            )
+        """.trimIndent()
+            )
+
+            db.execSQL(
+                """
+            INSERT INTO subscription_new (id, serviceId, isCustomService, price, currency, 
+                                          periodType, periodDuration, status, paymentDate, createdDate, description)
+            SELECT id, serviceId, isCustomService, price, currency, 
+                   periodType, periodDuration, status, paymentDate, createdDate, description
+            FROM subscription
+        """.trimIndent()
+            )
+
+            db.execSQL("DROP TABLE subscription")
+
+            db.execSQL("ALTER TABLE subscription_new RENAME TO subscription")
         }
     }
 }

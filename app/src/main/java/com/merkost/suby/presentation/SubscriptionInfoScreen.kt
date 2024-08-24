@@ -204,7 +204,11 @@ internal fun SubscriptionInfo(
                     )
                     DetailRow(
                         stringResource(R.string.renewal_period),
-                        "${subscription.periodDays} days"
+                        "${subscription.period.duration} ${
+                            subscription.period.type.getTitle(
+                                subscription.period.duration.toInt()
+                            )
+                        }"
                     )
                     DetailRow(
                         stringResource(R.string.next_payment_date),
