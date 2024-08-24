@@ -75,7 +75,7 @@ import com.merkost.suby.presentation.sheets.CreateCustomServiceSheet
 import com.merkost.suby.presentation.sheets.SelectServiceSheet
 import com.merkost.suby.presentation.states.NewSubscriptionUiState
 import com.merkost.suby.showToast
-import com.merkost.suby.viewModel.NewSubscriptionViewModel
+import com.merkost.suby.presentation.viewModel.NewSubscriptionViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

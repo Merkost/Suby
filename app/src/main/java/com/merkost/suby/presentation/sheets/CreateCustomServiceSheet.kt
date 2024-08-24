@@ -55,8 +55,8 @@ import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.SubyTextField
 import com.merkost.suby.presentation.base.TitleColumn
 import com.merkost.suby.presentation.rememberPickerState
-import com.merkost.suby.viewModel.CustomServiceUiState
-import com.merkost.suby.viewModel.CustomServiceViewModel
+import com.merkost.suby.presentation.viewModel.CustomServiceUiState
+import com.merkost.suby.presentation.viewModel.CustomServiceViewModel
 
 @Composable
 fun CreateCustomServiceSheet(

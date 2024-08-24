@@ -44,7 +44,7 @@ import com.merkost.suby.presentation.base.SubyTopAppBar
 import com.merkost.suby.presentation.base.components.ServiceLogo
 import com.merkost.suby.utils.BaseViewState
 import com.merkost.suby.utils.dateString
-import com.merkost.suby.viewModel.SubscriptionInfoViewModel
+import com.merkost.suby.presentation.viewModel.SubscriptionInfoViewModel
 import kotlinx.datetime.toJavaLocalDate
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

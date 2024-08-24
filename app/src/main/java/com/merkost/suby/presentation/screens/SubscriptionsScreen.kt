@@ -82,8 +82,8 @@ import com.merkost.suby.round
 import com.merkost.suby.ui.theme.SubyTheme
 import com.merkost.suby.utils.hasSubscriptions
 import com.merkost.suby.utils.toRelativeTimeString
-import com.merkost.suby.viewModel.MainViewModel
-import com.merkost.suby.viewModel.TotalPrice
+import com.merkost.suby.presentation.viewModel.MainViewModel
+import com.merkost.suby.presentation.viewModel.TotalPrice
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

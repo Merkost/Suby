@@ -33,7 +33,7 @@ import com.merkost.suby.presentation.base.SaveButton
 import com.merkost.suby.presentation.base.SubyTextField
 import com.merkost.suby.presentation.base.TitleColumn
 import com.merkost.suby.presentation.screens.CurrencyLabel
-import com.merkost.suby.viewModel.NewSubscriptionViewModel
+import com.merkost.suby.presentation.viewModel.NewSubscriptionViewModel
 
 @Composable
 fun PriceSheet(

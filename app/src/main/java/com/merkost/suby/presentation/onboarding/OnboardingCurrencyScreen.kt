@@ -37,7 +37,7 @@ import com.merkost.suby.presentation.base.LogoImage
 import com.merkost.suby.presentation.base.SubyButton
 import com.merkost.suby.presentation.rememberPickerState
 import com.merkost.suby.presentation.screens.CurrencyLabel
-import com.merkost.suby.viewModel.AppViewModel
+import com.merkost.suby.presentation.viewModel.AppViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

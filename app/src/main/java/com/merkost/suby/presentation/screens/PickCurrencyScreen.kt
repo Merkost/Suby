@@ -37,7 +37,7 @@ import com.merkost.suby.asWindowInsets
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.SubyTopAppBar
-import com.merkost.suby.viewModel.MainViewModel
+import com.merkost.suby.presentation.viewModel.MainViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)

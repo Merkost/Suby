@@ -1,4 +1,4 @@
-package com.merkost.suby.viewModel
+package com.merkost.suby.presentation.viewModel
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel

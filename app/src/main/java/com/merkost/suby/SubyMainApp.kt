@@ -26,7 +26,7 @@ import com.merkost.suby.presentation.screens.SubscriptionsScreen
 import com.merkost.suby.utils.Arguments
 import com.merkost.suby.utils.Destinations
 import com.merkost.suby.utils.isFirstTimeState
-import com.merkost.suby.viewModel.OnboardingViewModel
+import com.merkost.suby.presentation.viewModel.OnboardingViewModel
 
 @Composable
 fun SubyMainApp() {

@@ -9,7 +9,7 @@ import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.merkost.suby.model.Analytics
 import com.merkost.suby.ui.theme.SubyTheme
-import com.merkost.suby.viewModel.AppViewModel
+import com.merkost.suby.presentation.viewModel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

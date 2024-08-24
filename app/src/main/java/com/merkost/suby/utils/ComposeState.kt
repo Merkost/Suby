@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.produceState
 import com.merkost.suby.di.hiltActivityViewModel
-import com.merkost.suby.viewModel.AppViewModel
+import com.merkost.suby.presentation.viewModel.AppViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 

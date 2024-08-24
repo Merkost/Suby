@@ -48,7 +48,7 @@ import com.merkost.suby.model.entity.FeedbackAction
 import com.merkost.suby.presentation.base.SubyTextField
 import com.merkost.suby.presentation.base.SubyTopAppBar
 import com.merkost.suby.utils.BaseViewState
-import com.merkost.suby.viewModel.FeedbackViewModel
+import com.merkost.suby.presentation.viewModel.FeedbackViewModel
 import kotlinx.coroutines.android.awaitFrame
 
 @OptIn(ExperimentalMaterial3Api::class)
