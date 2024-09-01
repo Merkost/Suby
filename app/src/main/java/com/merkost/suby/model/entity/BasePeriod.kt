@@ -33,14 +33,14 @@ data class BasePeriod(
         return javaNextDate.toKotlinLocalDate()
     }
 
-    fun toApproximateDays(): Long {
-        return when (type) {
+    val approxDays: Long
+        get() = when (type) {
             CustomPeriod.DAYS -> duration
             CustomPeriod.WEEKS -> duration * 7
             CustomPeriod.MONTHS -> duration * 30
             CustomPeriod.YEARS -> duration * 365
         }
-    }
+
 }
 
 /**

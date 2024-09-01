@@ -79,9 +79,10 @@ data class Subscription(
     }
 
     fun getPriceForPeriod(selectedPeriod: Period): Double {
-        return if (this.period.duration != selectedPeriod.days) {
-            (price / this.period.duration * selectedPeriod.days)
+        val periodPrice = if (this.period.approxDays != selectedPeriod.approxDays) {
+            ((price / this.period.approxDays) * selectedPeriod.approxDays)
         } else price
+        return periodPrice
     }
 
     fun toService(): Service =

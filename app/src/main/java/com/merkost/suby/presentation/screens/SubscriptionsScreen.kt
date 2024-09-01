@@ -401,7 +401,7 @@ fun HorizontalSubscriptionItem(
                         },
                         label = "priceForPeriodAnim"
                     ) { priceForPeriod ->
-                        if (selectedPeriod.days != subscription.period.toApproximateDays()) {
+                        if (selectedPeriod.approxDays != subscription.period.approxDays) {
                             Column {
                                 Spacer(modifier = Modifier.size(8.dp))
                                 Text(

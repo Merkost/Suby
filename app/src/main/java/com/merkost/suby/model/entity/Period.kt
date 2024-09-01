@@ -4,7 +4,7 @@ import com.merkost.suby.utils.Constants.DEFAULT_CUSTOM_PERIOD_DAYS
 
 enum class Period(
     val periodName: String,
-    val days: Long,
+    val approxDays: Long,
     val description: String
 ) {
     DAILY("Daily", 1, "Billed every day."),
