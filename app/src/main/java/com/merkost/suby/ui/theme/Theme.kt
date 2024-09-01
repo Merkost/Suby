@@ -23,7 +23,8 @@ private val DarkColorScheme = darkColorScheme(
 private val LightColorScheme = lightColorScheme(
     primary = Purple40,
     secondary = PurpleGrey40,
-    tertiary = Pink40
+    tertiary = Pink40,
+
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -82,14 +83,29 @@ fun SubyTheme(
 }
 
 val lightColors = AppColors(
-    textPlaceholderColor = Color.LightGray
+    textPlaceholderColor = Color.LightGray,
+
+    statusOrange = Color(0xFFEF6C00),
+    statusGreen = Color(0xFF2E7D32),
+    statusRed = Color(0xFFC62828),
+    statusYellow = Color(0xFFF9A825)
 )
 
 val darkColors = AppColors(
-    textPlaceholderColor = Color.Gray
+    textPlaceholderColor = Color.Gray,
+
+    statusOrange = Color.StatusOrange,
+    statusGreen = Color.StatusGreen,
+    statusRed = Color.StatusRed,
+    statusYellow = Color.StatusYellow
 )
 
 @Stable
 data class AppColors(
     val textPlaceholderColor: Color,
+
+    val statusOrange: Color,
+    val statusGreen: Color,
+    val statusRed: Color,
+    val statusYellow: Color
 )

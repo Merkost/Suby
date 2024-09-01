@@ -157,8 +157,7 @@ fun SubscriptionsScreen(
                     items(subscriptions, key = { it.id }) { subscription ->
                         HorizontalSubscriptionItem(
                             modifier = Modifier
-                                .animateItem()
-                                .animateContentSize(),
+                                .animateItem(),
                             subscription = subscription,
                             selectedPeriod = selectedPeriod,
                             onClick = { onSubscriptionInfo(subscription.id) }
@@ -330,90 +329,88 @@ fun HorizontalSubscriptionItem(
     selectedPeriod: Period,
     onClick: () -> Unit
 ) {
-    Box(modifier = modifier) {
-        Surface(
-            modifier = Modifier
-                .animateContentSize()
-                .fillMaxWidth(),
-            onClick = onClick,
-            shape = SubyShape,
-            tonalElevation = 2.dp,
-            shadowElevation = 2.dp
+    Surface(
+        modifier = modifier
+            .animateContentSize()
+            .fillMaxWidth(),
+        onClick = onClick,
+        shape = SubyShape,
+        tonalElevation = 2.dp,
+        shadowElevation = 2.dp
+    ) {
+        Row(
+            modifier = Modifier.padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Row(
-                modifier = Modifier.padding(14.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                ServiceLogo(
-                    modifier = Modifier.size(54.dp),
-                    service = subscription.toService()
-                )
+            ServiceLogo(
+                modifier = Modifier.size(54.dp),
+                service = subscription.toService()
+            )
 
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight(),
-                    verticalArrangement = Arrangement.SpaceBetween
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = subscription.serviceName,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Row(
+                    modifier = Modifier,
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
+                    if (subscription.status != Status.ACTIVE) {
+                        StatusBubble(
+                            modifier = Modifier,
+                            status = subscription.status
+                        )
+                    }
                     Text(
-                        text = subscription.serviceName,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        text = subscription.getRemainingDurationString(LocalContext.current),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    Row(
-                        modifier = Modifier,
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        if (subscription.status != Status.ACTIVE) {
-                            StatusBubble(
-                                modifier = Modifier,
-                                status = subscription.status
+                }
+            }
+
+            Column(
+                horizontalAlignment = Alignment.End,
+            ) {
+                Text(
+                    text = "${subscription.price.formatDecimal()}${subscription.currency.symbol}",
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.End,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                AnimatedContent(
+                    targetState = subscription.getPriceForPeriod(selectedPeriod),
+                    transitionSpec = {
+                        fadeIn() togetherWith fadeOut()
+                    },
+                    label = "priceForPeriodAnim"
+                ) { priceForPeriod ->
+                    if (selectedPeriod.approxDays != subscription.period.approxDays) {
+                        Column {
+                            Spacer(modifier = Modifier.size(8.dp))
+                            Text(
+                                text = "~${priceForPeriod.round()}${subscription.currency.symbol}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                             )
                         }
-                        Text(
-                            text = subscription.getRemainingDurationString(LocalContext.current),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
                     }
                 }
 
-                Column(
-                    horizontalAlignment = Alignment.End,
-                ) {
-                    Text(
-                        text = "${subscription.price.formatDecimal()}${subscription.currency.symbol}",
-                        style = MaterialTheme.typography.bodyLarge,
-                        textAlign = TextAlign.End,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-
-                    AnimatedContent(
-                        targetState = subscription.getPriceForPeriod(selectedPeriod),
-                        transitionSpec = {
-                            fadeIn() togetherWith fadeOut()
-                        },
-                        label = "priceForPeriodAnim"
-                    ) { priceForPeriod ->
-                        if (selectedPeriod.approxDays != subscription.period.approxDays) {
-                            Column {
-                                Spacer(modifier = Modifier.size(8.dp))
-                                Text(
-                                    text = "~${priceForPeriod.round()}${subscription.currency.symbol}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                                )
-                            }
-                        }
-                    }
-
-                }
             }
         }
     }
@@ -423,7 +420,7 @@ fun HorizontalSubscriptionItem(
 fun StatusBubble(
     modifier: Modifier = Modifier,
     status: Status,
-    backgroundColor: Color = status.color.copy(alpha = 0.1f),
+    backgroundColor: Color = status.color.copy(alpha = 0.2f),
     padding: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
     horizontalArrangement: Arrangement.Horizontal = Arrangement.spacedBy(4.dp),
     textStyle: TextStyle = MaterialTheme.typography.bodySmall
