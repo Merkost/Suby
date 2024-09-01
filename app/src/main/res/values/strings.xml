@@ -6,7 +6,12 @@
     <string name="today">today</string>
     <string name="tomorrow">tomorrow</string>
     <string name="after_days">in %d days</string>
-    <string name="trial_more_days">%1$d more days</string>
+
+    <plurals name="trial_more_days">
+        <item quantity="one">%d more day</item>
+        <item quantity="other">%d more days</item>
+    </plurals>
+
     <string name="trial_ended_on">ended on %1$s</string>
     <string name="canceled_on">on %1$s</string>
     <string name="expired_on">on %1$s</string>

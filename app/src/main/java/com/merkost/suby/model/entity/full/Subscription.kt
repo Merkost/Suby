@@ -63,7 +63,11 @@ data class Subscription(
             }
 
             Status.TRIAL -> if (remainingDays > 0) {
-                context.getString(R.string.trial_more_days, remainingDays)
+                context.resources.getQuantityString(
+                    /* id = */ R.plurals.trial_more_days,
+                    /* quantity = */ remainingDays.toInt(),
+                    /* ...formatArgs = */ remainingDays
+                )
             } else {
                 context.getString(R.string.trial_ended_on, formattedDate)
             }
