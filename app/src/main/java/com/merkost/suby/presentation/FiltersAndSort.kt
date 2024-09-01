@@ -287,7 +287,7 @@ enum class SortOption(val displayName: String) {
     NAME("Name"),
     PRICE("Price"),
     STATUS("Status"),
-    BILLING_DATE("Billing Date");
+    PAYMENT_DATE("Payment Date");
 
     override fun toString() = displayName
 }

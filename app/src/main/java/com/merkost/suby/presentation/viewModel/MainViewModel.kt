@@ -8,7 +8,11 @@ import com.merkost.suby.model.entity.Period
 import com.merkost.suby.model.entity.Status
 import com.merkost.suby.model.entity.full.Subscription
 import com.merkost.suby.presentation.FilterOption
-import com.merkost.suby.presentation.FilterOption.*
+import com.merkost.suby.presentation.FilterOption.ACTIVE
+import com.merkost.suby.presentation.FilterOption.ALL
+import com.merkost.suby.presentation.FilterOption.CANCELLED
+import com.merkost.suby.presentation.FilterOption.EXPIRED
+import com.merkost.suby.presentation.FilterOption.TRIAL
 import com.merkost.suby.presentation.SelectedSortState
 import com.merkost.suby.presentation.SortDirection
 import com.merkost.suby.presentation.SortOption
@@ -50,7 +54,7 @@ class MainViewModel @Inject constructor(
     val period = MutableStateFlow(Period.MONTHLY)
 
     private val _sortState =
-        MutableStateFlow(SelectedSortState(SortOption.BILLING_DATE, SortDirection.ASCENDING))
+        MutableStateFlow(SelectedSortState(SortOption.PAYMENT_DATE, SortDirection.ASCENDING))
     val sortState: StateFlow<SelectedSortState> = _sortState
 
     private val _selectedFilters = MutableStateFlow<List<FilterOption>>(listOf(ALL))
@@ -85,6 +89,7 @@ class MainViewModel @Inject constructor(
                     filteredSubscriptions.sortedByDescending { it.serviceName }
                 }
             }
+
             SortOption.PRICE -> {
                 if (sortState.direction == SortDirection.ASCENDING) {
                     filteredSubscriptions.sortedBy { it.price }
@@ -92,14 +97,13 @@ class MainViewModel @Inject constructor(
                     filteredSubscriptions.sortedByDescending { it.price }
                 }
             }
-            SortOption.BILLING_DATE -> {
-                filteredSubscriptions.sortedWith(
-                    compareBy<Subscription> { it.status }
-                        .thenBy { it.paymentDate }
-                        .let {
-                            if (sortState.direction == SortDirection.DESCENDING) it.reversed() else it
-                        }
-                )
+
+            SortOption.PAYMENT_DATE -> {
+                filteredSubscriptions.sortedBy { it.remainingDays }
+                    .let {
+                        if (sortState.direction == SortDirection.DESCENDING) it.reversed() else it
+                    }
+
             }
 
             SortOption.STATUS -> {
