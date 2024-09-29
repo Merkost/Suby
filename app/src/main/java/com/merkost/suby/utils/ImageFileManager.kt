@@ -44,6 +44,17 @@ class ImageFileManager(private val context: Context) {
         }
     }
 
+    fun deleteCustomServiceImageFromInternalStorage(oldImageUrl: String) {
+        kotlin.runCatching {
+            val file = File(oldImageUrl)
+            if (file.exists()) {
+                file.delete()
+            }
+        }.onFailure {
+            Timber.tag("ImageFileManager").e(it, "Failed to delete image from internal storage")
+        }
+    }
+
     private fun getFileExtension(mimeType: String?): String? {
         return when (mimeType) {
             "image/jpeg" -> "jpg"

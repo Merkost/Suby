@@ -101,7 +101,12 @@ class CustomServiceViewModel @Inject constructor(
         viewModelScope.launch {
             val existingService = customServiceDao.getCustomServiceById(serviceId)
             if (existingService != null) {
+
                 val imageUri = serviceData.imageUri?.let {
+                    existingService.imageUri?.let {
+                        imageFileManager.deleteCustomServiceImageFromInternalStorage(it)
+                    }
+
                     imageFileManager.saveCustomServiceImageToInternalStorage(it, serviceData.name)
                 } ?: existingService.imageUri
 
