@@ -1,11 +1,13 @@
-package com.merkost.suby.presentation.base.components
+package com.merkost.suby.presentation.base.components.service
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
@@ -19,17 +21,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.merkost.suby.SubyShape
+import com.merkost.suby.model.entity.full.Category
 import com.merkost.suby.model.entity.full.Service
 import com.merkost.suby.presentation.base.BaseItem
 import com.merkost.suby.presentation.base.PlaceholderHighlight
 import com.merkost.suby.presentation.base.fade
 import com.merkost.suby.presentation.base.placeholder3
+import com.merkost.suby.utils.now
 import com.merkost.suby.utils.toEpochMillis
+import kotlinx.datetime.LocalDateTime
 import timber.log.Timber
 import java.text.DateFormat
 import java.util.Date
@@ -153,7 +159,6 @@ fun ServiceRowItem(
     showCategory: Boolean = false,
     onClick: () -> Unit
 ) {
-
     BaseService(
         modifier = modifier
             .fillMaxWidth(),
@@ -167,6 +172,7 @@ fun ServiceRowItem(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
+                modifier = Modifier.weight(1f, false),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -182,6 +188,7 @@ fun ServiceRowItem(
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     if (showCategory) {
+                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = service.category.beautifulName,
                             style = MaterialTheme.typography.bodySmall,
@@ -192,6 +199,7 @@ fun ServiceRowItem(
             }
             if (showCreatedAt) {
                 Text(
+                    modifier = Modifier.padding(start = 8.dp),
                     text = DateFormat.getDateInstance()
                         .format(Date(service.createdAt.toEpochMillis())),
                     style = MaterialTheme.typography.bodySmall,
@@ -200,4 +208,53 @@ fun ServiceRowItem(
             }
         }
     }
+}
+
+
+@Preview
+@Composable
+private fun ServiceRowItemLongPreview() {
+    ServiceRowItem(
+        service = Service(
+            id = 1,
+            name = "Netflix but with a very and very long name for two ",
+            category = Category(
+                id = 1,
+                name = "Streaming",
+                emoji = "📺",
+                createdAt = LocalDateTime.now()
+            ),
+            logoUrl = "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg",
+            createdAt = LocalDateTime.now(),
+            isCustomService = true,
+            lastUpdated = LocalDateTime.now()
+        ),
+        showCreatedAt = true,
+        showCategory = true,
+        onClick = {}
+    )
+}
+
+@Preview
+@Composable
+private fun ServiceRowItemShortPreview() {
+    ServiceRowItem(
+        service = Service(
+            id = 1,
+            name = "Netflix",
+            category = Category(
+                id = 1,
+                name = "Streaming",
+                emoji = "📺",
+                createdAt = LocalDateTime.now()
+            ),
+            logoUrl = "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg",
+            createdAt = LocalDateTime.now(),
+            isCustomService = true,
+            lastUpdated = LocalDateTime.now()
+        ),
+        showCreatedAt = true,
+        showCategory = true,
+        onClick = {}
+    )
 }

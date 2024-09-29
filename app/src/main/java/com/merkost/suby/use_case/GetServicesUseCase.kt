@@ -1,6 +1,5 @@
 package com.merkost.suby.use_case
 
-import com.merkost.suby.BuildConfig
 import com.merkost.suby.model.entity.dto.CategoryDto
 import com.merkost.suby.model.entity.dto.ServiceDto
 import com.merkost.suby.model.entity.full.Service
@@ -10,6 +9,7 @@ import com.merkost.suby.model.room.dao.ServiceDao
 import com.merkost.suby.repository.ktor.api.SupabaseApi
 import com.merkost.suby.repository.room.ServiceRepository
 import com.merkost.suby.utils.Constants
+import com.merkost.suby.utils.Environment
 import com.merkost.suby.utils.now
 import com.merkost.suby.utils.toEpochMillis
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +24,7 @@ class GetServicesUseCase(
     private val categoryDao: CategoryDao,
     private val serviceRepository: ServiceRepository
 ) {
-    suspend operator fun invoke(): Flow<Result<List<Service>>> = flow {
+    operator fun invoke(): Flow<Result<List<Service>>> = flow {
         val currentTime = System.currentTimeMillis()
         val updateThreshold = Constants.SUBY_UPDATE_THRESHOLD.inWholeMilliseconds
 
@@ -34,7 +34,7 @@ class GetServicesUseCase(
         val needToUpdateServices = currentTime - lastServiceUpdate > updateThreshold
         val needToUpdateCategories = currentTime - lastCategoryUpdate > updateThreshold
 
-        if (needToUpdateServices || needToUpdateCategories || BuildConfig.DEBUG) {
+        if (needToUpdateServices || needToUpdateCategories || Environment.DEBUG) {
             val categories = loadCategories()
             val services = loadServices()
 

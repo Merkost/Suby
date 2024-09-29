@@ -76,7 +76,7 @@ import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.PlaceholderHighlight
 import com.merkost.suby.presentation.base.SubyTopAppBar
 import com.merkost.suby.presentation.base.components.EmptyStateView
-import com.merkost.suby.presentation.base.components.ServiceLogo
+import com.merkost.suby.presentation.base.components.service.ServiceLogo
 import com.merkost.suby.presentation.base.fade
 import com.merkost.suby.presentation.base.placeholder3
 import com.merkost.suby.presentation.base.rotatingOnClick

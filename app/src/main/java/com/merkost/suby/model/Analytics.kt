@@ -6,13 +6,14 @@ import com.google.firebase.analytics.logEvent
 import com.merkost.suby.model.entity.BasePeriod
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.Status
+import com.merkost.suby.utils.Environment
 
 object Analytics {
 
     private val analytics = Firebase.analytics
 
     fun analyticsInit() {
-        analytics.setAnalyticsCollectionEnabled(true)
+        analytics.setAnalyticsCollectionEnabled(!Environment.DEBUG)
     }
 
     fun logAddedSubscription(
@@ -30,6 +31,14 @@ object Analytics {
             param("period", period.toString())
             param("status", status.toString())
             param("is_custom", isCustom.toString())
+        }
+    }
+
+    fun logUpdatedCustomService(oldServiceName: String, serviceName: String, categoryName: String) {
+        analytics.logEvent("updated_custom_service") {
+            param("old_service_name", oldServiceName)
+            param("service_name", serviceName)
+            param("category_name", categoryName)
         }
     }
 

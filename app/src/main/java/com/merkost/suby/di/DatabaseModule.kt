@@ -63,9 +63,10 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideServicesRepository(
-        serviceDao: ServiceDao, customServiceDao: CustomServiceDao
+        serviceDao: ServiceDao, customServiceDao: CustomServiceDao,
+        subscriptionDao: SubscriptionDao,
     ): ServiceRepository {
-        return ServiceRepositoryImpl(serviceDao, customServiceDao)
+        return ServiceRepositoryImpl(serviceDao, customServiceDao, subscriptionDao)
     }
 
     @Provides

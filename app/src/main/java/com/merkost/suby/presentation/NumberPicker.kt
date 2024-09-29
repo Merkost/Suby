@@ -55,10 +55,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 @Composable
-fun <T> rememberPickerState() = remember { PickerState<T>() }
+fun <T> rememberPickerState(
+    initialItem: T? = null
+) = remember { PickerState<T>(initialItem) }
 
-class PickerState<T> {
-    var selectedItem by mutableStateOf<T?>(null)
+class PickerState<T>(initialItem: T?) {
+    var selectedItem by mutableStateOf<T?>(initialItem)
 }
 
 @Composable
@@ -106,7 +108,7 @@ fun <T> HorizontalPicker(
     }
 
     Box(modifier = modifier) {
-        LazyRow (
+        LazyRow(
             state = listState,
             flingBehavior = flingBehavior,
             verticalAlignment = Alignment.CenterVertically,
@@ -241,7 +243,8 @@ fun <T> LayoutPicker(
     val visibleItemsMiddle = visibleItemsCount / 2
     val listScrollCount = items.size
     val listScrollMiddle = listScrollCount / 2
-    val listStartIndex = listScrollMiddle - listScrollMiddle % items.size - visibleItemsMiddle + startIndex
+    val listStartIndex =
+        listScrollMiddle - listScrollMiddle % items.size - visibleItemsMiddle + startIndex
 
     fun getItem(index: Int) = items[index % items.size]
 
@@ -260,7 +263,6 @@ fun <T> LayoutPicker(
     Box(modifier = modifier) {
         Layout(
             content = {
-                // Padding items before the actual content
                 repeat(visibleItemsMiddle) {
                     Box(modifier = Modifier.size(itemSizeDp))
                 }
@@ -277,7 +279,6 @@ fun <T> LayoutPicker(
                         pickerItem(item, Modifier)
                     }
                 }
-                // Padding items after the actual content
                 repeat(visibleItemsMiddle) {
                     Box(modifier = Modifier.size(itemSizeDp))
                 }
@@ -297,7 +298,10 @@ fun <T> LayoutPicker(
             layout(totalWidth, constraints.maxHeight) {
                 var xPosition = 0
                 placeables.forEach { placeable ->
-                    placeable.placeRelative(x = xPosition, y = (constraints.maxHeight - placeable.height) / 2)
+                    placeable.placeRelative(
+                        x = xPosition,
+                        y = (constraints.maxHeight - placeable.height) / 2
+                    )
                     xPosition += placeable.width
                 }
             }

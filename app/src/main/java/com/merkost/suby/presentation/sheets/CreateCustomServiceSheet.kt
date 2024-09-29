@@ -31,7 +31,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,6 +57,7 @@ import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.SubyTextField
 import com.merkost.suby.presentation.base.TitleColumn
 import com.merkost.suby.presentation.rememberPickerState
+import com.merkost.suby.presentation.viewModel.CustomServiceData
 import com.merkost.suby.presentation.viewModel.CustomServiceUiState
 import com.merkost.suby.presentation.viewModel.CustomServiceViewModel
 
@@ -62,21 +65,33 @@ import com.merkost.suby.presentation.viewModel.CustomServiceViewModel
 fun CreateCustomServiceSheet(
     onCreated: () -> Unit
 ) {
-
     val viewModel: CustomServiceViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
-    val customServiceData by viewModel.customServiceData.collectAsState()
     val categories by viewModel.categories.collectAsState()
-    val pickerState = rememberPickerState<Category>()
 
+    CustomServiceUiStateHandler(uiState) {
+        onCreated()
+        viewModel.resetUiState()
+    }
+
+    CustomServiceForm(
+        initialServiceData = null,
+        categories = categories,
+        onSave = { newServiceData ->
+            viewModel.createCustomService(newServiceData)
+        },
+        title = stringResource(R.string.create_custom_service),
+        saveButtonText = stringResource(R.string.btn_create_service)
+    )
+}
+
+@Composable
+fun CustomServiceUiStateHandler(uiState: CustomServiceUiState?, onCreated: () -> Unit) {
     val context = LocalContext.current
-    val focusRequester = remember { FocusRequester() }
-
     LaunchedEffect(uiState) {
         when (uiState) {
             CustomServiceUiState.Success -> {
                 onCreated()
-                viewModel.resetUiState()
             }
 
             CustomServiceUiState.ServiceNameRequired -> {
@@ -87,103 +102,118 @@ fun CreateCustomServiceSheet(
                 Toast.makeText(context, "Category is required", Toast.LENGTH_SHORT).show()
             }
 
-            else -> {}
+            CustomServiceUiState.ServiceNotFound -> {
+                Toast.makeText(context, "Service not found", Toast.LENGTH_SHORT).show()
+            }
+
+            null -> {}
         }
     }
+}
 
-    Box(
-        modifier = Modifier
+@Composable
+fun CustomServiceForm(
+    modifier: Modifier = Modifier,
+    initialServiceData: CustomServiceData? = null,
+    categories: List<Category>,
+    onSave: (CustomServiceData) -> Unit,
+    title: String,
+    saveButtonText: String,
+) {
+    var serviceName by remember { mutableStateOf(initialServiceData?.name ?: "") }
+    var imageUri by remember { mutableStateOf(initialServiceData?.imageUri) }
+    val pickerState = rememberPickerState<Category>(initialServiceData?.category)
+    val focusRequester = remember { FocusRequester() }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
             .verticalScroll(rememberScrollState())
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top)
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top)
-        ) {
 
-            Text(
-                text = stringResource(R.string.create_custom_service),
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
-            )
+        Text(
+            text = title,
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold
+        )
 
-            TitleColumn(title = "What's your service?") {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    SubyTextField(
-                        value = customServiceData.name,
-                        onValueChange = viewModel::setServiceName,
-                        modifier = Modifier
-                            .weight(1f, true)
-                            .focusRequester(focusRequester),
-                        singleLine = true,
-                        placeholder = { Text(stringResource(R.string.service_name)) }
-                    )
-
-                    ImagePicker(
-                        modifier = Modifier
-                            .size(56.dp)
-                            .aspectRatio(1f),
-                        selectedImage = customServiceData.imageUri,
-                        onImageSelected = viewModel::setImageUri
-                    )
-
-                }
-            }
-
-            TitleColumn(title = "Pick a category") {
-                AnimatedContent(categories) { categoriesList ->
-                    if (categoriesList.size > 1) {
-                        VerticalPicker(
-                            items = categoriesList,
-                            state = pickerState,
-                            visibleItemsCount = 3,
-                            modifier = Modifier.padding(vertical = 16.dp),
-                            pickerItem = { item, modifier ->
-                                CategoryLabel(
-                                    modifier = modifier.padding(4.dp),
-                                    category = item,
-                                )
-                            }
-                        )
+        TitleColumn(title = "What's your service?") {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                SubyTextField(
+                    value = serviceName,
+                    onValueChange = { serviceName = it },
+                    modifier = Modifier
+                        .weight(1f, true)
+                        .focusRequester(focusRequester),
+                    singleLine = true,
+                    placeholder = {
+                        Text(stringResource(R.string.service_name))
                     }
+                )
+
+
+                ImagePicker(
+                    modifier = Modifier
+                        .size(56.dp)
+                        .aspectRatio(1f),
+                    selectedImage = imageUri,
+                    onImageSelected = { imageUri = it }
+                )
+            }
+        }
+
+        TitleColumn(title = "Pick a category") {
+            AnimatedContent(categories) { categoriesList ->
+                if (categoriesList.isNotEmpty()) {
+                    VerticalPicker(
+                        items = categoriesList,
+                        state = pickerState,
+                        visibleItemsCount = 3,
+                        modifier = Modifier.padding(vertical = 16.dp),
+                        pickerItem = { item, modifier ->
+                            CategoryLabel(
+                                modifier = modifier.padding(4.dp),
+                                category = item,
+                            )
+                        }
+                    )
                 }
             }
+        }
 
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
             Button(
                 onClick = {
-                    viewModel.createCustomService(pickerState.selectedItem)
+                    val selectedCategory = pickerState.selectedItem
+                    val customServiceData = CustomServiceData(
+                        name = serviceName,
+                        imageUri = imageUri,
+                        category = selectedCategory
+                    )
+                    onSave(customServiceData)
                 },
-                modifier = Modifier
-                    .fillMaxWidth(),
-                enabled = customServiceData.name.isNotBlank()
+                modifier = Modifier.weight(1f),
+                enabled = serviceName.isNotBlank()
             ) {
-                Text(stringResource(R.string.btn_create_service))
+                Text(saveButtonText)
             }
-
-//        Text(
-//            text = "Pick a color:",
-//            style = MaterialTheme.typography.bodyMedium
-//        )
-//
-//        ColorPicker(
-//            selectedColor = selectedColor,
-//            onColorSelected = { selectedColor = it }
-//        )
-//
-
         }
     }
-
 }
 
 @Composable
 fun ImagePicker(
     modifier: Modifier,
     selectedImage: Uri?,
-    onImageSelected: (Uri) -> Unit,
+    onImageSelected: (Uri?) -> Unit,
     placeholderResId: Int = R.drawable.add_photo_placeholder
 ) {
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
@@ -200,13 +230,16 @@ fun ImagePicker(
                 tint = Color.White,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .offset(x = 3.dp, y = -3.dp)
+                    .offset(x = 3.dp, y = (-3).dp)
                     .size(20.dp)
                     .clip(CircleShape)
                     .clickable {
-                        onImageSelected(Uri.EMPTY)
+                        onImageSelected(null)
                     }
-                    .background(Color.Black.copy(alpha = 0.6f), shape = CircleShape) // Background circle for better visibility
+                    .background(
+                        Color.Black.copy(alpha = 0.6f),
+                        shape = CircleShape
+                    )
                     .padding(3.dp)
                     .zIndex(1f)
 
