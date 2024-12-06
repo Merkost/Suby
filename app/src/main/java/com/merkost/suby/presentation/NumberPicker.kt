@@ -7,6 +7,7 @@ import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -56,28 +57,31 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun <T> rememberPickerState(
-    initialItem: T? = null
-) = remember { PickerState<T>(initialItem) }
+    initialItem: T? = null,
+    isEndless: Boolean = false
+) = remember { PickerState<T>(initialItem, isEndless) }
 
-class PickerState<T>(initialItem: T?) {
-    var selectedItem by mutableStateOf<T?>(initialItem)
+class PickerState<T>(
+    val initialItem: T?,
+    val isEndless: Boolean
+) {
+    var selectedItem by mutableStateOf(initialItem)
 }
+
 
 @Composable
 fun <T> HorizontalPicker(
     items: List<T>,
     state: PickerState<T> = rememberPickerState(),
     modifier: Modifier = Modifier,
-    startIndex: Int = 0,
     visibleItemsCount: Int = 3,
     dividerColor: Color = LocalContentColor.current,
     pickerItem: @Composable (item: T, modifier: Modifier) -> Unit
 ) {
-    val visibleItemsMiddle = visibleItemsCount / 2
-    val listScrollCount = items.size
-    val listScrollMiddle = listScrollCount / 2
-    val listStartIndex =
-        listScrollMiddle - listScrollMiddle % items.size - visibleItemsMiddle + startIndex
+    val listScrollCount = if (state.isEndless) items.size * 1000 else items.size
+    val initialItem = state.initialItem
+    val initialItemIndex = if (initialItem != null) items.indexOf(initialItem).takeIf { it >= 0 } ?: 0 else 0
+    val listStartIndex = if (state.isEndless) (items.size * 500) + initialItemIndex else initialItemIndex
 
     fun getItem(index: Int) = items[index % items.size]
 
@@ -171,7 +175,6 @@ private fun pixelsToDp(pixels: Int) = with(LocalDensity.current) { pixels.toDp()
 
 @Composable
 fun FadingEdgeCurrencyPicker() {
-
     val lazyListState = rememberLazyListState()
     val snapBehavior = rememberSnapFlingBehavior(lazyListState = lazyListState)
 
@@ -207,7 +210,7 @@ fun BorderedCurrency(lazyListState: LazyListState, currency: Currency, index: In
 
             itemInfo?.let {
 
-                val delta = it.size / 2 //use your custom logic
+                val delta = it.size / 2
                 val center = lazyListState.layoutInfo.viewportEndOffset / 2
                 val childCenter = it.offset + it.size / 2
                 val target = childCenter - center
@@ -321,16 +324,16 @@ fun <T> VerticalPicker(
     items: List<T>,
     state: PickerState<T> = rememberPickerState(),
     modifier: Modifier = Modifier,
-    startIndex: Int = 0,
     visibleItemsCount: Int = 3,
     dividerColor: Color = LocalContentColor.current,
     pickerItem: @Composable (item: T, modifier: Modifier) -> Unit
 ) {
     val visibleItemsMiddle = visibleItemsCount / 2
-    val listScrollCount = items.size
-    val listScrollMiddle = listScrollCount / 2
-    val listStartIndex =
-        listScrollMiddle - listScrollMiddle % items.size - visibleItemsMiddle + startIndex
+
+    val listScrollCount = if (state.isEndless) items.size * 1000 else items.size
+    val initialItem = state.initialItem
+    val initialItemIndex = if (initialItem != null) items.indexOf(initialItem).takeIf { it >= 0 } ?: 0 else 0
+    val listStartIndex = if (state.isEndless) (items.size * 500) + initialItemIndex else initialItemIndex
 
     fun getItem(index: Int) = items[index % items.size]
 
@@ -357,7 +360,13 @@ fun <T> VerticalPicker(
         snapshotFlow { listState.firstVisibleItemIndex }
             .map { index -> getItem(index) }
             .distinctUntilChanged()
-            .collect { item -> state.selectedItem = item }
+            .collect { item ->
+                state.selectedItem = item
+            }
+    }
+
+    LaunchedEffect(initialItemIndex) {
+        listState.scrollToItem(listStartIndex)
     }
 
     Box(modifier = modifier) {
@@ -369,13 +378,14 @@ fun <T> VerticalPicker(
                 .height(itemHeightDp * visibleItemsCount)
                 .fadingEdge(fadingEdgeGradient)
         ) {
-            items(visibleItemsCount / 2) {
-                Box(
+            items(visibleItemsMiddle) {
+                Spacer(
                     modifier = Modifier
                         .width(itemWidthDp)
                         .height(itemHeightDp)
                 )
             }
+
             items(listScrollCount) { index ->
                 pickerItem(
                     getItem(index),
@@ -391,8 +401,9 @@ fun <T> VerticalPicker(
                             }
                         })
             }
-            items(visibleItemsCount / 2) {
-                Box(
+
+            items(visibleItemsMiddle) {
+                Spacer(
                     modifier = Modifier
                         .width(itemWidthDp)
                         .height(itemHeightDp)
