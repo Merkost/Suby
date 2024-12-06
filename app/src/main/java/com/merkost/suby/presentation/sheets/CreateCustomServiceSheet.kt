@@ -173,7 +173,7 @@ fun CustomServiceForm(
                     VerticalPicker(
                         items = categoriesList,
                         state = pickerState,
-                        visibleItemsCount = 3,
+                        visibleItemsCount = 5,
                         modifier = Modifier.padding(vertical = 16.dp),
                         pickerItem = { item, modifier ->
                             CategoryLabel(
