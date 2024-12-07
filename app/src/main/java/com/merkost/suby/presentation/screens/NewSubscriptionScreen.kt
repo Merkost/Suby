@@ -72,7 +72,6 @@ import com.merkost.suby.presentation.states.NewSubscriptionUiState
 import com.merkost.suby.presentation.viewModel.NewSubscriptionViewModel
 import com.merkost.suby.presentation.viewModel.SelectServiceViewModel
 import com.merkost.suby.showToast
-import kotlin.reflect.KFunction1
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -241,7 +240,7 @@ fun NewSubscriptionScreen(
 fun BillingDateComponent(
     billingDate: Long?,
     billingDateInfo: String?,
-    onBillingDateSelected: KFunction1<Long?, Unit>
+    onBillingDateSelected: (Long?) -> Unit,
 ) {
     TitleColumn(modifier = Modifier.padding(horizontal = 16.dp),
         title = stringResource(R.string.title_billing_date),
@@ -270,7 +269,7 @@ fun BillingDateComponent(
 @Composable
 fun PeriodComponent(
     selectedPeriod: BasePeriod?,
-    onPeriodSelected: KFunction1<BasePeriod, Unit>,
+    onPeriodSelected: (BasePeriod) -> Unit,
 ) {
     TitleColumn(modifier = Modifier.padding(horizontal = 16.dp),
         title = stringResource(R.string.title_period),
@@ -297,7 +296,10 @@ fun PeriodComponent(
 }
 
 @Composable
-fun StatusComponent(selectedStatus: Status?, onStatusClicked: KFunction1<Status, Unit>) {
+fun StatusComponent(
+    selectedStatus: Status?,
+    onStatusClicked: (Status) -> Unit
+) {
     TitleColumn(modifier = Modifier.padding(horizontal = 16.dp),
         title = stringResource(R.string.title_status),
         infoInformation = buildAnnotatedString {

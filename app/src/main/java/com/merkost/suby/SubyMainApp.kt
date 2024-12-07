@@ -118,7 +118,7 @@ private fun NavGraphBuilder.NavGraph(
             onCancel = {
                 navController.popBackStack()
             },
-                    pickedCurrency = it.savedStateHandle.get<Currency>(Arguments.CURRENCY),
+            pickedCurrency = it.savedStateHandle.get<Currency>(Arguments.CURRENCY),
             onCurrencyClicked = { navController.navigate(Destinations.CurrencyPick(false)) },
         )
 

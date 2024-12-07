@@ -361,7 +361,7 @@ fun HorizontalSubscriptionItem(
                 Row(
                     modifier = Modifier,
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     if (subscription.status != Status.ACTIVE) {
                         StatusBubble(

@@ -7,27 +7,44 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 enum class Currency(val fullName: String, val symbol: String, val flagEmoji: String) :
     Parcelable {
-    USD("US Dollar", "$", "🇺🇸"),
-    EUR("Euro", "€", "🇪🇺"),
-    JPY("Japanese Yen", "¥", "🇯🇵"),
-    GBP("British Pound", "£", "🇬🇧"),
+    AED("United Arab Emirates Dirham", "د.إ", "🇦🇪"),
+    ARS("Argentine Peso", "$", "🇦🇷"),
     AUD("Australian Dollar", "$", "🇦🇺"),
+    BDT("Bangladeshi Taka", "৳", "🇧🇩"),
+    BRL("Brazilian Real", "R$", "🇧🇷"),
     CAD("Canadian Dollar", "$", "🇨🇦"),
     CHF("Swiss Franc", "CHF", "🇨🇭"),
+    CLP("Chilean Peso", "$", "🇨🇱"),
+    COP("Colombian Peso", "$", "🇨🇴"),
     CNY("Chinese Yuan", "¥", "🇨🇳"),
-    INR("Indian Rupee", "₹", "🇮🇳"),
-    SGD("Singapore Dollar", "$", "🇸🇬"),
-    NZD("New Zealand Dollar", "$", "🇳🇿"),
-    BRL("Brazilian Real", "R$", "🇧🇷"),
-    KRW("South Korean Won", "₩", "🇰🇷"),
+    CZK("Czech Koruna", "Kč", "🇨🇿"),
+    DKK("Danish Krone", "kr", "🇩🇰"),
+    EGP("Egyptian Pound", "E£", "🇪🇬"),
+    EUR("Euro", "€", "🇪🇺"),
+    GBP("British Pound", "£", "🇬🇧"),
     HKD("Hong Kong Dollar", "$", "🇭🇰"),
-    SEK("Swedish Krona", "kr", "🇸🇪"),
-    NOK("Norwegian Krone", "kr", "🇳🇴"),
+    IDR("Indonesian Rupiah", "Rp", "🇮🇩"),
+    ILS("Israeli Shekel", "₪", "🇮🇱"),
+    INR("Indian Rupee", "₹", "🇮🇳"),
+    JPY("Japanese Yen", "¥", "🇯🇵"),
+    KRW("South Korean Won", "₩", "🇰🇷"),
     MXN("Mexican Peso", "$", "🇲🇽"),
-    TRY("Turkish Lira", "₺", "🇹🇷"),
+    MYR("Malaysian Ringgit", "RM", "🇲🇾"),
+    NGN("Nigerian Naira", "₦", "🇳🇬"),
+    NOK("Norwegian Krone", "kr", "🇳🇴"),
+    NZD("New Zealand Dollar", "$", "🇳🇿"),
+    PHP("Philippine Peso", "₱", "🇵🇭"),
+    PKR("Pakistani Rupee", "₨", "🇵🇰"),
+    PLN("Polish Zloty", "zł", "🇵🇱"),
     RUB("Russian Ruble", "₽", "🇷🇺"),
-    ZAR("South African Rand", "R", "🇿🇦"),
-    AED("United Arab Emirates Dirham", "د.إ", "🇦🇪");
+    SAR("Saudi Riyal", "﷼", "🇸🇦"),
+    SEK("Swedish Krona", "kr", "🇸🇪"),
+    SGD("Singapore Dollar", "$", "🇸🇬"),
+    THB("Thai Baht", "฿", "🇹🇭"),
+    TRY("Turkish Lira", "₺", "🇹🇷"),
+    USD("US Dollar", "$", "🇺🇸"),
+    VND("Vietnamese Dong", "₫", "🇻🇳"),
+    ZAR("South African Rand", "R", "🇿🇦");
 
     @IgnoredOnParcel
     val code = this.name
@@ -40,7 +57,7 @@ enum class Currency(val fullName: String, val symbol: String, val flagEmoji: Str
         }
 
         fun findOrNull(currencyName: String?): Currency? {
-            return Currency.values().find {
+            return entries.find {
                 it.name.lowercase() == currencyName?.lowercase()
             }
         }
