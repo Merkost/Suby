@@ -58,6 +58,7 @@
     <string name="support">Support</string>
     <string name="btn_add_first_subscription">Add a subscription</string>
     <string name="create_custom_service">Create a custom service</string>
+    <string name="edit_custom_service">Edit custom service</string>
     <string name="btn_save">Save</string>
     <string name="filter_by">Filter By</string>
     <string name="sort_by">Sort By</string>
@@ -93,6 +94,14 @@
     <string name="error_unknown">Something went wrong. Please try again later.</string>
 
     <!-- Toasts -->
-    <string name="toast_subscription_deleted">The subsription has been deleted successfully</string>
+    <string name="toast_subscription_deleted">The subscription has been deleted successfully</string>
     <string name="subscription_saved">Subscription has been updated</string>
+
+    <!--  Delete dialog  -->
+    <string name="delete_subscription_title">Delete Subscription?</string>
+    <string name="delete_subscription_description">You can\'t undo this action</string>
+
+    <string name="delete_custom_service_title">Delete %s?</string>
+    <string name="delete_custom_service_description">This will also remove all your subscriptions connected with this service</string>
+
 </resources>

@@ -11,6 +11,7 @@ import com.merkost.suby.model.room.entity.PartialSubscriptionDb
 import com.merkost.suby.model.room.entity.SubscriptionDb
 import com.merkost.suby.model.room.entity.related.SubscriptionWithCustomDetails
 import com.merkost.suby.model.room.entity.related.SubscriptionWithDetails
+import com.merkost.suby.utils.CustomServiceId
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -66,6 +67,10 @@ interface SubscriptionDao {
 
     @Delete
     suspend fun deleteSubscription(subscriptionDb: SubscriptionDb): Int
+
+    @Transaction
+    @Query("DELETE FROM subscription WHERE isCustomService = 1 and serviceId = :customServiceId")
+    suspend fun deleteSubscriptionsByCustomService(customServiceId: CustomServiceId)
 
     @Query("DELETE FROM subscription WHERE id = :subscriptionId")
     suspend fun deleteSubscriptionById(subscriptionId: Int): Int

@@ -50,7 +50,7 @@ import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.SubyTopAppBar
 import com.merkost.suby.presentation.base.UiState
 import com.merkost.suby.presentation.base.components.ScreenStateHandler
-import com.merkost.suby.presentation.base.components.ServiceLogo
+import com.merkost.suby.presentation.base.components.service.ServiceLogo
 import com.merkost.suby.presentation.viewModel.SubscriptionDetailsViewModel
 import com.merkost.suby.showToast
 import com.merkost.suby.utils.dateString
@@ -108,6 +108,8 @@ internal fun SubscriptionInfo(
 
     if (deleteDialog.value) {
         DeleteConfirmationDialog(
+            title = stringResource(R.string.delete_subscription_title),
+            message = stringResource(R.string.delete_subscription_description),
             onDismissRequest = { deleteDialog.value = false },
             onConfirm = {
                 onDelete()

@@ -38,6 +38,7 @@ import com.merkost.suby.presentation.base.SubyButton
 import com.merkost.suby.presentation.rememberPickerState
 import com.merkost.suby.presentation.screens.CurrencyLabel
 import com.merkost.suby.presentation.viewModel.AppViewModel
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -122,6 +123,7 @@ fun OnboardingCurrencyScreen(onCurrencySelected: (Currency) -> Unit) {
                 shape = CircleShape,
                 onClick = {
                     selectedCurrency = pickerState.selectedItem
+                    Timber.d("Selected currency: $selectedCurrency")
                     selectedCurrency?.let {
                         viewModel.updateFirstTimeOpening()
                         onCurrencySelected(it)

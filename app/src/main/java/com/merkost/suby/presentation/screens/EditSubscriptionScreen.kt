@@ -33,7 +33,7 @@ import com.merkost.suby.presentation.base.SaveButton
 import com.merkost.suby.presentation.base.SubyTopAppBar
 import com.merkost.suby.presentation.base.TitleColumn
 import com.merkost.suby.presentation.base.components.ScreenStateHandler
-import com.merkost.suby.presentation.base.components.ServiceRowItem
+import com.merkost.suby.presentation.base.components.service.ServiceRowItem
 import com.merkost.suby.presentation.states.EditSubscriptionEvent
 import com.merkost.suby.presentation.viewModel.EditSubscriptionViewModel
 import com.merkost.suby.showToast

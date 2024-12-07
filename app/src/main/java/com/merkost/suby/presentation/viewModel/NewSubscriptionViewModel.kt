@@ -11,16 +11,12 @@ import com.merkost.suby.model.entity.full.Service
 import com.merkost.suby.model.room.entity.SubscriptionDb
 import com.merkost.suby.presentation.states.NewSubscriptionUiState
 import com.merkost.suby.repository.datastore.AppSettings
-import com.merkost.suby.repository.room.ServiceRepository
 import com.merkost.suby.repository.room.SubscriptionRepository
-import com.merkost.suby.use_case.GetServicesUseCase
-import com.merkost.suby.utils.BaseViewState
 import com.merkost.suby.utils.toKotlinLocalDateTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -33,19 +29,10 @@ import javax.inject.Inject
 class NewSubscriptionViewModel @Inject constructor(
     appSettings: AppSettings,
     private val subscriptionRepository: SubscriptionRepository,
-    private val serviceRepository: ServiceRepository,
-    private val getServicesUseCase: GetServicesUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<NewSubscriptionUiState?>(null)
     val uiState = _uiState.asStateFlow()
-
-    private val _servicesState =
-        MutableStateFlow<BaseViewState<List<Service>>>(BaseViewState.Loading)
-    val servicesState = _servicesState.asStateFlow()
-
-    val customServices = serviceRepository.customServices
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     val mainCurrency = appSettings.mainCurrency.stateIn(
         viewModelScope,
@@ -63,25 +50,6 @@ class NewSubscriptionViewModel @Inject constructor(
                     && billingDate != null
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
-
-    init {
-        getServices()
-    }
-
-    private fun getServices() {
-        viewModelScope.launch {
-            getServicesUseCase.invoke().first().fold(
-                onSuccess = { result ->
-                    _servicesState.update {
-                        BaseViewState.Success(result)
-                    }
-                },
-                onFailure = { error ->
-                    _servicesState.update { BaseViewState.Error(error = error) }
-                }
-            )
-        }
-    }
 
     fun saveNewSubscription(currency: Currency) {
         viewModelScope.launch {
@@ -193,10 +161,6 @@ class NewSubscriptionViewModel @Inject constructor(
 
     fun onDescriptionChanged(newText: String) {
         selectedValues.update { it.copy(description = newText) }
-    }
-
-    fun onReloadServices() {
-        getServices()
     }
 }
 

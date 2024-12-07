@@ -6,13 +6,14 @@ import androidx.lifecycle.viewModelScope
 import com.merkost.suby.model.Analytics
 import com.merkost.suby.model.entity.full.Category
 import com.merkost.suby.model.entity.full.toCategory
-import com.merkost.suby.model.room.AppDatabase
 import com.merkost.suby.model.room.dao.CategoryDao
+import com.merkost.suby.model.room.dao.CustomServiceDao
 import com.merkost.suby.model.room.entity.CustomServiceDb
 import com.merkost.suby.utils.ImageFileManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -22,15 +23,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CustomServiceViewModel @Inject constructor(
-    private val appDatabase: AppDatabase,
+    private val customServiceDao: CustomServiceDao,
+    private val categoryDao: CategoryDao,
     private val imageFileManager: ImageFileManager,
-    categoryDao: CategoryDao,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<CustomServiceUiState?>(null)
     val uiState = _uiState.asStateFlow()
 
-    val categories = categoryDao.getCategories().map { it.map { it.toCategory() } }
+    val categories: StateFlow<List<Category>> = categoryDao.getCategories()
+        .map { list -> list.map { it.toCategory() } }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     private val _customServiceData = MutableStateFlow(CustomServiceData())
@@ -41,63 +43,108 @@ class CustomServiceViewModel @Inject constructor(
     }
 
     fun setImageUri(uri: Uri) {
-        _customServiceData.value =
-            _customServiceData.value.copy(imageUri = if (uri == Uri.EMPTY) null else uri)
+        _customServiceData.update {
+            it.copy(imageUri = if (uri == Uri.EMPTY) null else uri)
+        }
     }
 
-    private fun saveNewCustomService(serviceName: String, selectedCategoryId: Int) {
+    fun setCategory(category: Category) {
+        _customServiceData.update { it.copy(category = category) }
+    }
+
+    private fun validateServiceData(serviceData: CustomServiceData): CustomServiceUiState? {
+        return when {
+            serviceData.name.isBlank() -> CustomServiceUiState.ServiceNameRequired
+            serviceData.category == null -> CustomServiceUiState.CategoryRequired
+            else -> null
+        }
+    }
+
+    fun createCustomService(serviceData: CustomServiceData) {
+        val validationState = validateServiceData(serviceData)
+        if (validationState != null || serviceData.category == null) {
+            _uiState.value = validationState ?: CustomServiceUiState.CategoryRequired
+            return
+        }
+        val category = serviceData.category
+        val serviceName = serviceData.name
+        val imageUriInput = serviceData.imageUri
+
         viewModelScope.launch {
+            val imageUri = imageUriInput?.let {
+                imageFileManager.saveCustomServiceImageToInternalStorage(it, serviceName)
+            }
+
             val customService = CustomServiceDb(
                 name = serviceName,
-                categoryId = selectedCategoryId,
-                imageUri = customServiceData.value.imageUri?.let {
-                    imageFileManager.saveCustomServiceImageToInternalStorage(it, serviceName)
-                }
+                categoryId = category.id,
+                imageUri = imageUri
             )
-            appDatabase.customServiceDao().addCustomService(customService)
+            customServiceDao.addCustomService(customService)
             Analytics.logCreatedCustomService(
                 serviceName,
-                categories.value.firstOrNull() { it.id == selectedCategoryId }?.name.orEmpty()
+                category.name
             )
 
-            _uiState.update { CustomServiceUiState.Success }
-            _customServiceData.update { CustomServiceData() }
+            _uiState.value = CustomServiceUiState.Success
+            _customServiceData.value = CustomServiceData()
         }
     }
 
-    fun createCustomService(selectedCategory: Category?) {
-        val serviceName = customServiceData.value.name
-
-        when {
-            serviceName.isBlank() -> {
-                _uiState.update { CustomServiceUiState.ServiceNameRequired }
-                return
-            }
-
-            selectedCategory == null -> {
-                _uiState.update { CustomServiceUiState.CategoryRequired }
-                return
-            }
-
-            else -> {
-                saveNewCustomService(serviceName, selectedCategory.id)
-            }
+    fun updateCustomService(serviceId: Int, serviceData: CustomServiceData) {
+        val validationState = validateServiceData(serviceData)
+        if (validationState != null || serviceData.category == null) {
+            _uiState.value = validationState ?: CustomServiceUiState.CategoryRequired
+            return
         }
 
+        viewModelScope.launch {
+            val existingService = customServiceDao.getCustomServiceById(serviceId)
+            if (existingService != null) {
+
+                val imageUri = serviceData.imageUri?.let {
+                    existingService.imageUri?.let {
+                        imageFileManager.deleteCustomServiceImageFromInternalStorage(it)
+                    }
+
+                    imageFileManager.saveCustomServiceImageToInternalStorage(it, serviceData.name)
+                } ?: existingService.imageUri
+
+                val updatedService = existingService.copy(
+                    name = serviceData.name,
+                    categoryId = serviceData.category.id,
+                    imageUri = imageUri
+                )
+
+                customServiceDao.updateCustomService(updatedService)
+                Analytics.logUpdatedCustomService(
+                    oldServiceName = existingService.name,
+                    serviceName = serviceData.name,
+                    categoryName = serviceData.category.name
+                )
+
+                _uiState.value = CustomServiceUiState.Success
+                _customServiceData.value = CustomServiceData()
+            } else {
+                _uiState.value = CustomServiceUiState.ServiceNotFound
+            }
+        }
     }
 
     fun resetUiState() {
-        _uiState.update { null }
+        _uiState.value = null
     }
 }
 
 sealed class CustomServiceUiState {
     data object ServiceNameRequired : CustomServiceUiState()
     data object CategoryRequired : CustomServiceUiState()
+    data object ServiceNotFound : CustomServiceUiState()
     data object Success : CustomServiceUiState()
 }
 
 data class CustomServiceData(
     val name: String = "",
     val imageUri: Uri? = null,
+    val category: Category? = null,
 )

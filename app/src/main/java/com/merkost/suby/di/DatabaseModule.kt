@@ -19,6 +19,7 @@ import com.merkost.suby.repository.room.ServiceRepository
 import com.merkost.suby.repository.room.ServiceRepositoryImpl
 import com.merkost.suby.repository.room.SubscriptionRepository
 import com.merkost.suby.repository.room.SubscriptionRepositoryImpl
+import com.merkost.suby.utils.ImageFileManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -63,9 +64,16 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideServicesRepository(
-        serviceDao: ServiceDao, customServiceDao: CustomServiceDao
+        serviceDao: ServiceDao, customServiceDao: CustomServiceDao,
+        subscriptionDao: SubscriptionDao,
+        imageFileManager: ImageFileManager
     ): ServiceRepository {
-        return ServiceRepositoryImpl(serviceDao, customServiceDao)
+        return ServiceRepositoryImpl(
+            serviceDao,
+            customServiceDao,
+            subscriptionDao,
+            imageFileManager
+        )
     }
 
     @Provides
