@@ -96,6 +96,7 @@ fun ServiceNameImage(modifier: Modifier, shape: Shape = SubyShape, name: String)
         contentAlignment = Alignment.Center
     ) {
         Text(
+            modifier = Modifier.padding(8.dp),
             text = name.take(1),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.headlineSmall
