@@ -281,10 +281,7 @@ fun MainBalance(
                         shape = SubyShape,
                         highlight = PlaceholderHighlight.fade()
                     ),
-                text = buildString {
-                    append(totalPrice.total ?: stringResource(R.string.unknown))
-                    append(totalPrice.currency.symbol)
-                },
+                text = totalPrice.total ?: stringResource(R.string.unknown),
                 style = textStyle,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

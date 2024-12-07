@@ -2,6 +2,7 @@ package com.merkost.suby.presentation.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.merkost.suby.domain.CurrencyFormat
 import com.merkost.suby.formatDecimal
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.Period
@@ -42,7 +43,8 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     subscriptionRepository: SubscriptionRepository,
     private val appSettings: AppSettings,
-    private val getCurrencyRatesUseCase: GetCurrencyRatesUseCase
+    private val getCurrencyRatesUseCase: GetCurrencyRatesUseCase,
+    private val currencyFormatter: CurrencyFormat,
 ) : ViewModel() {
 
     val subscriptions = subscriptionRepository.subscriptions
@@ -148,7 +150,7 @@ class MainViewModel @Inject constructor(
                 isUpdating = true,
                 isLoading = true,
                 currency = currency,
-                total = lastTotal?.totalPrice?.formatDecimal(),
+                total = lastTotal?.totalPrice?.formatWithCurrency(currencyFormatter, currency.code),
             )
         }
 
@@ -162,7 +164,7 @@ class MainViewModel @Inject constructor(
                     it.copy(
                         isLoading = false,
                         isUpdating = false,
-                        total = lastTotal.totalPrice.formatDecimal(),
+                        total = lastTotal.totalPrice.formatWithCurrency(currencyFormatter, currency.code),
                         lastUpdated = lastTotal.lastUpdated
                     )
                 }
@@ -182,16 +184,16 @@ class MainViewModel @Inject constructor(
                 it.copy(
                     isLoading = false,
                     isUpdating = false,
-                    total = currencyResult.formatDecimal(),
+                    total = currencyResult.formatWithCurrency(currencyFormatter, currency.code),
                     lastUpdated = java.time.LocalDateTime.now().toKotlinLocalDateTime()
                 )
             }
 
             appSettings.saveLastTotalPrice(
                 LastTotalPrice(
-                    currencyResult,
-                    currency,
-                    java.time.LocalDateTime.now().toKotlinLocalDateTime()
+                    totalPrice = currencyResult,
+                    currency = currency,
+                    lastUpdated = java.time.LocalDateTime.now().toKotlinLocalDateTime()
                 )
             )
         }
@@ -252,6 +254,15 @@ class MainViewModel @Inject constructor(
 
     fun onFiltersReset() {
         _selectedFilters.update { listOf(ALL) }
+    }
+}
+
+private fun Double?.formatWithCurrency(
+    currencyFormatter: CurrencyFormat,
+    currencyCode: String
+): String? {
+    return this?.let {
+        currencyFormatter.formatCurrencyStyle(it.formatDecimal(), currencyCode)
     }
 }
 

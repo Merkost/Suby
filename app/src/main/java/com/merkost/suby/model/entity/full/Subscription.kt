@@ -14,6 +14,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toKotlinLocalDate
 import kotlinx.datetime.toKotlinLocalDateTime
 import kotlinx.datetime.toLocalDateTime
 
@@ -107,4 +108,31 @@ data class Subscription(
         service = toService(),
         billingDate = paymentDate,
     )
+}
+
+fun Subscription.upcomingPayments(count: Int = 3): List<LocalDate> {
+    // For CANCELED and EXPIRED, no upcoming payments
+    if (status == Status.CANCELED || status == Status.EXPIRED) {
+        return emptyList()
+    }
+
+    val currentDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+    val upcomingDates = mutableListOf<LocalDate>()
+
+    var nextDate = period.nextBillingDateFromToday(paymentDate.date)
+
+    while (upcomingDates.size < count) {
+        if (nextDate > currentDate) {
+            upcomingDates.add(nextDate)
+        }
+        nextDate = period.nextBillingDate(nextDate)
+    }
+
+    return upcomingDates.map { date ->
+        java.time.LocalDate.of(
+            date.year,
+            date.month.value,
+            date.dayOfMonth,
+        ).toKotlinLocalDate()
+    }
 }
