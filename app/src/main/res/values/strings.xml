@@ -12,6 +12,11 @@
         <item quantity="other">%d more days</item>
     </plurals>
 
+    <plurals name="days">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+
     <string name="trial_ended_on">ended on %1$s</string>
     <string name="canceled_on">on %1$s</string>
     <string name="expired_on">on %1$s</string>
@@ -94,7 +99,7 @@
     <string name="error_unknown">Something went wrong. Please try again later.</string>
 
     <!-- Toasts -->
-    <string name="toast_subscription_deleted">The subscription has been deleted successfully</string>
+    <string name="toast_subscription_deleted">Subscription has been deleted</string>
     <string name="subscription_saved">Subscription has been updated</string>
 
     <!--  Delete dialog  -->
@@ -103,5 +108,12 @@
 
     <string name="delete_custom_service_title">Delete %s?</string>
     <string name="delete_custom_service_description">This will also remove all your subscriptions connected with this service</string>
+    <string name="no_description">No description</string>
+    <string name="days_until_next_payment">Days until next payment</string>
+    <string name="subscription_details">Subscription Details</string>
+    <string name="cd_more_options">content_description_more_options</string>
+    <string name="option_edit">Edit</string>
+    <string name="action_delete">Delete</string>
+    <string name="upcoming_payments_title">Upcoming payments</string>
 
 </resources>

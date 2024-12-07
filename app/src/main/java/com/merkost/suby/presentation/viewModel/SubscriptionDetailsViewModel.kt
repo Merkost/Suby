@@ -25,9 +25,9 @@ class SubscriptionDetailsViewModel @Inject constructor(
     val subscriptionId = savedStateHandle.toRoute<Destinations.SubscriptionInfo>().subscriptionId
     val uiState = MutableStateFlow<UiState<Subscription>>(UiState.Loading)
 
-    fun deleteSubscription(subscription: Subscription) {
+    fun deleteSubscription(subscriptionId: Int) {
         viewModelScope.launch {
-            subscriptionRepository.removeSubscription(subscription.id)
+            subscriptionRepository.removeSubscription(subscriptionId)
         }
     }
 

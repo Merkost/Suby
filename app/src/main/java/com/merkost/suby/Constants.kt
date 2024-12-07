@@ -9,6 +9,7 @@ const val CURRENCY_ENDPOINT_FREE =
 val SUPABASE_ENDPOINT = "https://${BuildConfig.SUPABASE_ID}.supabase.co"
 
 val SubyShape = RoundedCornerShape(25)
+val SubySmallShape = RoundedCornerShape(10)
 
 
 
