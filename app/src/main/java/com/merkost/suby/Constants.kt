@@ -5,6 +5,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 
 const val CURRENCY_ENDPOINT_FREE =
     "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies"
+const val CURRENCY_ENDPOINT_FALLBACK = "https://latest.currency-api.pages.dev/v1/currencies"
 
 val SUPABASE_ENDPOINT = "https://${BuildConfig.SUPABASE_ID}.supabase.co"
 

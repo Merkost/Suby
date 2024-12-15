@@ -47,7 +47,7 @@ class GetCurrencyRatesUseCase(
                 },
                 onFailure = {
                     Timber.tag("GetCurrencyRatesUseCase")
-                        .e(it, "Failed to get currency rates for $mainCurrency")
+                        .w(it, "Failed to get currency rates for $mainCurrency")
                     return rates
                 }
             )
@@ -62,7 +62,7 @@ class GetCurrencyRatesUseCase(
     ): Double {
         val mainCurrency = mainCurrency.first()
         val activeSubscriptions = subscriptionRepository.subscriptions.firstOrNull().orEmpty()
-            .filter { it.status == Status.ACTIVE}
+            .filter { it.status == Status.ACTIVE }
 
         // Calculate cost of subscriptions in the main currency
         val subscriptionsInMainCurrency = activeSubscriptions
