@@ -122,6 +122,7 @@ fun CurrencyItem(modifier: Modifier = Modifier, currency: Currency, onClick: () 
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
+                modifier = Modifier.weight(1f, false),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
