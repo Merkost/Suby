@@ -3,7 +3,6 @@ package com.merkost.suby.presentation.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.merkost.suby.domain.CurrencyFormat
-import com.merkost.suby.formatDecimal
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.Period
 import com.merkost.suby.model.entity.Status
@@ -164,7 +163,10 @@ class MainViewModel @Inject constructor(
                     it.copy(
                         isLoading = false,
                         isUpdating = false,
-                        total = lastTotal.totalPrice.formatWithCurrency(currencyFormatter, currency.code),
+                        total = lastTotal.totalPrice.formatWithCurrency(
+                            currencyFormatter,
+                            currency.code
+                        ),
                         lastUpdated = lastTotal.lastUpdated
                     )
                 }
@@ -262,7 +264,7 @@ private fun Double?.formatWithCurrency(
     currencyCode: String
 ): String? {
     return this?.let {
-        currencyFormatter.formatCurrencyStyle(it.formatDecimal(), currencyCode)
+        currencyFormatter.formatCurrencyStyle(it.toBigDecimal(), currencyCode)
     }
 }
 

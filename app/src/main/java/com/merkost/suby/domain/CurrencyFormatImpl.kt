@@ -1,5 +1,6 @@
 package com.merkost.suby.domain
 
+import android.annotation.SuppressLint
 import android.icu.text.NumberFormat
 import android.icu.util.Currency
 import timber.log.Timber
@@ -19,7 +20,7 @@ class CurrencyFormatImpl @Inject constructor(
     private val locale: Locale
 ) : CurrencyFormat {
     @Deprecated("Use the one with bigDecimal")
-    override fun formatIsoCurrencyStyle(amount: String, currencyCode: String): String =
+    override fun formatIsoCurrencyStyle(amount: BigDecimal, currencyCode: String): String =
         formatCurrent(
             amount,
             currencyCode,
@@ -28,13 +29,15 @@ class CurrencyFormatImpl @Inject constructor(
 
 
     @Deprecated("Use the one with bigDecimal")
-    override fun formatCurrencyStyle(amount: String, currencyCode: String): String = formatCurrent(
-        amount,
-        currencyCode,
-        NumberFormat.CURRENCYSTYLE
-    )
+    override fun formatCurrencyStyle(amount: BigDecimal, currencyCode: String): String =
+        formatCurrent(
+            amount,
+            currencyCode,
+            NumberFormat.CURRENCYSTYLE
+        )
 
 
+    @SuppressLint("TimberExceptionLogging")
     private fun formatCurrent(amount: String, currencyCode: String, style: Int): String {
         return kotlin.runCatching {
             val value = amount.toDouble()
@@ -45,15 +48,15 @@ class CurrencyFormatImpl @Inject constructor(
             )
             numberFormat.format(value)
         }.onFailure {
-            Timber.tag("CurrencyFormat").w(
-                CurrencyFormatException.createException(
-                    amount,
-                    currencyCode
-                )
+            val exception = CurrencyFormatException.createException(
+                amount,
+                currencyCode
             )
+            Timber.tag("CurrencyFormat").e(it, exception.message)
         }.getOrDefault("")
     }
 
+    @SuppressLint("TimberExceptionLogging")
     private fun formatCurrent(amount: BigDecimal, currencyCode: String, style: Int): String {
         return kotlin.runCatching {
             val value = amount.toDouble()
@@ -64,12 +67,11 @@ class CurrencyFormatImpl @Inject constructor(
             )
             numberFormat.format(value)
         }.onFailure {
-            Timber.tag("CurrencyFormat").w(
-                CurrencyFormatException.createException(
-                    amount.toPlainString(),
-                    currencyCode
-                )
+            val exception = CurrencyFormatException.createException(
+                amount.toPlainString(),
+                currencyCode
             )
+            Timber.tag("CurrencyFormat").e(it, exception.message)
         }.getOrDefault("")
     }
 

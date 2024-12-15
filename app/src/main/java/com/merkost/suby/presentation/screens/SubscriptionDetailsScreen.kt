@@ -54,7 +54,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.merkost.suby.R
 import com.merkost.suby.SubySmallShape
 import com.merkost.suby.domain.ui.LocalCurrencyFormatter
-import com.merkost.suby.formatDecimal
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.Status
 import com.merkost.suby.model.entity.full.Subscription
@@ -337,7 +336,7 @@ fun PriceWithCurrency(price: Double, currency: Currency) {
 
         Text(
             text = currencyFormatter.formatCurrencyStyle(
-                price.formatDecimal(),
+                price.toBigDecimal(),
                 currency.code
             ),
             style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
@@ -418,7 +417,7 @@ fun UpcomingPaymentsList(
                             UpcomingPaymentItem(
                                 paymentDate = paymentDate,
                                 priceString = currencyFormatter.formatCurrencyStyle(
-                                    price.formatDecimal(),
+                                    price.toBigDecimal(),
                                     currency.code
                                 )
                             )
