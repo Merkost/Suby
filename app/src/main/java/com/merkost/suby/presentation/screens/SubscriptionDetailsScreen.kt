@@ -125,16 +125,19 @@ fun SubscriptionDetailsScreen(
                 }
             )
         },
-
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         ScreenStateHandler(
             screenState = uiState,
             modifier = Modifier
+                .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(innerPadding)
+                .padding(innerPadding),
         ) { data ->
-            SubscriptionInfo(subscription = data)
+            SubscriptionInfo(
+                modifier = Modifier.fillMaxSize(),
+                subscription = data
+            )
         }
     }
 }
@@ -309,7 +312,8 @@ internal fun SubscriptionInfo(
             currency = subscription.currency,
             upcomingPayments = subscription.upcomingPayments(),
             getPriceForDate = { subscription.price },
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
         )
     }
 }
@@ -395,7 +399,7 @@ fun UpcomingPaymentsList(
         val currencyFormatter = LocalCurrencyFormatter.current
 
         TitleColumn(
-            modifier = modifier.fillMaxWidth(),
+            modifier = modifier,
             title = stringResource(R.string.upcoming_payments_title)
         ) {
 

@@ -37,22 +37,23 @@ fun <T> ScreenStateHandler(
         label = "screenStateHandlerAnim",
         transitionSpec = { screenStateTransitionSpec() }
     ) { state ->
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            when (state) {
-                is UiState.Loading -> {
-                    loadingContent()
-                }
+        when (state) {
+            is UiState.Loading -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) { loadingContent() }
+            }
 
-                is UiState.Error -> {
-                    errorContent(stringResource(state.messageRes))
-                }
+            is UiState.Error -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) { errorContent(stringResource(state.messageRes)) }
+            }
 
-                is UiState.Success -> {
-                    successContent(state.data)
-                }
+            is UiState.Success -> {
+                successContent(state.data)
             }
         }
     }
