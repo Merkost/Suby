@@ -1,11 +1,10 @@
-package com.merkost.suby.presentation.screens
+package com.merkost.suby.presentation.home
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,12 +15,15 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -48,9 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -79,11 +79,14 @@ import com.merkost.suby.presentation.base.components.EmptyStateView
 import com.merkost.suby.presentation.base.components.service.ServiceLogo
 import com.merkost.suby.presentation.base.fade
 import com.merkost.suby.presentation.base.placeholder3
-import com.merkost.suby.presentation.base.rotatingOnClick
+import com.merkost.suby.presentation.screens.CurrencyLabel
 import com.merkost.suby.presentation.viewModel.MainViewModel
 import com.merkost.suby.presentation.viewModel.TotalPrice
 import com.merkost.suby.round
 import com.merkost.suby.ui.theme.SubyTheme
+import com.merkost.suby.utils.Constants
+import com.merkost.suby.utils.Constants.MAX_FREE_SERVICES
+import com.merkost.suby.utils.all
 import com.merkost.suby.utils.hasSubscriptions
 import com.merkost.suby.utils.toRelativeTimeString
 import kotlinx.coroutines.launch
@@ -93,6 +96,7 @@ import kotlinx.coroutines.launch
 fun SubscriptionsScreen(
     onAddClicked: () -> Unit,
     onCurrencyClick: () -> Unit,
+    onPremiumClick: () -> Unit,
     onSubscriptionInfo: (subscriptionId: Int) -> Unit,
 ) {
     val viewModel = hiltViewModel<MainViewModel>()
@@ -106,27 +110,23 @@ fun SubscriptionsScreen(
 
     DoubleBackPressHandler(true)
 
-    Scaffold(contentWindowInsets = WindowInsets(0.dp), topBar = {
-        SubyTopAppBar(title = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Image(
-                    modifier = Modifier
-                        .size(45.dp)
-                        .rotatingOnClick(onClick = {}),
-                    painter = painterResource(id = R.drawable.suby_logo_white),
-                    contentDescription = "",
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface)
-                )
-                Text(text = stringResource(R.string.title_subscriptions))
-            }
-        }, actions = {
-            OutlinedButton(
-                modifier = Modifier.padding(end = 8.dp), onClick = onAddClicked
-            ) {
-                Icon(Icons.Default.Add)
-            }
-        })
-    }) {
+    Scaffold(
+        contentWindowInsets = WindowInsets(0.dp),
+        topBar = {
+            SubyTopAppBar(
+                title = { MainScreenTitle(onLogoClick = {}) },
+                actions = {
+                    if (subscriptions.size < MAX_FREE_SERVICES) {
+                        OutlinedButton(
+                            modifier = Modifier.padding(end = 8.dp), onClick = onAddClicked
+                        ) {
+                            Icon(Icons.Default.Add)
+                        }
+                    }
+                }
+            )
+        }
+    ) {
         AnimatedContent(
             modifier = Modifier.padding(it),
             targetState = hasSubscriptions,
@@ -136,7 +136,10 @@ fun SubscriptionsScreen(
                 EmptySubscriptions(onAddClicked)
             } else {
                 LazyColumn(
-                    contentPadding = PaddingValues(16.dp),
+                    modifier = Modifier,
+                    contentPadding =
+                    WindowInsets.navigationBars.add(WindowInsets.all(16.dp))
+                        .asPaddingValues(),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     item {
@@ -152,6 +155,14 @@ fun SubscriptionsScreen(
 
                     item {
                         Sorting(viewModel)
+                    }
+
+                    if (subscriptions.size >= Constants.MAX_FREE_SERVICES) {
+                        item {
+                            AddMoreServicesItem(
+                                onClick = { onPremiumClick() }
+                            )
+                        }
                     }
 
                     items(subscriptions, key = { it.id }) { subscription ->
@@ -333,7 +344,7 @@ fun HorizontalSubscriptionItem(
         onClick = onClick,
         shape = SubyShape,
         tonalElevation = 2.dp,
-        shadowElevation = 2.dp
+        shadowElevation = 0.dp
     ) {
         Row(
             modifier = Modifier.padding(14.dp),
@@ -454,6 +465,6 @@ fun StatusBubble(
 @Composable
 fun SubscriptionsScreenPreview() {
     SubyTheme {
-        SubscriptionsScreen({}, {}, { _ -> })
+        SubscriptionsScreen({}, {}, {}, { _ -> })
     }
 }

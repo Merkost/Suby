@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.datetime.LocalDateTime
 import timber.log.Timber
+import kotlin.time.Duration.Companion.milliseconds
 
 class GetServicesUseCase(
     private val supabaseApi: SupabaseApi,
@@ -26,7 +27,11 @@ class GetServicesUseCase(
 ) {
     operator fun invoke(): Flow<Result<List<Service>>> = flow {
         val currentTime = System.currentTimeMillis()
-        val updateThreshold = Constants.SUBY_UPDATE_THRESHOLD.inWholeMilliseconds
+        val updateThreshold = if (Environment.DEBUG) {
+            1.milliseconds.inWholeMilliseconds
+        } else {
+            Constants.SUBY_UPDATE_THRESHOLD.inWholeMilliseconds
+        }
 
         val lastServiceUpdate = serviceDao.getLastServiceUpdate()?.toEpochMillis() ?: 0
         val lastCategoryUpdate = categoryDao.getLastCategoryUpdate()?.toEpochMillis() ?: 0

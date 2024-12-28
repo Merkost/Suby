@@ -1,5 +1,7 @@
 package com.merkost.suby.utils
 
+import com.merkost.suby.BuildConfig
+
 object Environment {
-    const val DEBUG = false
+    const val DEBUG = BuildConfig.BUILD_TYPE == "debug"
 }

@@ -116,4 +116,20 @@
     <string name="action_delete">Delete</string>
     <string name="upcoming_payments_title">Upcoming payments</string>
 
+    <!-- Premium Features -->
+    <string name="feature_unlimited_subscriptions_title">Unlimited Subscriptions</string>
+    <string name="feature_priority_support_title">Priority Support</string>
+    <string name="feature_ad_free_title">Ad-Free Experience</string>
+    <string name="feature_backup_sync_title">Backup &amp; Sync</string>
+    <string name="feature_subscription_analytics_title">Subscription Analytics</string>
+    <string name="coming_soon">Coming Soon</string>
+    <string name="feature_notification_reminder_title">Notification Reminders</string>
+    <string name="upgrade_button_text">Upgrade to Premium</string>
+    <string name="more_please">More Please!</string>
+    <string name="upgrade_to_add_more_subscriptions">Upgrade to add more subscriptions</string>
+    <string name="unlock_premium_features">Unlock Premium Features</string>
+    <string name="unlock_premium_description">Simplify your life and take control of your subscriptions with Suby Premium.</string>
+    <string name="thanks_description">Thanks for going premium—you’re the best!</string>
+
+
 </resources>

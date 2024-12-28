@@ -35,6 +35,9 @@ object Destinations {
     data class EditSubscription(
         val subscriptionId: Int,
     )
+
+    @Serializable
+    data object PremiumFeatures
 }
 
 object Arguments {

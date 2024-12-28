@@ -65,6 +65,7 @@ import com.merkost.suby.presentation.base.TitleColumn
 import com.merkost.suby.presentation.base.UiState
 import com.merkost.suby.presentation.base.components.ScreenStateHandler
 import com.merkost.suby.presentation.base.components.service.ServiceLogo
+import com.merkost.suby.presentation.home.StatusBubble
 import com.merkost.suby.presentation.viewModel.SubscriptionDetailsViewModel
 import com.merkost.suby.showToast
 import com.merkost.suby.utils.dateString
