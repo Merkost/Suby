@@ -39,12 +39,15 @@ import com.merkost.suby.model.billing.ChooseSubscription
 import com.merkost.suby.presentation.base.LogoImage
 import com.merkost.suby.presentation.base.SubyTopAppBar
 import com.merkost.suby.ui.theme.LocalActivity
+import com.merkost.suby.utils.analytics.ScreenLog
+import com.merkost.suby.utils.analytics.Screens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PremiumFeaturesScreen(
     onBackClick: () -> Unit,
 ) {
+    ScreenLog(Screens.Premium)
     val activity = LocalActivity.current
 
     val chooseSubscription = remember {

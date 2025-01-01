@@ -27,9 +27,12 @@ import com.merkost.suby.R
 import com.merkost.suby.presentation.base.LogoImage
 import com.merkost.suby.presentation.base.SubyButton
 import com.merkost.suby.ui.theme.SubyTheme
+import com.merkost.suby.utils.analytics.ScreenLog
+import com.merkost.suby.utils.analytics.Screens
 
 @Composable
 fun GreetingScreen(onContinueClick: () -> Unit) {
+    ScreenLog(Screens.Greeting)
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background

@@ -37,12 +37,15 @@ import com.merkost.suby.presentation.base.SubyButton
 import com.merkost.suby.presentation.rememberPickerState
 import com.merkost.suby.presentation.screens.CurrencyLabel
 import com.merkost.suby.presentation.viewModel.AppViewModel
+import com.merkost.suby.utils.analytics.ScreenLog
+import com.merkost.suby.utils.analytics.Screens
 import org.koin.androidx.compose.koinViewModel
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OnboardingCurrencyScreen(onCurrencySelected: (Currency) -> Unit) {
+    ScreenLog(Screens.Onboarding)
     val pickerState = rememberPickerState<Currency>()
     var selectedCurrency by remember { mutableStateOf<Currency?>(null) }
 

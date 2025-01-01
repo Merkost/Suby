@@ -37,12 +37,14 @@ android {
             )
             signingConfig = signingConfigs.getByName("debug")
 
+            buildConfigField("String", "AMPLITUDE_API_KEY", findProperty("AMPLITUDE_API_KEY").toString())
             buildConfigField("String", "SUPABASE_API_KEY", findProperty("SUPABASE_API_KEY").toString())
             buildConfigField("String", "SUPABASE_ID", findProperty("SUPABASE_ID").toString())
         }
         debug {
             versionNameSuffix = ".debug"
             applicationIdSuffix = ".debug"
+            buildConfigField("String", "AMPLITUDE_API_KEY", findProperty("AMPLITUDE_API_KEY").toString())
             buildConfigField("String", "SUPABASE_API_KEY", findProperty("SUPABASE_API_KEY").toString())
             buildConfigField("String", "SUPABASE_ID", findProperty("SUPABASE_ID").toString())
         }
@@ -80,6 +82,8 @@ android {
 
 dependencies {
     implementation(libs.material)
+    implementation(libs.analytics.android)
+
     implementation(libs.koin.compose)
     implementation(libs.koin)
 

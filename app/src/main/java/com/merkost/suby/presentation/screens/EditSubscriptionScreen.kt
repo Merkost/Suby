@@ -36,6 +36,8 @@ import com.merkost.suby.presentation.base.components.service.ServiceRowItem
 import com.merkost.suby.presentation.states.EditSubscriptionEvent
 import com.merkost.suby.presentation.viewModel.EditSubscriptionViewModel
 import com.merkost.suby.showToast
+import com.merkost.suby.utils.analytics.ScreenLog
+import com.merkost.suby.utils.analytics.Screens
 import com.merkost.suby.utils.toEpochMillis
 import org.koin.androidx.compose.koinViewModel
 
@@ -48,6 +50,7 @@ fun EditSubscriptionScreen(
     onSave: () -> Unit,
     onCurrencyClicked: () -> Unit
 ) {
+    ScreenLog(Screens.EditSubscription)
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
     val couldSave by viewModel.couldSave.collectAsState()

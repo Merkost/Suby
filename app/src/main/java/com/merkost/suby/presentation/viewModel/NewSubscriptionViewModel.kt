@@ -2,7 +2,6 @@ package com.merkost.suby.presentation.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.merkost.suby.model.Analytics
 import com.merkost.suby.model.entity.BasePeriod
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.NewSubscription
@@ -12,6 +11,7 @@ import com.merkost.suby.model.room.entity.SubscriptionDb
 import com.merkost.suby.presentation.states.NewSubscriptionUiState
 import com.merkost.suby.repository.datastore.AppSettings
 import com.merkost.suby.repository.room.SubscriptionRepository
+import com.merkost.suby.utils.analytics.Analytics
 import com.merkost.suby.utils.toKotlinLocalDateTime
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -97,12 +97,13 @@ class NewSubscriptionViewModel(
 
                         subscriptionRepository.addSubscription(newSubscriptionDb)
                         Analytics.logAddedSubscription(
+                            serviceId = values.service.id,
                             serviceName = values.service.name,
                             price = values.price,
                             currency = currency,
-                            values.service.isCustomService,
-                            values.period,
-                            values.status,
+                            isCustom = values.service.isCustomService,
+                            period = values.period,
+                            status = values.status,
                         )
                         _uiState.update { NewSubscriptionUiState.Success }
                     }.onFailure { e ->
@@ -124,6 +125,7 @@ class NewSubscriptionViewModel(
     }
 
     fun onServiceSelected(service: Service) {
+        Analytics.logServiceSelected(service.id.toString(), service.name, service.isCustomService)
         selectedValues.update {
             it.copy(service = service)
         }

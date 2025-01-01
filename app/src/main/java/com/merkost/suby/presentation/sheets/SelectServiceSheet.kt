@@ -50,6 +50,8 @@ import com.merkost.suby.presentation.base.components.service.SwipeableServiceRow
 import com.merkost.suby.presentation.screens.AbsentItem
 import com.merkost.suby.presentation.viewModel.SelectServiceViewModel
 import com.merkost.suby.utils.BaseViewState
+import com.merkost.suby.utils.analytics.ScreenLog
+import com.merkost.suby.utils.analytics.Screens
 import kotlinx.coroutines.launch
 
 @Composable
@@ -159,6 +161,7 @@ internal fun CustomServicesList(
     onCustomServiceSelected: (Service) -> Unit,
     onDeleteCustomService: (Service) -> Unit,
 ) {
+    ScreenLog(Screens.CustomServices)
     var createCustomServiceSheet by remember { mutableStateOf(false) }
 
     SheetDialog(
@@ -238,6 +241,7 @@ internal fun ServicesList(
     onServiceSelected: (Service) -> Unit,
     onSuggestService: (name: String) -> Unit,
 ) {
+    ScreenLog(Screens.Services)
     var searchString by remember {
         mutableStateOf("")
     }

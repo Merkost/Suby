@@ -48,12 +48,15 @@ import com.merkost.suby.presentation.base.SubyTextField
 import com.merkost.suby.presentation.base.SubyTopAppBar
 import com.merkost.suby.presentation.viewModel.FeedbackViewModel
 import com.merkost.suby.utils.BaseViewState
+import com.merkost.suby.utils.analytics.ScreenLog
+import com.merkost.suby.utils.analytics.Screens
 import kotlinx.coroutines.android.awaitFrame
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FeedbackScreen(upPress: () -> Unit, feedbackAction: FeedbackAction, text: String) {
+    ScreenLog(Screens.Feedback)
 
     val context = LocalContext.current
     val viewModel = koinViewModel<FeedbackViewModel>()

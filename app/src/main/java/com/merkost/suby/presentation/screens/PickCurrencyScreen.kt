@@ -37,6 +37,8 @@ import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.SubyTopAppBar
 import com.merkost.suby.presentation.viewModel.MainViewModel
+import com.merkost.suby.utils.analytics.ScreenLog
+import com.merkost.suby.utils.analytics.Screens
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -47,6 +49,7 @@ fun PickCurrencyScreen(
     onCurrencySelected: (Currency) -> Unit,
     upPress: () -> Unit
 ) {
+    ScreenLog(Screens.Currency)
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val mainViewModel = koinViewModel<MainViewModel>()

@@ -59,12 +59,15 @@ import com.merkost.suby.presentation.rememberPickerState
 import com.merkost.suby.presentation.viewModel.CustomServiceData
 import com.merkost.suby.presentation.viewModel.CustomServiceUiState
 import com.merkost.suby.presentation.viewModel.CustomServiceViewModel
+import com.merkost.suby.utils.analytics.ScreenLog
+import com.merkost.suby.utils.analytics.Screens
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CreateCustomServiceSheet(
     onCreated: () -> Unit
 ) {
+    ScreenLog(Screens.CreateCustomService)
     val viewModel: CustomServiceViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val categories by viewModel.categories.collectAsState()

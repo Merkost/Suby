@@ -71,6 +71,8 @@ import com.merkost.suby.presentation.states.NewSubscriptionUiState
 import com.merkost.suby.presentation.viewModel.NewSubscriptionViewModel
 import com.merkost.suby.presentation.viewModel.SelectServiceViewModel
 import com.merkost.suby.showToast
+import com.merkost.suby.utils.analytics.ScreenLog
+import com.merkost.suby.utils.analytics.Screens
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -81,6 +83,7 @@ fun NewSubscriptionScreen(
     onSuggestService: (inputText: String) -> Unit,
     upPress: () -> Unit
 ) {
+    ScreenLog(Screens.NewSubscription)
     val context = LocalContext.current
     val viewModel = koinViewModel<NewSubscriptionViewModel>()
     val selectServiceViewModel = koinViewModel<SelectServiceViewModel>()

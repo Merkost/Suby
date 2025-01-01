@@ -7,12 +7,24 @@ import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import coil.util.DebugLogger
+import com.amplitude.android.Amplitude
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
-import dagger.hilt.android.HiltAndroidApp
+import com.merkost.suby.di.appModule
+import com.merkost.suby.di.databaseModule
+import com.merkost.suby.di.databaseRepositoryModule
+import com.merkost.suby.di.repositoryModule
+import com.merkost.suby.di.useCaseModule
+import com.merkost.suby.di.viewModelModule
+import org.koin.android.ext.android.inject
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.startKoin
 import timber.log.Timber
 
 class SubyApplication : Application(), ImageLoaderFactory {
+
+    private val amplitude: Amplitude by inject()
 
     override fun onCreate() {
         super.onCreate()

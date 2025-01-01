@@ -86,6 +86,8 @@ import com.merkost.suby.ui.theme.SubyTheme
 import com.merkost.suby.utils.Constants
 import com.merkost.suby.utils.Constants.MAX_FREE_SERVICES
 import com.merkost.suby.utils.all
+import com.merkost.suby.utils.analytics.ScreenLog
+import com.merkost.suby.utils.analytics.Screens
 import com.merkost.suby.utils.hasSubscriptions
 import com.merkost.suby.utils.toRelativeTimeString
 import kotlinx.coroutines.launch
@@ -99,6 +101,7 @@ fun SubscriptionsScreen(
     onPremiumClick: () -> Unit,
     onSubscriptionInfo: (subscriptionId: Int) -> Unit,
 ) {
+    ScreenLog(Screens.Main)
     val viewModel = koinViewModel<MainViewModel>()
 
     val hasSubscriptions by hasSubscriptions()

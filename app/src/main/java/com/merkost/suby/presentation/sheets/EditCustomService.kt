@@ -9,6 +9,8 @@ import com.merkost.suby.R
 import com.merkost.suby.model.entity.full.Service
 import com.merkost.suby.presentation.viewModel.CustomServiceData
 import com.merkost.suby.presentation.viewModel.CustomServiceViewModel
+import com.merkost.suby.utils.analytics.ScreenLog
+import com.merkost.suby.utils.analytics.Screens
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -16,6 +18,7 @@ fun EditCustomServiceSheet(
     service: Service,
     onCreated: () -> Unit
 ) {
+    ScreenLog(Screens.EditCustomService)
     val viewModel: CustomServiceViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val categories by viewModel.categories.collectAsState()

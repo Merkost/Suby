@@ -3,13 +3,13 @@ package com.merkost.suby.presentation.viewModel
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.merkost.suby.model.Analytics
 import com.merkost.suby.model.entity.full.Category
 import com.merkost.suby.model.entity.full.toCategory
 import com.merkost.suby.model.room.dao.CategoryDao
 import com.merkost.suby.model.room.dao.CustomServiceDao
 import com.merkost.suby.model.room.entity.CustomServiceDb
 import com.merkost.suby.utils.ImageFileManager
+import com.merkost.suby.utils.analytics.Analytics
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -80,8 +80,8 @@ class CustomServiceViewModel(
             )
             customServiceDao.addCustomService(customService)
             Analytics.logCreatedCustomService(
-                serviceName,
-                category.name
+                serviceName = serviceName,
+                categoryName = category.name
             )
 
             _uiState.value = CustomServiceUiState.Success

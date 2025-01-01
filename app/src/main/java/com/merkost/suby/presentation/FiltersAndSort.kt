@@ -40,6 +40,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.merkost.suby.R
 import com.merkost.suby.SubyShape
+import com.merkost.suby.utils.analytics.ScreenLog
+import com.merkost.suby.utils.analytics.Screens
 
 @Composable
 fun TinySortFilterRow(
@@ -123,6 +125,7 @@ fun SortFilterBottomSheet(
     onSortSelected: (SortOption, SortState) -> Unit,
     onDismissRequest: () -> Unit
 ) {
+    ScreenLog(Screens.FiltersAndSort)
     ModalBottomSheet(
         sheetState = sheetState,
         onDismissRequest = onDismissRequest

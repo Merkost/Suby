@@ -67,6 +67,8 @@ import com.merkost.suby.presentation.base.components.service.ServiceLogo
 import com.merkost.suby.presentation.home.StatusBubble
 import com.merkost.suby.presentation.viewModel.SubscriptionDetailsViewModel
 import com.merkost.suby.showToast
+import com.merkost.suby.utils.analytics.ScreenLog
+import com.merkost.suby.utils.analytics.Screens
 import com.merkost.suby.utils.dateString
 import com.merkost.suby.utils.now
 import kotlinx.datetime.LocalDate
@@ -81,6 +83,7 @@ fun SubscriptionDetailsScreen(
     upPress: () -> Unit,
     onEditClick: () -> Unit
 ) {
+    ScreenLog(Screens.SubscriptionDetails)
     val viewModel: SubscriptionDetailsViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current

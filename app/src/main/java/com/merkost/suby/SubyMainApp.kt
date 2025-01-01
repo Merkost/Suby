@@ -101,9 +101,7 @@ private fun NavGraphBuilder.NavGraph(
             upPress = upPress,
             onSuggestService = { inputText ->
                 navController.navigate(
-                    Destinations.Feedback(
-                        FeedbackAction.ADD_SERVICE.toString(), text = inputText
-                    )
+                    Destinations.Feedback(FeedbackAction.ADD_SERVICE.toString(), text = inputText)
                 )
             })
     }

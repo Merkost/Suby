@@ -6,9 +6,9 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.merkost.suby.model.Analytics
 import com.merkost.suby.presentation.viewModel.AppViewModel
 import com.merkost.suby.ui.theme.SubyTheme
+import com.merkost.suby.utils.analytics.Analytics
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Analytics.analyticsInit()
+        Analytics.analyticsInit(BuildConfig.DEBUG)
 
         enableEdgeToEdge(
             SystemBarStyle.auto(
