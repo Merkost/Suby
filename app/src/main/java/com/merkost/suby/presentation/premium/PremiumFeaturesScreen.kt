@@ -24,22 +24,40 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.merkost.suby.R
+import com.merkost.suby.model.billing.ChooseSubscription
 import com.merkost.suby.presentation.base.LogoImage
 import com.merkost.suby.presentation.base.SubyTopAppBar
+import com.merkost.suby.ui.theme.LocalActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PremiumFeaturesScreen(
-    onSubscribeClick: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
 ) {
+    val activity = LocalActivity.current
+
+    val chooseSubscription = remember {
+        ChooseSubscription(activity)
+    }
+
+    LaunchedEffect(key1 = true) {
+        chooseSubscription.billingSetup()
+        chooseSubscription.hasSubscription()
+    }
+
+    val currentSubscription by chooseSubscription.subscriptions.collectAsStateWithLifecycle()
+
     Scaffold(
         topBar = {
             SubyTopAppBar(upPress = onBackClick)
@@ -54,7 +72,9 @@ fun PremiumFeaturesScreen(
         ) {
             HeaderSection()
             FeaturesList()
-            SubscribeButton(onSubscribeClick)
+            SubscribeButton(true) {
+                chooseSubscription.checkSubscriptionStatus("basic-plan")
+            }
         }
     }
 }
@@ -126,9 +146,10 @@ fun FeaturesList() {
 
 
 @Composable
-fun SubscribeButton(onSubscribeClick: () -> Unit) {
+fun SubscribeButton(isReady: Boolean, onSubscribeClick: () -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         ElevatedButton(
+            enabled = isReady,
             onClick = onSubscribeClick,
             modifier = Modifier
                 .fillMaxWidth()
@@ -158,7 +179,6 @@ fun SubscribeButton(onSubscribeClick: () -> Unit) {
 fun PremiumFeaturesScreenPreview() {
     MaterialTheme {
         PremiumFeaturesScreen(
-            onSubscribeClick = { /* TODO: Handle subscription */ },
             onBackClick = { /* TODO: Handle back navigation */ }
         )
     }

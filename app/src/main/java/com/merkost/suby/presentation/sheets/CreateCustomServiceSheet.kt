@@ -47,7 +47,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.merkost.suby.R
 import com.merkost.suby.SubyShape
@@ -60,12 +59,13 @@ import com.merkost.suby.presentation.rememberPickerState
 import com.merkost.suby.presentation.viewModel.CustomServiceData
 import com.merkost.suby.presentation.viewModel.CustomServiceUiState
 import com.merkost.suby.presentation.viewModel.CustomServiceViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CreateCustomServiceSheet(
     onCreated: () -> Unit
 ) {
-    val viewModel: CustomServiceViewModel = hiltViewModel()
+    val viewModel: CustomServiceViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val categories by viewModel.categories.collectAsState()
 

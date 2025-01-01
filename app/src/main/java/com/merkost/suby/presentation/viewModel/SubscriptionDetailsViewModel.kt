@@ -9,15 +9,13 @@ import com.merkost.suby.model.entity.full.Subscription
 import com.merkost.suby.presentation.base.UiState
 import com.merkost.suby.repository.room.SubscriptionRepository
 import com.merkost.suby.utils.Destinations
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class SubscriptionDetailsViewModel @Inject constructor(
+
+class SubscriptionDetailsViewModel(
     savedStateHandle: SavedStateHandle,
     private val subscriptionRepository: SubscriptionRepository,
 ) : ViewModel() {

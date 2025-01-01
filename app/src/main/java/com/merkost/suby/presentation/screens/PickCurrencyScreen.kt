@@ -30,7 +30,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.merkost.suby.R
 import com.merkost.suby.SubyShape
 import com.merkost.suby.asWindowInsets
@@ -38,6 +37,7 @@ import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.SubyTopAppBar
 import com.merkost.suby.presentation.viewModel.MainViewModel
+import org.koin.androidx.compose.koinViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,7 +49,7 @@ fun PickCurrencyScreen(
 ) {
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    val mainViewModel = hiltViewModel<MainViewModel>()
+    val mainViewModel = koinViewModel<MainViewModel>()
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp),
         topBar = {

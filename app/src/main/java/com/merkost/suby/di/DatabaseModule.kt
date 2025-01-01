@@ -1,6 +1,5 @@
 package com.merkost.suby.di
 
-import android.content.Context
 import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
@@ -13,90 +12,27 @@ import com.merkost.suby.model.room.dao.CurrencyRatesDao
 import com.merkost.suby.model.room.dao.CustomServiceDao
 import com.merkost.suby.model.room.dao.ServiceDao
 import com.merkost.suby.model.room.dao.SubscriptionDao
-import com.merkost.suby.repository.room.CurrencyRatesRepository
-import com.merkost.suby.repository.room.CurrencyRatesRepositoryImpl
-import com.merkost.suby.repository.room.ServiceRepository
-import com.merkost.suby.repository.room.ServiceRepositoryImpl
-import com.merkost.suby.repository.room.SubscriptionRepository
-import com.merkost.suby.repository.room.SubscriptionRepositoryImpl
-import com.merkost.suby.utils.ImageFileManager
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import org.koin.android.ext.koin.androidApplication
+import org.koin.dsl.module
 
-@InstallIn(SingletonComponent::class)
-@Module
-object DatabaseModule {
+val databaseModule = module {
 
-    @Provides
-    @Singleton
-    fun provideCategoryDao(appDatabase: AppDatabase): CategoryDao {
-        return appDatabase.categoryDao()
-    }
-
-    @Provides
-    @Singleton
-    fun provideCustomServiceDao(appDatabase: AppDatabase): CustomServiceDao {
-        return appDatabase.customServiceDao()
-    }
-
-    @Provides
-    @Singleton
-    fun provideServiceDao(appDatabase: AppDatabase): ServiceDao {
-        return appDatabase.servicesDao()
-    }
-
-    @Provides
-    @Singleton
-    fun provideSubscriptionDao(appDatabase: AppDatabase): SubscriptionDao {
-        return appDatabase.subscriptionDao()
-    }
-
-    @Provides
-    @Singleton
-    fun provideCurrencyRatesDao(appDatabase: AppDatabase): CurrencyRatesDao {
-        return appDatabase.currencyRatesDao()
-    }
-
-    @Provides
-    @Singleton
-    fun provideServicesRepository(
-        serviceDao: ServiceDao, customServiceDao: CustomServiceDao,
-        subscriptionDao: SubscriptionDao,
-        imageFileManager: ImageFileManager
-    ): ServiceRepository {
-        return ServiceRepositoryImpl(
-            serviceDao,
-            customServiceDao,
-            subscriptionDao,
-            imageFileManager
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideSubscriptionRepository(subscriptionDao: SubscriptionDao): SubscriptionRepository {
-        return SubscriptionRepositoryImpl(subscriptionDao)
-    }
-
-    @Provides
-    @Singleton
-    fun provideCurrencyRatesRepository(currencyRatesDao: CurrencyRatesDao): CurrencyRatesRepository {
-        return CurrencyRatesRepositoryImpl(currencyRatesDao)
-    }
-
-    @Provides
-    @Singleton
-    fun provideAppDatabase(@ApplicationContext appContext: Context): AppDatabase {
-        return Room.databaseBuilder(
-            appContext, AppDatabase::class.java, "app_database.db"
+    single<AppDatabase> {
+        Room.databaseBuilder(
+            androidApplication(),
+            AppDatabase::class.java,
+            "app_database.db"
         )
             .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
             .build()
     }
+
+    single<CategoryDao> { get<AppDatabase>().categoryDao() }
+    single<CustomServiceDao> { get<AppDatabase>().customServiceDao() }
+    single<ServiceDao> { get<AppDatabase>().servicesDao() }
+    single<SubscriptionDao> { get<AppDatabase>().subscriptionDao() }
+    single<CurrencyRatesDao> { get<AppDatabase>().currencyRatesDao() }
+
 }
 
 object Migrations {

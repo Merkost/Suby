@@ -5,15 +5,13 @@ import androidx.lifecycle.viewModelScope
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.repository.datastore.AppSettings
 import com.merkost.suby.repository.room.SubscriptionRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class AppViewModel @Inject constructor(
+
+class AppViewModel(
     subscriptionRepository: SubscriptionRepository,
     private val appSettings: AppSettings,
 ) : ViewModel() {

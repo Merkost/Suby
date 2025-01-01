@@ -13,7 +13,6 @@ import com.merkost.suby.presentation.base.UiState
 import com.merkost.suby.presentation.states.EditSubscriptionEvent
 import com.merkost.suby.repository.room.SubscriptionRepository
 import com.merkost.suby.utils.toKotlinLocalDateTime
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,11 +24,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 
-@HiltViewModel
-class EditSubscriptionViewModel @Inject constructor(
+
+class EditSubscriptionViewModel(
     private val repository: SubscriptionRepository
 ) : ViewModel() {
 

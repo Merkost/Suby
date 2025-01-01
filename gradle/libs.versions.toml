@@ -1,6 +1,7 @@
 [versions]
 agp = "8.7.3"
 billing-ktx = "7.1.1"
+koin-android = "3.5.6"
 kotlin = "2.0.0"
 core-ktx = "1.15.0"
 junit = "4.13.2"
@@ -37,6 +38,10 @@ core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
+
+koin = { module = "io.insert-koin:koin-android", version.ref = "koin-android" }
+koin-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin-android" }
+
 lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }

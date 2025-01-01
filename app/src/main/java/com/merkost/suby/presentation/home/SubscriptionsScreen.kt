@@ -58,7 +58,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
@@ -90,6 +89,7 @@ import com.merkost.suby.utils.all
 import com.merkost.suby.utils.hasSubscriptions
 import com.merkost.suby.utils.toRelativeTimeString
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -99,7 +99,7 @@ fun SubscriptionsScreen(
     onPremiumClick: () -> Unit,
     onSubscriptionInfo: (subscriptionId: Int) -> Unit,
 ) {
-    val viewModel = hiltViewModel<MainViewModel>()
+    val viewModel = koinViewModel<MainViewModel>()
 
     val hasSubscriptions by hasSubscriptions()
     val subscriptions by viewModel.filteredAndSortedSubscriptions.collectAsState()

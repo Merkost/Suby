@@ -29,7 +29,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.merkost.suby.R
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.presentation.HorizontalPicker
@@ -38,6 +37,7 @@ import com.merkost.suby.presentation.base.SubyButton
 import com.merkost.suby.presentation.rememberPickerState
 import com.merkost.suby.presentation.screens.CurrencyLabel
 import com.merkost.suby.presentation.viewModel.AppViewModel
+import org.koin.androidx.compose.koinViewModel
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,7 +46,7 @@ fun OnboardingCurrencyScreen(onCurrencySelected: (Currency) -> Unit) {
     val pickerState = rememberPickerState<Currency>()
     var selectedCurrency by remember { mutableStateOf<Currency?>(null) }
 
-    val viewModel = hiltViewModel<AppViewModel>()
+    val viewModel = koinViewModel<AppViewModel>()
 
     Scaffold(
         topBar = {

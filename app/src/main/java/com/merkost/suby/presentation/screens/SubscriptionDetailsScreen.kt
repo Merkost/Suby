@@ -50,7 +50,6 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.merkost.suby.R
 import com.merkost.suby.SubySmallShape
 import com.merkost.suby.domain.ui.LocalCurrencyFormatter
@@ -72,6 +71,7 @@ import com.merkost.suby.utils.dateString
 import com.merkost.suby.utils.now
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
+import org.koin.androidx.compose.koinViewModel
 import java.time.temporal.ChronoUnit
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -81,7 +81,7 @@ fun SubscriptionDetailsScreen(
     upPress: () -> Unit,
     onEditClick: () -> Unit
 ) {
-    val viewModel: SubscriptionDetailsViewModel = hiltViewModel()
+    val viewModel: SubscriptionDetailsViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val subscriptionId by remember(uiState) { derivedStateOf { (uiState as? UiState.Success<Subscription>)?.data?.id } }

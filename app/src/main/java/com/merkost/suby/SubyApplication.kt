@@ -12,11 +12,19 @@ import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 
-@HiltAndroidApp
 class SubyApplication : Application(), ImageLoaderFactory {
 
     override fun onCreate() {
         super.onCreate()
+
+        startKoin {
+            androidLogger()
+            androidContext(this@SubyApplication)
+            modules(
+                appModule, databaseModule, databaseRepositoryModule,
+                repositoryModule, useCaseModule, viewModelModule
+            )
+        }
 
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())

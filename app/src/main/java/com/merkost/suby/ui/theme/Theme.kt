@@ -1,6 +1,7 @@
 package com.merkost.suby.ui.theme
 
 import android.os.Build
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -38,6 +39,9 @@ private val LightColorScheme = lightColorScheme(
 )
 
 val LocalAppColors = staticCompositionLocalOf { lightColors }
+val LocalActivity = staticCompositionLocalOf<ComponentActivity> {
+    error("No LocalActivity provided")
+}
 
 val MaterialTheme.subyColors: AppColors
     @Composable
@@ -73,7 +77,10 @@ fun SubyTheme(
 //        }
 //    }
 
-    CompositionLocalProvider(LocalAppColors provides colors) {
+    CompositionLocalProvider(
+        LocalActivity provides LocalContext.current as ComponentActivity,
+        LocalAppColors provides colors
+    ) {
         MaterialTheme(
             colorScheme = colorScheme,
             typography = Typography,

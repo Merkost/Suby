@@ -6,7 +6,6 @@ import android.icu.util.Currency
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.Locale
-import javax.inject.Inject
 
 data class CurrencyFormatException(val amount: String, val currencyCode: String) :
     Throwable("Formatting Currency Failed: amount: $amount currencyCode: $currencyCode") {
@@ -16,7 +15,7 @@ data class CurrencyFormatException(val amount: String, val currencyCode: String)
     }
 }
 
-class CurrencyFormatImpl @Inject constructor(
+class CurrencyFormatImpl(
     private val locale: Locale
 ) : CurrencyFormat {
     @Deprecated("Use the one with bigDecimal")

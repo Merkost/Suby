@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.merkost.suby.R
 import com.merkost.suby.domain.ui.EditableSubscription
 import com.merkost.suby.model.entity.Currency
@@ -38,10 +37,11 @@ import com.merkost.suby.presentation.states.EditSubscriptionEvent
 import com.merkost.suby.presentation.viewModel.EditSubscriptionViewModel
 import com.merkost.suby.showToast
 import com.merkost.suby.utils.toEpochMillis
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun EditSubscriptionScreen(
-    viewModel: EditSubscriptionViewModel = hiltViewModel(),
+    viewModel: EditSubscriptionViewModel = koinViewModel(),
     subscriptionId: Int,
     pickedCurrency: Currency?,
     onCancel: () -> Unit,
@@ -53,13 +53,14 @@ fun EditSubscriptionScreen(
     val couldSave by viewModel.couldSave.collectAsState()
     val subscription by viewModel.subscriptionEdit.collectAsState()
 
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
         viewModel.uiEvents.collect {
-            when(it){
+            when (it) {
                 is EditSubscriptionEvent.SubscriptionSaved -> {
                     context.showToast(context.getString(R.string.subscription_saved))
                     onSave()
                 }
+
                 null -> {}
             }
         }

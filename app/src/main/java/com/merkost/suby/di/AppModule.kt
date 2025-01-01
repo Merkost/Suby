@@ -1,31 +1,31 @@
 package com.merkost.suby.di
 
-import android.content.Context
+import com.amplitude.android.Amplitude
+import com.amplitude.android.AutocaptureOption
+import com.amplitude.android.Configuration
+import com.merkost.suby.BuildConfig
 import com.merkost.suby.domain.CurrencyFormat
 import com.merkost.suby.domain.CurrencyFormatImpl
 import com.merkost.suby.repository.datastore.AppSettings
 import com.merkost.suby.repository.datastore.AppSettingsImpl
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import org.koin.core.module.dsl.factoryOf
+import org.koin.dsl.bind
+import org.koin.dsl.module
+import java.util.Locale
 
-@InstallIn(SingletonComponent::class)
-@Module
-object AppModule {
+val appModule = module {
 
-    @Singleton
-    @Provides
-    fun provideCurrencyFormat(@ApplicationContext context: Context): CurrencyFormat {
-        return CurrencyFormatImpl(context.resources.configuration.locales[0])
+    single<Amplitude> {
+        Amplitude(
+            Configuration(
+                apiKey = BuildConfig.AMPLITUDE_API_KEY,
+                context = get(),
+                autocapture = AutocaptureOption.entries.toSet(),
+            )
+        )
     }
 
-    @Singleton
-    @Provides
-    fun provideAppSettings(@ApplicationContext context: Context): AppSettings {
-        return AppSettingsImpl(context)
-    }
-
+    factory<Locale> { Locale.getDefault() }
+    factoryOf(::CurrencyFormatImpl) bind CurrencyFormat::class
+    single<AppSettings> { AppSettingsImpl(get()) }
 }

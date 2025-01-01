@@ -49,7 +49,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.merkost.suby.R
 import com.merkost.suby.SubyShape
 import com.merkost.suby.model.entity.BasePeriod
@@ -72,6 +71,7 @@ import com.merkost.suby.presentation.states.NewSubscriptionUiState
 import com.merkost.suby.presentation.viewModel.NewSubscriptionViewModel
 import com.merkost.suby.presentation.viewModel.SelectServiceViewModel
 import com.merkost.suby.showToast
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,8 +82,8 @@ fun NewSubscriptionScreen(
     upPress: () -> Unit
 ) {
     val context = LocalContext.current
-    val viewModel = hiltViewModel<NewSubscriptionViewModel>()
-    val selectServiceViewModel = hiltViewModel<SelectServiceViewModel>()
+    val viewModel = koinViewModel<NewSubscriptionViewModel>()
+    val selectServiceViewModel = koinViewModel<SelectServiceViewModel>()
     val uiState by viewModel.uiState.collectAsState()
     val mainCurrency by viewModel.mainCurrency.collectAsState()
     val couldSave by viewModel.couldSave.collectAsState()

@@ -6,7 +6,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
@@ -29,6 +28,7 @@ import com.merkost.suby.presentation.viewModel.OnboardingViewModel
 import com.merkost.suby.utils.Arguments
 import com.merkost.suby.utils.Destinations
 import com.merkost.suby.utils.isFirstTimeState
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SubyMainApp() {
@@ -70,7 +70,7 @@ private fun NavGraphBuilder.NavGraph(
 
     navigation(Destinations.ONBOARDING_CURRENCY, Destinations.ONBOARDING) {
         composable(Destinations.ONBOARDING_CURRENCY) {
-            val onboardingViewModel = hiltViewModel<OnboardingViewModel>()
+            val onboardingViewModel = koinViewModel<OnboardingViewModel>()
 
             OnboardingCurrencyScreen(onCurrencySelected = {
                 onboardingViewModel.saveMainCurrency(it)
@@ -157,7 +157,7 @@ private fun NavGraphBuilder.NavGraph(
     }
 
     composable<Destinations.PremiumFeatures> {
-        PremiumFeaturesScreen(onBackClick = upPress, onSubscribeClick = {})
+        PremiumFeaturesScreen(onBackClick = upPress)
     }
 
 }

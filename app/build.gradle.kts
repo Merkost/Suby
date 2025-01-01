@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.kotlinParcelize)
-    alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.secrets)
@@ -81,6 +80,8 @@ android {
 
 dependencies {
     implementation(libs.material)
+    implementation(libs.koin.compose)
+    implementation(libs.koin)
 
     implementation(libs.splashscreen)
     implementation(libs.kotlin.datetime)
@@ -99,7 +100,6 @@ dependencies {
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
-    implementation(libs.systemUiController)
     implementation(libs.datastore)
     implementation(libs.kotlin.serialization)
     implementation(libs.bundles.ktor)
@@ -113,10 +113,6 @@ dependencies {
     implementation(libs.firebase.perf)
     ksp(libs.room.compiler)
     implementation(libs.room.ktx)
-    implementation(libs.hilt.android)
-    implementation(libs.hilt.navigation)
-    ksp(libs.hilt.compiler)
-    ksp(libs.hilt.kapt)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)

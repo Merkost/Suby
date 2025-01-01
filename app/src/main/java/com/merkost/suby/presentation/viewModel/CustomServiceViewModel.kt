@@ -10,7 +10,6 @@ import com.merkost.suby.model.room.dao.CategoryDao
 import com.merkost.suby.model.room.dao.CustomServiceDao
 import com.merkost.suby.model.room.entity.CustomServiceDb
 import com.merkost.suby.utils.ImageFileManager
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -19,10 +18,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class CustomServiceViewModel @Inject constructor(
+
+class CustomServiceViewModel(
     private val customServiceDao: CustomServiceDao,
     private val categoryDao: CategoryDao,
     private val imageFileManager: ImageFileManager,

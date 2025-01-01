@@ -20,7 +20,6 @@ import com.merkost.suby.repository.datastore.AppSettings
 import com.merkost.suby.repository.datastore.LastTotalPrice
 import com.merkost.suby.repository.room.SubscriptionRepository
 import com.merkost.suby.use_case.GetCurrencyRatesUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -36,10 +35,9 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.toKotlinLocalDateTime
 import timber.log.Timber
-import javax.inject.Inject
 
-@HiltViewModel
-class MainViewModel @Inject constructor(
+
+class MainViewModel(
     subscriptionRepository: SubscriptionRepository,
     private val appSettings: AppSettings,
     private val getCurrencyRatesUseCase: GetCurrencyRatesUseCase,

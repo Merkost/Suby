@@ -6,7 +6,6 @@ import com.merkost.suby.model.entity.full.Service
 import com.merkost.suby.repository.room.ServiceRepository
 import com.merkost.suby.use_case.GetServicesUseCase
 import com.merkost.suby.utils.BaseViewState
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,10 +13,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class SelectServiceViewModel @Inject constructor(
+
+class SelectServiceViewModel(
     private val serviceRepository: ServiceRepository,
     private val getServicesUseCase: GetServicesUseCase
 ) : ViewModel() {

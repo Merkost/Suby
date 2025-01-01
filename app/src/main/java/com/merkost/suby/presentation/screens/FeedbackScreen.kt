@@ -42,21 +42,21 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.merkost.suby.R
 import com.merkost.suby.model.entity.FeedbackAction
 import com.merkost.suby.presentation.base.SubyTextField
 import com.merkost.suby.presentation.base.SubyTopAppBar
-import com.merkost.suby.utils.BaseViewState
 import com.merkost.suby.presentation.viewModel.FeedbackViewModel
+import com.merkost.suby.utils.BaseViewState
 import kotlinx.coroutines.android.awaitFrame
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FeedbackScreen(upPress: () -> Unit, feedbackAction: FeedbackAction, text: String) {
 
     val context = LocalContext.current
-    val viewModel = hiltViewModel<FeedbackViewModel>()
+    val viewModel = koinViewModel<FeedbackViewModel>()
     val feedbackState by viewModel.feedbackState.collectAsState()
     var userAnswer by remember { mutableStateOf(TextFieldValue(text, TextRange(text.length))) }
     val insets = remember { 32.dp }

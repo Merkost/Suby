@@ -4,16 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.merkost.suby.repository.ktor.api.SupabaseApi
 import com.merkost.suby.utils.BaseViewState
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class FeedbackViewModel @Inject constructor(
+
+class FeedbackViewModel(
     private val supabaseApi: SupabaseApi
 ) : ViewModel() {
 
