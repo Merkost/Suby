@@ -1,6 +1,7 @@
 package com.merkost.suby.model.billing
 
 import androidx.activity.ComponentActivity
+import com.merkost.suby.utils.analytics.Analytics
 import com.qonversion.android.sdk.Qonversion
 import com.qonversion.android.sdk.dto.QonversionError
 import com.qonversion.android.sdk.dto.entitlements.QEntitlement
@@ -36,6 +37,7 @@ class BillingServiceImpl : BillingService {
 
                     override fun onSuccess(entitlements: Map<String, QEntitlement>) {
                         Timber.tag(TAG).d("Purchased: $entitlements")
+                        Analytics.logPremiumPurchased()
                         // FIXME:
                         continuation.resume(Result.success(entitlements.values.first()))
                     }

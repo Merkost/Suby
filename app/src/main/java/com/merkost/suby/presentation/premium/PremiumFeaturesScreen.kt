@@ -356,7 +356,7 @@ internal fun SuccessDialog(
 fun PremiumFeaturesScreenPreview() {
     MaterialTheme {
         PremiumFeaturesScreen(
-            onBackClick = { /* TODO: Handle back navigation */ }
+            onBackClick = {}
         )
     }
 }

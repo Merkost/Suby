@@ -161,4 +161,8 @@ object Analytics : KoinComponent {
         )
     }
 
+    fun logPremiumPurchased() {
+        logEvent(Events.PREMIUM_BOUGHT, emptyMap())
+    }
+
 }
