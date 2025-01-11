@@ -10,6 +10,9 @@ import coil.util.DebugLogger
 import com.amplitude.android.Amplitude
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.merkost.suby.di.appModule
 import com.merkost.suby.di.databaseModule
 import com.merkost.suby.di.databaseRepositoryModule
@@ -33,6 +36,18 @@ class SubyApplication : Application(), ImageLoaderFactory {
     override fun onCreate() {
         super.onCreate()
 
+        val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
+        remoteConfig.setDefaultsAsync(
+            mapOf(
+                "free_currency_rates_update_days" to 3L,
+                "free_max_custom_services" to 3L,
+                "free_max_subscriptions" to 3L,
+            )
+        )
+        val configSettings = remoteConfigSettings {
+            minimumFetchIntervalInSeconds = 3600
+        }
+        remoteConfig.setConfigSettingsAsync(configSettings)
 
         val qonversionConfig = QonversionConfig.Builder(
             this,

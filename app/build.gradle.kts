@@ -117,6 +117,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.analytics)
+    implementation(libs.firebase.config)
     implementation(libs.firebase.perf)
     ksp(libs.room.compiler)
     implementation(libs.room.ktx)
