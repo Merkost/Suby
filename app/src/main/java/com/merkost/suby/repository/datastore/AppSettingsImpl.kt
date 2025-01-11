@@ -16,7 +16,6 @@ import kotlinx.serialization.encodeToString
 
 class AppSettingsImpl(private val context: Context) : AppSettings {
 
-    // to make sure there's only one instance
     companion object {
         private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("SubySettings")
 
@@ -24,8 +23,20 @@ class AppSettingsImpl(private val context: Context) : AppSettings {
         private val MAIN_CURRENCY = stringPreferencesKey("main_currency")
 
         private val LAST_TOTAL = stringPreferencesKey("last_total")
+
+        private val HAS_PREMIUM = booleanPreferencesKey("has_premium")
     }
 
+    override val hasPremium: Flow<Boolean> = context.dataStore.data
+        .map { preferences ->
+            preferences[HAS_PREMIUM] ?: false
+        }
+
+    override suspend fun saveHasPremium(newValue: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[HAS_PREMIUM] = newValue
+        }
+    }
 
     override val isFirstTimeLaunch: Flow<Boolean> = context.dataStore.data
         .map { preferences ->

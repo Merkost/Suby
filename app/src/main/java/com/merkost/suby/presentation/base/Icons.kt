@@ -23,13 +23,15 @@ import kotlin.math.absoluteValue
 
 @Composable
 fun Icon(
-    imageVector: ImageVector, modifier: Modifier = Modifier,
-    tint: Color = LocalContentColor.current
+    imageVector: ImageVector,
+    modifier: Modifier = Modifier,
+    tint: Color = LocalContentColor.current,
+    contentDescription: String = imageVector.name
 ) {
     androidx.compose.material3.Icon(
         modifier = modifier,
         imageVector = imageVector,
-        contentDescription = imageVector.name,
+        contentDescription = contentDescription,
         tint = tint,
     )
 }

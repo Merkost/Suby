@@ -57,11 +57,11 @@ import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.Status
 import com.merkost.suby.model.entity.full.Subscription
 import com.merkost.suby.model.entity.full.upcomingPayments
+import com.merkost.suby.presentation.base.BaseUiState
 import com.merkost.suby.presentation.base.DeleteConfirmationDialog
 import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.SubyTopAppBar
 import com.merkost.suby.presentation.base.TitleColumn
-import com.merkost.suby.presentation.base.UiState
 import com.merkost.suby.presentation.base.components.ScreenStateHandler
 import com.merkost.suby.presentation.base.components.service.ServiceLogo
 import com.merkost.suby.presentation.home.StatusBubble
@@ -87,8 +87,8 @@ fun SubscriptionDetailsScreen(
     val viewModel: SubscriptionDetailsViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
-    val subscriptionId by remember(uiState) { derivedStateOf { (uiState as? UiState.Success<Subscription>)?.data?.id } }
-    val showActions by remember(uiState) { derivedStateOf { uiState is UiState.Success } }
+    val subscriptionId by remember(uiState) { derivedStateOf { (uiState as? BaseUiState.Success<Subscription>)?.data?.id } }
+    val showActions by remember(uiState) { derivedStateOf { uiState is BaseUiState.Success } }
 
     LaunchedEffect(Unit) {
         viewModel.loadSubscription()
@@ -116,7 +116,7 @@ fun SubscriptionDetailsScreen(
             SubyTopAppBar(
                 title = {
                     Text(
-                        text = (uiState as? UiState.Success<Subscription>)?.data?.serviceName.orEmpty(),
+                        text = (uiState as? BaseUiState.Success<Subscription>)?.data?.serviceName.orEmpty(),
                     )
                 },
                 upPress = upPress,

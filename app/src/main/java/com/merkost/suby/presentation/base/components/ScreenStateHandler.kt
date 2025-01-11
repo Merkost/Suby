@@ -10,11 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.merkost.suby.R
-import com.merkost.suby.presentation.base.UiState
+import com.merkost.suby.presentation.base.BaseUiState
 
 @Composable
 fun <T> ScreenStateHandler(
-    screenState: UiState<T>,
+    screenState: BaseUiState<T>,
     onRetry: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     loadingContent: @Composable () -> Unit = {
@@ -38,21 +38,21 @@ fun <T> ScreenStateHandler(
         transitionSpec = { screenStateTransitionSpec() }
     ) { state ->
         when (state) {
-            is UiState.Loading -> {
+            is BaseUiState.Loading -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) { loadingContent() }
             }
 
-            is UiState.Error -> {
+            is BaseUiState.Error -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) { errorContent(stringResource(state.messageRes)) }
             }
 
-            is UiState.Success -> {
+            is BaseUiState.Success -> {
                 successContent(state.data)
             }
         }

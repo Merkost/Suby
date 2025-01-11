@@ -16,6 +16,10 @@ import com.merkost.suby.di.databaseRepositoryModule
 import com.merkost.suby.di.repositoryModule
 import com.merkost.suby.di.useCaseModule
 import com.merkost.suby.di.viewModelModule
+import com.qonversion.android.sdk.Qonversion
+import com.qonversion.android.sdk.QonversionConfig
+import com.qonversion.android.sdk.dto.QEnvironment
+import com.qonversion.android.sdk.dto.QLaunchMode
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -29,12 +33,23 @@ class SubyApplication : Application(), ImageLoaderFactory {
     override fun onCreate() {
         super.onCreate()
 
+
+        val qonversionConfig = QonversionConfig.Builder(
+            this,
+            BuildConfig.QONVERSION_API_KEY,
+            QLaunchMode.SubscriptionManagement
+        ).setEnvironment(
+            QEnvironment.Production
+        )
+            .build()
+        Qonversion.initialize(qonversionConfig)
+
         startKoin {
             androidLogger()
             androidContext(this@SubyApplication)
             modules(
                 appModule, databaseModule, databaseRepositoryModule,
-                repositoryModule, useCaseModule, viewModelModule
+                repositoryModule, useCaseModule, viewModelModule,
             )
         }
 
@@ -56,7 +71,7 @@ class SubyApplication : Application(), ImageLoaderFactory {
             .diskCache {
                 DiskCache.Builder()
                     .directory(cacheDir.resolve("image_cache"))
-                    .maxSizeBytes(5 * 1024 * 1024)
+                    .maxSizeBytes(20 * 1024 * 1024)
                     .build()
             }
             .logger(logger = DebugLogger(level = if (BuildConfig.DEBUG) Log.DEBUG else Log.ERROR))

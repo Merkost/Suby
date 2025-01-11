@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface SubscriptionRepository {
     val subscriptions: Flow<List<Subscription>>
+    val hasAnySubscriptions: Flow<Boolean>
 
     suspend fun addSubscription(newSubscriptionDb: SubscriptionDb)
     suspend fun updateSubscription(update: PartialSubscriptionDb)

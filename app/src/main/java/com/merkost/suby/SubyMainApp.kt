@@ -27,15 +27,16 @@ import com.merkost.suby.presentation.screens.SubscriptionDetailsScreen
 import com.merkost.suby.presentation.viewModel.OnboardingViewModel
 import com.merkost.suby.utils.Arguments
 import com.merkost.suby.utils.Destinations
-import com.merkost.suby.utils.isFirstTimeState
+import com.merkost.suby.utils.appState
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SubyMainApp() {
     val navController = rememberNavController()
 
-    val isFirstTime by isFirstTimeState()
-    val startDestination = if (isFirstTime) Destinations.GREETING else Destinations.MAIN_SCREEN
+    val appState by appState()
+    val startDestination =
+        if (appState.isFirstTimeLaunch) Destinations.GREETING else Destinations.MAIN_SCREEN
 //    val startDestination = Destinations.GREETING
     Scaffold(
         modifier = Modifier,
@@ -94,16 +95,19 @@ private fun NavGraphBuilder.NavGraph(
     }
 
     composable(Destinations.NEW_SUBSCRIPTION) { backStackEntry ->
-        NewSubscriptionScreen(pickedCurrency = backStackEntry.savedStateHandle.get<Currency>(
-            Arguments.CURRENCY
-        ),
+        NewSubscriptionScreen(
+            pickedCurrency = backStackEntry.savedStateHandle.get<Currency>(Arguments.CURRENCY),
             onCurrencyClicked = { navController.navigate(Destinations.CurrencyPick(false)) },
             upPress = upPress,
             onSuggestService = { inputText ->
                 navController.navigate(
                     Destinations.Feedback(FeedbackAction.ADD_SERVICE.toString(), text = inputText)
                 )
-            })
+            },
+            onPremiumClicked = {
+                navController.navigate(Destinations.PremiumFeatures)
+            },
+        )
     }
 
     composable<Destinations.EditSubscription> {

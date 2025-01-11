@@ -82,13 +82,13 @@ import com.merkost.suby.presentation.screens.CurrencyLabel
 import com.merkost.suby.presentation.viewModel.MainViewModel
 import com.merkost.suby.presentation.viewModel.TotalPrice
 import com.merkost.suby.round
+import com.merkost.suby.ui.theme.LocalAppState
 import com.merkost.suby.ui.theme.SubyTheme
 import com.merkost.suby.utils.Constants
 import com.merkost.suby.utils.Constants.MAX_FREE_SERVICES
 import com.merkost.suby.utils.all
 import com.merkost.suby.utils.analytics.ScreenLog
 import com.merkost.suby.utils.analytics.Screens
-import com.merkost.suby.utils.hasSubscriptions
 import com.merkost.suby.utils.toRelativeTimeString
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -102,9 +102,10 @@ fun SubscriptionsScreen(
     onSubscriptionInfo: (subscriptionId: Int) -> Unit,
 ) {
     ScreenLog(Screens.Main)
+    val appState = LocalAppState.current
     val viewModel = koinViewModel<MainViewModel>()
 
-    val hasSubscriptions by hasSubscriptions()
+    val hasSubscriptions = appState.hasSubscriptions
     val subscriptions by viewModel.filteredAndSortedSubscriptions.collectAsState()
     val mainCurrency by viewModel.mainCurrency.collectAsState()
     val totalState by viewModel.total.collectAsState()
@@ -117,14 +118,21 @@ fun SubscriptionsScreen(
         contentWindowInsets = WindowInsets(0.dp),
         topBar = {
             SubyTopAppBar(
-                title = { MainScreenTitle(onLogoClick = {}) },
+                title = {
+                    MainScreenTitle(onLogoClick = onPremiumClick)
+                },
                 actions = {
-                    if (subscriptions.size < MAX_FREE_SERVICES) {
-                        OutlinedButton(
-                            modifier = Modifier.padding(end = 8.dp), onClick = onAddClicked
-                        ) {
-                            Icon(Icons.Default.Add)
+                    OutlinedButton(
+                        modifier = Modifier.padding(end = 8.dp),
+                        onClick = {
+                            if (appState.hasPremium || subscriptions.size < MAX_FREE_SERVICES) {
+                                onAddClicked()
+                            } else {
+                                onPremiumClick()
+                            }
                         }
+                    ) {
+                        Icon(Icons.Default.Add)
                     }
                 }
             )
@@ -160,12 +168,8 @@ fun SubscriptionsScreen(
                         Sorting(viewModel)
                     }
 
-                    if (subscriptions.size >= Constants.MAX_FREE_SERVICES) {
-                        item {
-                            AddMoreServicesItem(
-                                onClick = { onPremiumClick() }
-                            )
-                        }
+                    if (subscriptions.size >= Constants.MAX_FREE_SERVICES && !appState.hasPremium) {
+                        item { AddMoreServicesItem(onClick = { onPremiumClick() }) }
                     }
 
                     items(subscriptions, key = { it.id }) { subscription ->

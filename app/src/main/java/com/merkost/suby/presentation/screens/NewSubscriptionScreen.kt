@@ -81,6 +81,7 @@ fun NewSubscriptionScreen(
     pickedCurrency: Currency?,
     onCurrencyClicked: () -> Unit,
     onSuggestService: (inputText: String) -> Unit,
+    onPremiumClicked: () -> Unit,
     upPress: () -> Unit
 ) {
     ScreenLog(Screens.NewSubscription)
@@ -131,6 +132,7 @@ fun NewSubscriptionScreen(
                 viewModel.onCustomServiceSelected(service)
                 selectServiceSheet = false
             },
+            onPremiumClicked = onPremiumClicked
         )
     }
 

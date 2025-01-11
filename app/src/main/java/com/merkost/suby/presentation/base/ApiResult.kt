@@ -6,8 +6,8 @@ sealed class ApiResult<out T> {
     data class Success<T>(val data: T) : ApiResult<T>()
     sealed class Error(private val exception: Throwable) : ApiResult<Nothing>() {
 
-        fun <T> toUiState(): UiState<T> {
-            return UiState.Error(
+        fun <T> toUiState(): BaseUiState<T> {
+            return BaseUiState.Error(
                 message = exception.message.orEmpty(),
                 messageRes = infoResource,
             )

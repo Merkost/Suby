@@ -6,6 +6,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface AppSettings {
 
+    val hasPremium: Flow<Boolean>
+    suspend fun saveHasPremium(newValue: Boolean)
+
     val isFirstTimeLaunch: Flow<Boolean>
     suspend fun saveFirstTimeLaunch(newValue: Boolean)
 

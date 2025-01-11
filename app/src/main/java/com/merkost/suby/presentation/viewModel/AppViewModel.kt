@@ -2,27 +2,41 @@ package com.merkost.suby.presentation.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.merkost.suby.model.entity.Currency
+import com.merkost.suby.model.billing.BillingService
 import com.merkost.suby.repository.datastore.AppSettings
-import com.merkost.suby.repository.room.SubscriptionRepository
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import com.merkost.suby.repository.datastore.AppStateRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 
 class AppViewModel(
-    subscriptionRepository: SubscriptionRepository,
+    private val billingService: BillingService,
     private val appSettings: AppSettings,
+    private val appStateRepository: AppStateRepository
 ) : ViewModel() {
 
-    val isFirstTimeLaunch = appSettings.isFirstTimeLaunch
+    val isReadyForLaunch = MutableStateFlow(false)
 
-    private val subscriptions = subscriptionRepository.subscriptions
-    val hasSubscriptions = subscriptions.map { it.isNotEmpty() }
+    init {
+        getReadyForAppLaunch()
+    }
 
-    val mainCurrency = appSettings.mainCurrency
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Currency.USD)
+    private fun getReadyForAppLaunch() {
+        viewModelScope.launch {
+            appStateRepository.appState.firstOrNull()
+            val entitlements = billingService.getEntitlements()
+            if (entitlements.isEmpty()) {
+                appSettings.saveHasPremium(false)
+            } else {
+                Timber.tag("AppViewModel").w("Entitlements: $entitlements")
+                appSettings.saveHasPremium(entitlements.any { it.isActive })
+            }
+            isReadyForLaunch.update { true }
+        }
+    }
 
     fun updateFirstTimeOpening() {
         viewModelScope.launch {

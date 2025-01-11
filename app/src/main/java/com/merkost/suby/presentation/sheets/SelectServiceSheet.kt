@@ -47,9 +47,12 @@ import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.components.SheetDialog
 import com.merkost.suby.presentation.base.components.service.ServiceRowItem
 import com.merkost.suby.presentation.base.components.service.SwipeableServiceRow
+import com.merkost.suby.presentation.home.AddMoreServicesItem
 import com.merkost.suby.presentation.screens.AbsentItem
 import com.merkost.suby.presentation.viewModel.SelectServiceViewModel
+import com.merkost.suby.ui.theme.LocalAppState
 import com.merkost.suby.utils.BaseViewState
+import com.merkost.suby.utils.Constants
 import com.merkost.suby.utils.analytics.ScreenLog
 import com.merkost.suby.utils.analytics.Screens
 import kotlinx.coroutines.launch
@@ -61,6 +64,7 @@ fun SelectServiceSheet(
     onServiceSelected: (Service) -> Unit,
     onSuggestService: (name: String) -> Unit,
     onCustomServiceSelected: (Service) -> Unit,
+    onPremiumClicked: () -> Unit
 ) {
     val customServices by selectServiceViewModel.customServices.collectAsStateWithLifecycle()
     val servicesState by selectServiceViewModel.servicesState.collectAsStateWithLifecycle()
@@ -140,6 +144,7 @@ fun SelectServiceSheet(
                                 onDeleteCustomService = {
                                     selectServiceViewModel.deleteCustomService(it)
                                 },
+                                onPremiumClicked = onPremiumClicked
                             )
                         } else {
                             ServicesList(
@@ -160,9 +165,13 @@ internal fun CustomServicesList(
     customServices: List<Service>,
     onCustomServiceSelected: (Service) -> Unit,
     onDeleteCustomService: (Service) -> Unit,
+    onPremiumClicked: () -> Unit
 ) {
     ScreenLog(Screens.CustomServices)
     var createCustomServiceSheet by remember { mutableStateOf(false) }
+
+    val appState = LocalAppState.current
+    val canAddMoreCustomServices = (customServices.size < Constants.MAX_FREE_CUSTOM_SERVICES || appState.hasPremium)
 
     SheetDialog(
         isShown = createCustomServiceSheet,
@@ -179,6 +188,11 @@ internal fun CustomServicesList(
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(16.dp)
         ) {
+            if (canAddMoreCustomServices.not()) {
+                item {
+                    AddMoreServicesItem { onPremiumClicked() }
+                }
+            }
             items(customServices) { service ->
                 var deleteDialog by remember { mutableStateOf(false) }
                 var editDialog by remember { mutableStateOf(false) }

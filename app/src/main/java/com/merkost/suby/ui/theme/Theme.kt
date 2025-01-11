@@ -11,9 +11,15 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import com.merkost.suby.model.entity.Currency
+import com.merkost.suby.repository.datastore.AppStateRepository
+import org.koin.compose.koinInject
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -43,6 +49,17 @@ val LocalActivity = staticCompositionLocalOf<ComponentActivity> {
     error("No LocalActivity provided")
 }
 
+data class AppState(
+    val isFirstTimeLaunch: Boolean = true,
+    val hasPremium: Boolean = false,
+    val hasSubscriptions: Boolean = false,
+    val mainCurrency: Currency = Currency.USD
+)
+
+val LocalAppState = compositionLocalOf<AppState> {
+    error("No app state provided")
+}
+
 val MaterialTheme.subyColors: AppColors
     @Composable
     get() = LocalAppColors.current
@@ -54,6 +71,9 @@ fun SubyTheme(
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
+    val appStateRepository = koinInject<AppStateRepository>()
+    val appState by appStateRepository.appState.collectAsState()
+
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
@@ -68,18 +88,11 @@ fun SubyTheme(
         darkTheme -> darkColors
         else -> lightColors
     }
-//    val view = LocalView.current
-//    if (!view.isInEditMode) {
-//        SideEffect {
-//            val window = (view.context as Activity).window
-//            window.statusBarColor = colorScheme.primary.toArgb()
-//            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
-//        }
-//    }
 
     CompositionLocalProvider(
         LocalActivity provides LocalContext.current as ComponentActivity,
-        LocalAppColors provides colors
+        LocalAppColors provides colors,
+        LocalAppState provides appState
     ) {
         MaterialTheme(
             colorScheme = colorScheme,

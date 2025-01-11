@@ -74,4 +74,7 @@ interface SubscriptionDao {
 
     @Query("DELETE FROM subscription WHERE id = :subscriptionId")
     suspend fun deleteSubscriptionById(subscriptionId: Int): Int
+
+    @Query("SELECT EXISTS(SELECT 1 FROM subscription)")
+    fun hasAnySubscriptions(): Flow<Boolean>
 }

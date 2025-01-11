@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.merkost.suby.R
 import com.merkost.suby.model.entity.full.Subscription
-import com.merkost.suby.presentation.base.UiState
+import com.merkost.suby.presentation.base.BaseUiState
 import com.merkost.suby.repository.room.SubscriptionRepository
 import com.merkost.suby.utils.Destinations
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +21,7 @@ class SubscriptionDetailsViewModel(
 ) : ViewModel() {
 
     val subscriptionId = savedStateHandle.toRoute<Destinations.SubscriptionInfo>().subscriptionId
-    val uiState = MutableStateFlow<UiState<Subscription>>(UiState.Loading)
+    val uiState = MutableStateFlow<BaseUiState<Subscription>>(BaseUiState.Loading)
 
     fun deleteSubscription(subscriptionId: Int) {
         viewModelScope.launch {
@@ -35,13 +35,13 @@ class SubscriptionDetailsViewModel(
 
             if (subscription == null) {
                 uiState.update {
-                    UiState.Error(
+                    BaseUiState.Error(
                         "Subscription not found",
                         R.string.subscription_not_found
                     )
                 }
             } else {
-                uiState.update { UiState.Success(subscription) }
+                uiState.update { BaseUiState.Success(subscription) }
             }
         }
     }

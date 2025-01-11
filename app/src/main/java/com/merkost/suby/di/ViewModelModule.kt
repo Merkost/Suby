@@ -1,6 +1,7 @@
 package com.merkost.suby.di
 
 import com.merkost.suby.presentation.viewModel.AppViewModel
+import com.merkost.suby.presentation.viewModel.BillingViewModel
 import com.merkost.suby.presentation.viewModel.CustomServiceViewModel
 import com.merkost.suby.presentation.viewModel.EditSubscriptionViewModel
 import com.merkost.suby.presentation.viewModel.FeedbackViewModel
@@ -22,5 +23,6 @@ val viewModelModule = module {
     viewModelOf(::OnboardingViewModel)
     viewModelOf(::SelectServiceViewModel)
     viewModelOf(::SubscriptionDetailsViewModel)
+    viewModelOf(::BillingViewModel)
 
 }

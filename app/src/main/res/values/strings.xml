@@ -127,9 +127,24 @@
     <string name="upgrade_button_text">Upgrade to Premium</string>
     <string name="more_please">More Please!</string>
     <string name="upgrade_to_add_more_subscriptions">Upgrade to add more subscriptions</string>
+
+    <string name="subscription_active">Subscription Active</string>
+    <string name="subscription_active_message">You have access to all premium features!</string>
+
     <string name="unlock_premium_features">Unlock Premium Features</string>
     <string name="unlock_premium_description">Simplify your life and take control of your subscriptions with Suby Premium.</string>
-    <string name="thanks_description">Thanks for going premium—you’re the best!</string>
+
+    <string name="error_loading_products">Failed to load subscriptions</string>
+    <string name="error_purchase_failed">Purchase failed. Please, try again later.</string>
+    <string name="restore_purchase">Restore purchase</string>
+    <string name="error_no_products">No products available</string>
+    <string name="okay">Okay</string>
+    <string name="error_title">Error</string>
+    <string name="success_title">Success!</string>
+    <string name="purchase_restored">Your purchase has been restored</string>
+    <string name="error_no_purchase_to_restore">No purchase to restore</string>
+    <string name="error_restore_purchase">Failed to restore the purchase</string>
+    <string name="feature_frequent_currency_updates_title">More Accurate Currency Rates</string>
 
 
 </resources>

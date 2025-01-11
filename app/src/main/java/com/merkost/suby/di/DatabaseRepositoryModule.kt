@@ -1,5 +1,6 @@
 package com.merkost.suby.di
 
+import com.merkost.suby.repository.datastore.AppStateRepository
 import com.merkost.suby.repository.room.CurrencyRatesRepository
 import com.merkost.suby.repository.room.CurrencyRatesRepositoryImpl
 import com.merkost.suby.repository.room.ServiceRepository
@@ -14,4 +15,6 @@ val databaseRepositoryModule = module {
     factoryOf(::ServiceRepositoryImpl) bind ServiceRepository::class
     factoryOf(::SubscriptionRepositoryImpl) bind SubscriptionRepository::class
     factoryOf(::CurrencyRatesRepositoryImpl) bind CurrencyRatesRepository::class
+
+    single { AppStateRepository(get(), get(), get()) }
 }

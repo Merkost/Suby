@@ -9,7 +9,7 @@ import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.Status
 import com.merkost.suby.model.entity.full.Service
 import com.merkost.suby.model.entity.full.Subscription
-import com.merkost.suby.presentation.base.UiState
+import com.merkost.suby.presentation.base.BaseUiState
 import com.merkost.suby.presentation.states.EditSubscriptionEvent
 import com.merkost.suby.repository.room.SubscriptionRepository
 import com.merkost.suby.utils.toKotlinLocalDateTime
@@ -34,7 +34,7 @@ class EditSubscriptionViewModel(
     private val _uiEvents = MutableSharedFlow<EditSubscriptionEvent?>()
     val uiEvents = _uiEvents.asSharedFlow()
 
-    private val _uiState = MutableStateFlow<UiState<Unit>>(UiState.Loading)
+    private val _uiState = MutableStateFlow<BaseUiState<Unit>>(BaseUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
     private val subscription = MutableStateFlow<Subscription?>(null)
@@ -61,7 +61,7 @@ class EditSubscriptionViewModel(
             val subscription = repository.getSubscriptionById(subscriptionId).firstOrNull()
             if (subscription == null) {
                 _uiState.update {
-                    UiState.Error(
+                    BaseUiState.Error(
                         "Subscription not found",
                         R.string.subscription_not_found
                     )
@@ -69,7 +69,7 @@ class EditSubscriptionViewModel(
             } else {
                 val editableSubscription = subscription.toEditableSubscription()
                 _subscriptionEdit.update { editableSubscription }
-                _uiState.update { UiState.Success(Unit) }
+                _uiState.update { BaseUiState.Success(Unit) }
             }
         }
     }

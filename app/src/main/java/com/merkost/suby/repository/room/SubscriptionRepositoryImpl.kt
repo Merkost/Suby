@@ -51,4 +51,6 @@ class SubscriptionRepositoryImpl(private val subscriptionDao: SubscriptionDao) :
         }
     }
 
+    override val hasAnySubscriptions: Flow<Boolean> = subscriptionDao.hasAnySubscriptions()
+
 }
