@@ -3,6 +3,7 @@ package com.merkost.suby.model.billing
 import androidx.activity.ComponentActivity
 import com.merkost.suby.utils.analytics.Analytics
 import com.qonversion.android.sdk.Qonversion
+import com.qonversion.android.sdk.dto.QUser
 import com.qonversion.android.sdk.dto.QonversionError
 import com.qonversion.android.sdk.dto.entitlements.QEntitlement
 import com.qonversion.android.sdk.dto.offerings.QOffering
@@ -11,6 +12,7 @@ import com.qonversion.android.sdk.dto.products.QProduct
 import com.qonversion.android.sdk.listeners.QonversionEntitlementsCallback
 import com.qonversion.android.sdk.listeners.QonversionOfferingsCallback
 import com.qonversion.android.sdk.listeners.QonversionProductsCallback
+import com.qonversion.android.sdk.listeners.QonversionUserCallback
 import kotlinx.coroutines.suspendCancellableCoroutine
 import timber.log.Timber
 import kotlin.coroutines.resume
@@ -19,12 +21,28 @@ class BillingServiceImpl : BillingService {
 
     private val TAG = "BillingService"
 
+    override suspend fun getUserInfo() = suspendCancellableCoroutine<Result<QUser>> {
+        Qonversion.shared.userInfo(
+            object : QonversionUserCallback {
+                override fun onError(error: QonversionError) {
+                    Timber.tag(TAG).w("Could not get user: $error")
+                    it.resume(Result.failure(Exception(error.additionalMessage)))
+                }
+
+                override fun onSuccess(user: QUser) {
+                    Timber.tag(TAG).d("Got user: $user")
+                    it.resume(Result.success(user))
+                }
+            }
+        )
+    }
+
     override suspend fun purchase(
         activity: ComponentActivity,
         product: QProduct,
         offerId: String?
     ) =
-        suspendCancellableCoroutine<Result<QEntitlement>> { continuation ->
+        suspendCancellableCoroutine<Result<QEntitlement?>> { continuation ->
             Timber.tag(TAG).d("Purchasing: $product")
             Qonversion.shared.purchase(
                 activity,
@@ -34,14 +52,13 @@ class BillingServiceImpl : BillingService {
                         Timber.tag(TAG).w("Could not purchase: $error")
                         continuation.resume(Result.failure(Exception(error.additionalMessage)))
                     }
-
                     override fun onSuccess(entitlements: Map<String, QEntitlement>) {
                         Timber.tag(TAG).d("Purchased: $entitlements")
                         Analytics.logPremiumPurchased()
-                        // FIXME:
-                        continuation.resume(Result.success(entitlements.values.first()))
+                        continuation.resume(Result.success(entitlements.values.firstOrNull()))
                     }
-                })
+                }
+            )
         }
 
     override suspend fun getProducts() =
@@ -90,31 +107,32 @@ class BillingServiceImpl : BillingService {
         suspendCancellableCoroutine { continuation ->
             Qonversion.shared.restore(object : QonversionEntitlementsCallback {
                 override fun onError(error: QonversionError) {
-                    Timber.tag(TAG).w("Could not restore purchases: $error")
+                    Timber.tag(TAG).w("Restore error: $error")
                     continuation.resume(Result.failure(Exception(error.additionalMessage)))
                 }
 
                 override fun onSuccess(entitlements: Map<String, QEntitlement>) {
-                    Timber.tag(TAG).d("Restored purchases: $entitlements")
+                    Timber.tag(TAG).d("Restore success: $entitlements")
                     continuation.resume(Result.success(entitlements.values.toList()))
                 }
             })
         }
 
-    override suspend fun getEntitlements() = suspendCancellableCoroutine<List<QEntitlement>> { cont ->
-        Qonversion.shared.checkEntitlements(
-            object : QonversionEntitlementsCallback {
-                override fun onError(error: QonversionError) {
-                    Timber.tag("AppViewModel").w("Error checking entitlements: $error")
-                    cont.resume(emptyList())
-                }
+    override suspend fun getEntitlements() =
+        suspendCancellableCoroutine<List<QEntitlement>> { cont ->
+            Qonversion.shared.checkEntitlements(
+                object : QonversionEntitlementsCallback {
+                    override fun onError(error: QonversionError) {
+                        Timber.tag("AppViewModel").w("Error checking entitlements: $error")
+                        cont.resume(emptyList())
+                    }
 
-                override fun onSuccess(entitlements: Map<String, QEntitlement>) {
-                    Timber.tag("AppViewModel").d("Entitlements: $entitlements")
-                    cont.resume(entitlements.values.toList())
+                    override fun onSuccess(entitlements: Map<String, QEntitlement>) {
+                        Timber.tag("AppViewModel").d("Entitlements: $entitlements")
+                        cont.resume(entitlements.values.toList())
+                    }
                 }
-            }
-        )
-    }
+            )
+        }
 
 }

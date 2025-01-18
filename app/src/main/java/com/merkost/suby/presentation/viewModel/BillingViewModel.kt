@@ -71,7 +71,7 @@ class BillingViewModel(
             _uiState.value = BaseUiState.Loading
             billingService.purchase(activity, product, null).fold(
                 onSuccess = { entitlement ->
-                    appSettings.saveHasPremium(entitlement.isActive)
+                    appSettings.saveHasPremium(entitlement?.isActive == true)
                 },
                 onFailure = {
                     _uiEvent.emit(

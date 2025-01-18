@@ -54,7 +54,9 @@ class SubyApplication : Application(), ImageLoaderFactory {
             BuildConfig.QONVERSION_API_KEY,
             QLaunchMode.SubscriptionManagement
         ).setEnvironment(
-            QEnvironment.Production
+            QEnvironment.Sandbox
+//            if (BuildConfig.DEBUG) QEnvironment.Sandbox
+//            else QEnvironment.Production
         )
             .build()
         Qonversion.initialize(qonversionConfig)
@@ -67,9 +69,9 @@ class SubyApplication : Application(), ImageLoaderFactory {
                 repositoryModule, useCaseModule, viewModelModule,
             )
         }
+        Timber.plant(Timber.DebugTree())
 
         if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
         } else {
             Timber.plant(CrashReportingTree())
         }
