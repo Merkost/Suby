@@ -145,6 +145,7 @@
     <string name="error_no_purchase_to_restore">No purchase to restore</string>
     <string name="error_restore_purchase">Failed to restore the purchase</string>
     <string name="feature_frequent_currency_updates_title">More Accurate Currency Rates</string>
+    <string name="manage_subscription">Manage subscription</string>
 
 
 </resources>

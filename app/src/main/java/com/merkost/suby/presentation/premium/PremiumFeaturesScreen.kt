@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,6 +56,7 @@ import com.merkost.suby.presentation.base.LogoImage
 import com.merkost.suby.presentation.base.SubyTopAppBar
 import com.merkost.suby.presentation.viewModel.BillingViewModel
 import com.merkost.suby.presentation.viewModel.UiEvent
+import com.merkost.suby.ui.theme.AppState
 import com.merkost.suby.ui.theme.LocalActivity
 import com.merkost.suby.ui.theme.LocalAppState
 import com.merkost.suby.ui.theme.StatusGreen
@@ -63,20 +65,37 @@ import com.merkost.suby.utils.analytics.Screens
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PremiumFeaturesScreen(
     onBackClick: () -> Unit,
 ) {
     ScreenLog(Screens.Premium)
-    val activity = LocalActivity.current
-    val appState = LocalAppState.current
     val viewModel = koinViewModel<BillingViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val scrollBehaviour = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val activity = LocalActivity.current
 
     LaunchedEffect(Unit) { viewModel.loadProducts() }
     HandlePurchaseDialogs(viewModel)
+
+    PremiumScreenContent(
+        uiState = uiState,
+        onSubscribe = { viewModel.purchase(activity) },
+        onRestorePurchase = viewModel::restorePurchase,
+        onBackClick = onBackClick,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PremiumScreenContent(
+    uiState: BaseUiState<Unit>,
+    onSubscribe: () -> Unit,
+    onRestorePurchase: () -> Unit,
+    onBackClick: () -> Unit,
+) {
+    val appState = LocalAppState.current
+    val scrollBehaviour = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
 
     Scaffold(
         modifier = Modifier
@@ -98,13 +117,10 @@ fun PremiumFeaturesScreen(
         ) {
             HeaderSection(hasSubscription = appState.hasPremium)
             FeaturesList()
-
             UpgradeButtons(
                 isLoading = uiState is BaseUiState.Loading,
-                onSubscribeClick = {
-                    viewModel.purchase(activity)
-                },
-                onRestoreClick = viewModel::restorePurchase
+                onSubscribeClick = onSubscribe,
+                onRestoreClick = onRestorePurchase
             )
         }
     }
@@ -117,11 +133,12 @@ fun UpgradeButtons(
     onRestoreClick: () -> Unit
 ) {
     val appState = LocalAppState.current
-    if (appState.hasPremium.not()) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        if (appState.hasPremium.not()) {
             SubscribeButton(
                 isLoading = isLoading,
                 onSubscribeClick = onSubscribeClick
@@ -129,6 +146,13 @@ fun UpgradeButtons(
             TextButton(onClick = onRestoreClick, enabled = !isLoading) {
                 Text(
                     text = stringResource(R.string.restore_purchase),
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
+        } else {
+            TextButton(onClick = onRestoreClick, enabled = !isLoading) {
+                Text(
+                    text = stringResource(R.string.manage_subscription),
                     style = MaterialTheme.typography.labelSmall
                 )
             }
@@ -189,36 +213,34 @@ fun HeaderSection(hasSubscription: Boolean) {
         Spacer(modifier = Modifier.height(16.dp))
 
         if (hasSubscription) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.CheckCircle,
-                    contentDescription = stringResource(R.string.subscription_active),
-                    tint = Color.StatusGreen,
-                    modifier = Modifier.size(40.dp)
-                )
-                Text(
-                    text = stringResource(R.string.subscription_active_message),
-                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center
-                )
-            }
+            Text(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                text = stringResource(R.string.subscription_active_message),
+                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Icon(
+                imageVector = Icons.Default.CheckCircle,
+                contentDescription = stringResource(R.string.subscription_active),
+                tint = Color.StatusGreen,
+                modifier = Modifier.size(40.dp)
+            )
+
         } else {
             Text(
                 text = stringResource(R.string.unlock_premium_features),
                 style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.onBackground,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = stringResource(R.string.unlock_premium_description),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                textAlign = TextAlign.Center
             )
         }
     }
@@ -355,8 +377,28 @@ internal fun SuccessDialog(
 @Composable
 fun PremiumFeaturesScreenPreview() {
     MaterialTheme {
-        PremiumFeaturesScreen(
-            onBackClick = {}
-        )
+        CompositionLocalProvider(LocalAppState provides AppState()) {
+            PremiumScreenContent(
+                uiState = BaseUiState.Success(Unit),
+                onBackClick = {},
+                onSubscribe = {},
+                onRestorePurchase = {}
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PremiumFeaturesScreenSubscribedPreview() {
+    MaterialTheme {
+        CompositionLocalProvider(LocalAppState provides AppState(hasPremium = true)) {
+            PremiumScreenContent(
+                uiState = BaseUiState.Success(Unit),
+                onBackClick = {},
+                onSubscribe = {},
+                onRestorePurchase = {}
+            )
+        }
     }
 }
