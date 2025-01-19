@@ -56,9 +56,7 @@ class GetServicesUseCase(
     private suspend fun loadServices(): List<ServiceDto> {
         return supabaseApi.getServices().first().onSuccess { result ->
             serviceDao.upsertServices(
-                result.map {
-                    DbMapper.mapService(it).copy(lastUpdated = LocalDateTime.now())
-                }
+                result.map { DbMapper.mapService(it).copy(lastUpdated = LocalDateTime.now()) }
             )
         }.onFailure {
             Timber.tag("GetServicesUseCase").w(it, "Failed to get services from API")

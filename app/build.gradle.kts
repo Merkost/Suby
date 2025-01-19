@@ -21,7 +21,7 @@ android {
         applicationId = "com.merkost.suby"
         minSdk = 26
         targetSdk = 35
-        versionCode = 13
+        versionCode = 15
         versionName = "0.1.12"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -29,7 +29,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -43,8 +43,8 @@ android {
             buildConfigField("String", "SUPABASE_ID", findProperty("SUPABASE_ID").toString())
         }
         debug {
-//            versionNameSuffix = ".debug"
-//            applicationIdSuffix = ".debug"
+            versionNameSuffix = ".debug"
+            applicationIdSuffix = ".debug"
             buildConfigField("String", "QONVERSION_API_KEY", findProperty("QONVERSION_API_KEY").toString())
             buildConfigField("String", "AMPLITUDE_API_KEY", findProperty("AMPLITUDE_API_KEY").toString())
             buildConfigField("String", "SUPABASE_API_KEY", findProperty("SUPABASE_API_KEY").toString())

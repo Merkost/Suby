@@ -17,7 +17,7 @@ import timber.log.Timber
             entity = CategoryDb::class,
             parentColumns = ["id"],
             childColumns = ["categoryId"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.NO_ACTION
         )
     ],
     indices = [Index(value = ["categoryId"])]
@@ -31,7 +31,6 @@ data class ServiceDb(
     val createdAt: LocalDateTime,
     val lastUpdated: LocalDateTime = LocalDateTime.now(),
 ) {
-
     val logoLink: String?
         get() = logoName?.let {
             runCatching { supaClient.storage["service_logo"].publicUrl(it) }

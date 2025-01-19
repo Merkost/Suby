@@ -8,9 +8,7 @@ import com.merkost.suby.model.entity.Status
 import com.merkost.suby.utils.now
 import kotlinx.datetime.LocalDateTime
 
-@Entity(
-    tableName = "subscription",
-)
+@Entity(tableName = "subscription",)
 data class SubscriptionDb(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,

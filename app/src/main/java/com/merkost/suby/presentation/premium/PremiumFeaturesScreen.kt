@@ -96,7 +96,6 @@ fun PremiumScreenContent(
     val appState = LocalAppState.current
     val scrollBehaviour = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -150,7 +149,7 @@ fun UpgradeButtons(
                 )
             }
         } else {
-            TextButton(onClick = onRestoreClick, enabled = !isLoading) {
+            TextButton(onClick = onSubscribeClick, enabled = !isLoading) {
                 Text(
                     text = stringResource(R.string.manage_subscription),
                     style = MaterialTheme.typography.labelSmall
