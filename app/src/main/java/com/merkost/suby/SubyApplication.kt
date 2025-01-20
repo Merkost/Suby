@@ -10,7 +10,10 @@ import coil.util.DebugLogger
 import com.amplitude.android.Amplitude
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.ConfigUpdate
+import com.google.firebase.remoteconfig.ConfigUpdateListener
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigException
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.merkost.suby.di.appModule
@@ -28,6 +31,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import timber.log.Timber
+import kotlin.time.Duration.Companion.hours
 
 class SubyApplication : Application(), ImageLoaderFactory {
 
@@ -44,8 +48,17 @@ class SubyApplication : Application(), ImageLoaderFactory {
                 "free_max_subscriptions" to 3L,
             )
         )
-        val configSettings = remoteConfigSettings {}
+        val configSettings = remoteConfigSettings {
+            minimumFetchIntervalInSeconds = 6.hours.inWholeSeconds
+        }
         remoteConfig.setConfigSettingsAsync(configSettings)
+        remoteConfig.addOnConfigUpdateListener(object : ConfigUpdateListener {
+            override fun onUpdate(configUpdate: ConfigUpdate) {
+                remoteConfig.activate()
+            }
+
+            override fun onError(error: FirebaseRemoteConfigException) {}
+        })
 
         val qonversionConfig = QonversionConfig.Builder(
             this,
