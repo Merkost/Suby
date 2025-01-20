@@ -9,9 +9,8 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.merkost.suby.model.room.entity.PartialSubscriptionDb
 import com.merkost.suby.model.room.entity.SubscriptionDb
-import com.merkost.suby.model.room.entity.related.SubscriptionWithCustomDetails
 import com.merkost.suby.model.room.entity.related.SubscriptionWithDetails
-import com.merkost.suby.utils.CustomServiceId
+import com.merkost.suby.utils.ServiceId
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -24,7 +23,6 @@ interface SubscriptionDao {
     @Query(
         """
         SELECT * FROM subscription
-        WHERE subscription.isCustomService = 0
     """
     )
     fun getSubscriptionsWithService(): Flow<List<SubscriptionWithDetails>>
@@ -33,28 +31,10 @@ interface SubscriptionDao {
     @Query(
         """
         SELECT * FROM subscription
-        WHERE subscription.isCustomService = 1
-    """
-    )
-    fun getSubscriptionsWithCustomService(): Flow<List<SubscriptionWithCustomDetails>>
-
-    @Transaction
-    @Query(
-        """
-        SELECT * FROM subscription
-        WHERE subscription.isCustomService = 0 and subscription.id = :subscriptionId
+        WHERE subscription.id = :subscriptionId
     """
     )
     fun getSubscriptionWithService(subscriptionId: Int): Flow<SubscriptionWithDetails>
-
-    @Transaction
-    @Query(
-        """
-        SELECT * FROM subscription
-        WHERE subscription.isCustomService = 1 and subscription.id = :subscriptionId
-    """
-    )
-    fun getSubscriptionWithCustomService(subscriptionId: Int): Flow<SubscriptionWithCustomDetails>
 
     @Query("SELECT * FROM subscription")
     fun getAllSubscriptions(): Flow<List<SubscriptionDb>>
@@ -69,8 +49,8 @@ interface SubscriptionDao {
     suspend fun deleteSubscription(subscriptionDb: SubscriptionDb): Int
 
     @Transaction
-    @Query("DELETE FROM subscription WHERE isCustomService = 1 and serviceId = :customServiceId")
-    suspend fun deleteSubscriptionsByCustomService(customServiceId: CustomServiceId)
+    @Query("DELETE FROM subscription WHERE serviceId = :serviceId")
+    suspend fun deleteSubscriptionsByService(serviceId: ServiceId)
 
     @Query("DELETE FROM subscription WHERE id = :subscriptionId")
     suspend fun deleteSubscriptionById(subscriptionId: Int): Int

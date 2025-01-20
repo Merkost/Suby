@@ -92,7 +92,7 @@ fun SubyTheme(
     CompositionLocalProvider(
         LocalActivity provides LocalContext.current as ComponentActivity,
         LocalAppColors provides colors,
-        LocalAppState provides appState
+        LocalAppState provides appState,
     ) {
         MaterialTheme(
             colorScheme = colorScheme,

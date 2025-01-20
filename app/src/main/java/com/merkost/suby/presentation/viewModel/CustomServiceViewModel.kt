@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.merkost.suby.model.entity.full.Category
 import com.merkost.suby.model.entity.full.toCategory
 import com.merkost.suby.model.room.dao.CategoryDao
-import com.merkost.suby.model.room.dao.CustomServiceDao
-import com.merkost.suby.model.room.entity.CustomServiceDb
+import com.merkost.suby.model.room.dao.ServiceDao
+import com.merkost.suby.model.room.entity.Service
 import com.merkost.suby.utils.ImageFileManager
 import com.merkost.suby.utils.analytics.Analytics
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 
 
 class CustomServiceViewModel(
-    private val customServiceDao: CustomServiceDao,
+    private val serviceDao: ServiceDao,
     private val categoryDao: CategoryDao,
     private val imageFileManager: ImageFileManager,
 ) : ViewModel() {
@@ -73,12 +73,12 @@ class CustomServiceViewModel(
                 imageFileManager.saveCustomServiceImageToInternalStorage(it, serviceName)
             }
 
-            val customService = CustomServiceDb(
+            val customService = Service(
                 name = serviceName,
                 categoryId = category.id,
-                imageUri = imageUri
+                customImageUri = imageUri
             )
-            customServiceDao.addCustomService(customService)
+            serviceDao.insertService(customService)
             Analytics.logCreatedCustomService(
                 serviceName = serviceName,
                 categoryName = category.name
@@ -97,24 +97,24 @@ class CustomServiceViewModel(
         }
 
         viewModelScope.launch {
-            val existingService = customServiceDao.getCustomServiceById(serviceId)
+            val existingService = serviceDao.getServiceById(serviceId)
             if (existingService != null) {
 
                 val imageUri = serviceData.imageUri?.let {
-                    existingService.imageUri?.let {
+                    existingService.customImageUri?.let {
                         imageFileManager.deleteCustomServiceImageFromInternalStorage(it)
                     }
 
                     imageFileManager.saveCustomServiceImageToInternalStorage(it, serviceData.name)
-                } ?: existingService.imageUri
+                } ?: existingService.customImageUri
 
                 val updatedService = existingService.copy(
                     name = serviceData.name,
                     categoryId = serviceData.category.id,
-                    imageUri = imageUri
+                    customImageUri = imageUri
                 )
 
-                customServiceDao.updateCustomService(updatedService)
+                serviceDao.updateService(updatedService)
                 Analytics.logUpdatedCustomService(
                     oldServiceName = existingService.name,
                     serviceName = serviceData.name,

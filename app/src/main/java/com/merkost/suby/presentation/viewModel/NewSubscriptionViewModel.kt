@@ -84,7 +84,6 @@ class NewSubscriptionViewModel(
 
                         val newSubscriptionDb = SubscriptionDb(
                             serviceId = values.service.id,
-                            isCustomService = values.service.isCustomService,
                             status = values.status,
                             currency = currency,
                             price = values.price.toDouble(),

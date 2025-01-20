@@ -52,7 +52,7 @@ class SelectServiceViewModel(
 
     fun deleteCustomService(customService: Service) {
         viewModelScope.launch {
-            serviceRepository.deleteCustomService(customService.id)
+            serviceRepository.deleteService(customService.id)
         }
     }
 }
