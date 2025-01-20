@@ -44,9 +44,7 @@ class SubyApplication : Application(), ImageLoaderFactory {
                 "free_max_subscriptions" to 3L,
             )
         )
-        val configSettings = remoteConfigSettings {
-            minimumFetchIntervalInSeconds = 3600
-        }
+        val configSettings = remoteConfigSettings {}
         remoteConfig.setConfigSettingsAsync(configSettings)
 
         val qonversionConfig = QonversionConfig.Builder(
@@ -119,5 +117,4 @@ class SubyApplication : Application(), ImageLoaderFactory {
             }
         }
     }
-
 }
