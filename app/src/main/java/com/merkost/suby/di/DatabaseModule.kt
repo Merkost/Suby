@@ -3,13 +3,14 @@ package com.merkost.suby.di
 import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.merkost.suby.BuildConfig
 import com.merkost.suby.di.Migrations.MIGRATION_1_2
 import com.merkost.suby.di.Migrations.MIGRATION_2_3
 import com.merkost.suby.di.Migrations.MIGRATION_3_4
+import com.merkost.suby.di.Migrations.MIGRATION_4_5
 import com.merkost.suby.model.room.AppDatabase
 import com.merkost.suby.model.room.dao.CategoryDao
 import com.merkost.suby.model.room.dao.CurrencyRatesDao
-import com.merkost.suby.model.room.dao.CustomServiceDao
 import com.merkost.suby.model.room.dao.ServiceDao
 import com.merkost.suby.model.room.dao.SubscriptionDao
 import org.koin.android.ext.koin.androidApplication
@@ -21,14 +22,13 @@ val databaseModule = module {
         Room.databaseBuilder(
             androidApplication(),
             AppDatabase::class.java,
-            "app_database.db"
+            if (BuildConfig.DEBUG) "app_database_debug.db" else "app_database.db"
         )
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
             .build()
     }
 
     single<CategoryDao> { get<AppDatabase>().categoryDao() }
-    single<CustomServiceDao> { get<AppDatabase>().customServiceDao() }
     single<ServiceDao> { get<AppDatabase>().servicesDao() }
     single<SubscriptionDao> { get<AppDatabase>().subscriptionDao() }
     single<CurrencyRatesDao> { get<AppDatabase>().currencyRatesDao() }
@@ -194,6 +194,82 @@ object Migrations {
             )
             """.trimIndent()
             )
+        }
+    }
+
+    val MIGRATION_4_5 = object : Migration(4, 5) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            val MAX_BACKEND_SERVICE_ID = 200
+
+            db.execSQL("""
+            CREATE TABLE IF NOT EXISTS service_new (
+                id INTEGER PRIMARY KEY NOT NULL,
+                backendId INTEGER,
+                name TEXT NOT NULL,
+                categoryId INTEGER NOT NULL,
+                logoName TEXT,
+                customImageUri TEXT,
+                isDeprecated INTEGER NOT NULL DEFAULT 0,
+                createdAt TEXT NOT NULL,
+                lastUpdated TEXT NOT NULL,
+                FOREIGN KEY(categoryId) REFERENCES category(id) ON DELETE CASCADE
+            )
+        """.trimIndent())
+
+            db.execSQL("""
+            INSERT INTO service_new (id, backendId, name, categoryId, logoName, customImageUri, isDeprecated, createdAt, lastUpdated)
+            SELECT id, id AS backendId, name, categoryId, logoName, NULL, 0, createdAt, lastUpdated
+            FROM service
+        """.trimIndent())
+
+            db.execSQL("""
+            INSERT INTO service_new (id, backendId, name, categoryId, logoName, customImageUri, isDeprecated, createdAt, lastUpdated)
+            SELECT id + $MAX_BACKEND_SERVICE_ID, NULL, name, categoryId, NULL, imageUri, 0, createdAt, lastUpdated
+            FROM custom_service
+        """.trimIndent())
+
+            // 4. Update subscriptions for custom services by adding the offset to serviceId where isCustomService = 1
+            db.execSQL("""
+            UPDATE subscription
+            SET serviceId = serviceId + $MAX_BACKEND_SERVICE_ID
+            WHERE isCustomService = 1
+        """.trimIndent())
+
+            db.execSQL("DROP TABLE service")
+            db.execSQL("DROP TABLE custom_service")
+
+            db.execSQL("ALTER TABLE service_new RENAME TO service")
+
+            db.execSQL("CREATE INDEX IF NOT EXISTS index_service_categoryId ON service(categoryId)")
+            db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_service_backendId ON service(backendId)")
+
+            db.execSQL("""
+            CREATE TABLE IF NOT EXISTS subscription_new (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                serviceId INTEGER NOT NULL,
+                price REAL NOT NULL,
+                currency TEXT NOT NULL,
+                periodType TEXT NOT NULL,
+                periodDuration INTEGER NOT NULL,
+                status TEXT NOT NULL,
+                paymentDate TEXT NOT NULL,
+                createdDate TEXT NOT NULL,
+                description TEXT NOT NULL,
+                FOREIGN KEY(serviceId) REFERENCES service(id) ON DELETE CASCADE
+            )
+        """.trimIndent())
+
+            db.execSQL("""
+            INSERT INTO subscription_new (id, serviceId, price, currency, periodType, periodDuration, status, paymentDate, createdDate, description)
+            SELECT id, serviceId, price, currency, periodType, periodDuration, status, paymentDate, createdDate, description
+            FROM subscription
+        """.trimIndent())
+
+            db.execSQL("DROP TABLE subscription")
+
+            db.execSQL("ALTER TABLE subscription_new RENAME TO subscription")
+
+            db.execSQL("CREATE INDEX IF NOT EXISTS index_subscription_serviceId ON subscription(serviceId)")
         }
     }
 

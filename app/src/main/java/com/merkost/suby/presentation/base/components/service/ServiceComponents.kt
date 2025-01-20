@@ -46,8 +46,6 @@ fun ServiceSvg(
     link: String,
     contentScale: ContentScale = ContentScale.Fit
 ) {
-    Timber.tag("ServiceLogo").d("Link: $link")
-
     SubcomposeAsyncImage(
         modifier = modifier,
         model = ImageRequest.Builder(LocalContext.current.applicationContext)
@@ -82,7 +80,8 @@ fun ServiceLogo(
         ServiceSvg(
             modifier = modifier
                 .clip(shape),
-            link = it
+            link = it,
+            contentScale = if (service.isCustomService) ContentScale.Crop else ContentScale.Fit
         )
     } ?: ServiceNameImage(modifier = modifier, shape = shape, name = service.name)
 }
