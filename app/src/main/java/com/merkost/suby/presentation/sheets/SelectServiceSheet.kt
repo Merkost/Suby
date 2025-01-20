@@ -209,6 +209,7 @@ internal fun CustomServicesList(
                             deleteDialog = false
                         }, onConfirm = {
                             onDeleteCustomService(service)
+                            deleteDialog = false
                         }
                     )
                 }
