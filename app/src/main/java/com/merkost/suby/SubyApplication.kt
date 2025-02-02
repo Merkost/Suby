@@ -26,6 +26,14 @@ import com.qonversion.android.sdk.Qonversion
 import com.qonversion.android.sdk.QonversionConfig
 import com.qonversion.android.sdk.dto.QEnvironment
 import com.qonversion.android.sdk.dto.QLaunchMode
+import io.sentry.Breadcrumb
+import io.sentry.Hint
+import io.sentry.SentryEvent
+import io.sentry.SentryLevel
+import io.sentry.SentryOptions
+import io.sentry.android.core.SentryAndroid
+import io.sentry.android.core.SentryAndroidOptions
+import io.sentry.android.timber.SentryTimberIntegration
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -39,7 +47,68 @@ class SubyApplication : Application(), ImageLoaderFactory {
 
     override fun onCreate() {
         super.onCreate()
+        setRemoteConfig()
+        initQonversion()
+        initSentry()
+        initTimber()
+        startKoin {
+            androidLogger()
+            androidContext(this@SubyApplication)
+            modules(
+                appModule, databaseModule, databaseRepositoryModule,
+                repositoryModule, useCaseModule, viewModelModule,
+            )
+        }
 
+    }
+
+    private fun initSentry() {
+        SentryAndroid.init(this) { options: SentryAndroidOptions ->
+            options.isEnablePerformanceV2 = true
+            options.beforeSend =
+                SentryOptions.BeforeSendCallback { event: SentryEvent, hint: Hint? ->
+                    if (event.level == null) return@BeforeSendCallback null
+                    else return@BeforeSendCallback event
+                }
+            options.beforeBreadcrumb =
+                SentryOptions.BeforeBreadcrumbCallback { breadcrumb: Breadcrumb, _: Hint? ->
+                    // TODO: Set breadcrumb user data
+                    breadcrumb
+                }
+            options.isEnableUserInteractionTracing = true
+            options.isEnableUserInteractionBreadcrumbs = true
+            options.addIntegration(
+                SentryTimberIntegration(
+                    minEventLevel = SentryLevel.WARNING,
+                    minBreadcrumbLevel = SentryLevel.INFO
+                )
+            )
+        }
+    }
+
+    private fun initTimber() {
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+            Timber.plant(CrashReportingTree())
+        } else {
+            Timber.plant(CrashReportingTree())
+        }
+    }
+
+    private fun initQonversion() {
+        val qonversionConfig = QonversionConfig.Builder(
+            this,
+            BuildConfig.QONVERSION_API_KEY,
+            QLaunchMode.SubscriptionManagement
+        ).setEnvironment(
+            if (BuildConfig.DEBUG) QEnvironment.Sandbox
+            else QEnvironment.Production
+        )
+            .build()
+        Qonversion.initialize(qonversionConfig)
+    }
+
+    private fun setRemoteConfig() {
         val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
         remoteConfig.setDefaultsAsync(
             mapOf(
@@ -59,33 +128,6 @@ class SubyApplication : Application(), ImageLoaderFactory {
 
             override fun onError(error: FirebaseRemoteConfigException) {}
         })
-
-        val qonversionConfig = QonversionConfig.Builder(
-            this,
-            BuildConfig.QONVERSION_API_KEY,
-            QLaunchMode.SubscriptionManagement
-        ).setEnvironment(
-            if (BuildConfig.DEBUG) QEnvironment.Sandbox
-            else QEnvironment.Production
-        )
-            .build()
-        Qonversion.initialize(qonversionConfig)
-
-        startKoin {
-            androidLogger()
-            androidContext(this@SubyApplication)
-            modules(
-                appModule, databaseModule, databaseRepositoryModule,
-                repositoryModule, useCaseModule, viewModelModule,
-            )
-        }
-
-        if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
-            Timber.plant(CrashReportingTree())
-        } else {
-            Timber.plant(CrashReportingTree())
-        }
     }
 
     override fun newImageLoader(): ImageLoader {

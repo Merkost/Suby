@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.googleServices)
     alias(libs.plugins.firebaseCrashlytics)
     alias(libs.plugins.firebasePerformance)
+    alias(libs.plugins.sentry)
 }
 
 android {
@@ -36,7 +37,6 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("debug")
-
             buildConfigField("String", "QONVERSION_API_KEY", findProperty("QONVERSION_API_KEY").toString())
             buildConfigField("String", "AMPLITUDE_API_KEY", findProperty("AMPLITUDE_API_KEY").toString())
             buildConfigField("String", "SUPABASE_API_KEY", findProperty("SUPABASE_API_KEY").toString())
@@ -63,7 +63,6 @@ android {
         buildConfig = true
     }
     composeCompiler {
-        enableStrongSkippingMode = true
         reportsDestination = layout.buildDirectory.dir("compose_compiler")
     }
     packaging {
@@ -128,4 +127,11 @@ dependencies {
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
+}
+
+sentry {
+    org.set("merkost")
+    projectName.set("suby")
+
+    includeSourceContext.set(true)
 }
