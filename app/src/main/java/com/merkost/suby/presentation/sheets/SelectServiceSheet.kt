@@ -288,7 +288,6 @@ internal fun ServicesList(
                             }
                         }
                     },
-                    colors = searchBarColors.inputFieldColors,
                     interactionSource = null,
                 )
             },

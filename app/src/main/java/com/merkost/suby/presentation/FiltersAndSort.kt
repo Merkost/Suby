@@ -140,7 +140,7 @@ fun SortFilterBottomSheet(
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 FilterOption.entries.forEach { option ->
                     FilterChip(
@@ -168,7 +168,7 @@ fun SortFilterBottomSheet(
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 SortOption.entries.forEach { option ->
                     SortAssistChip(

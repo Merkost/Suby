@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
@@ -76,29 +78,42 @@ fun ServiceLogo(
     service: Service,
     shape: Shape = SubyShape
 ) {
-    service.logoUrl?.let {
+    if (service.logoUrl != null) {
         ServiceSvg(
             modifier = modifier
-                .clip(shape),
-            link = it,
+                .clip(shape)
+                .then(
+                    if (service.isCustomService) Modifier.aspectRatio(1f) else Modifier
+                ),
+            link = service.logoUrl,
             contentScale = if (service.isCustomService) ContentScale.Crop else ContentScale.Fit
         )
-    } ?: ServiceNameImage(modifier = modifier, shape = shape, name = service.name)
+    } else {
+        ServiceNameImage(
+            modifier = modifier,
+            shape = shape,
+            name = service.name
+        )
+    }
 }
 
 @Composable
-fun ServiceNameImage(modifier: Modifier, shape: Shape = SubyShape, name: String) {
+fun ServiceNameImage(
+    modifier: Modifier = Modifier,
+    shape: Shape = MaterialTheme.shapes.medium,
+    name: String
+) {
     Box(
         modifier = modifier
+            .size(64.dp)
             .clip(shape)
-            .background(MaterialTheme.colorScheme.surfaceVariant),
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
         contentAlignment = Alignment.Center
     ) {
         Text(
-            modifier = Modifier.padding(8.dp),
-            text = name.take(1),
+            text = name.take(1).uppercase(),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = MaterialTheme.typography.headlineSmall
+            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
         )
     }
 }

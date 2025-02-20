@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -24,17 +23,17 @@ import com.merkost.suby.presentation.screens.FeedbackScreen
 import com.merkost.suby.presentation.screens.NewSubscriptionScreen
 import com.merkost.suby.presentation.screens.PickCurrencyScreen
 import com.merkost.suby.presentation.screens.SubscriptionDetailsScreen
+import com.merkost.suby.presentation.screens.calendar.CalendarViewScreen
 import com.merkost.suby.presentation.viewModel.OnboardingViewModel
+import com.merkost.suby.ui.theme.LocalAppState
 import com.merkost.suby.utils.Arguments
 import com.merkost.suby.utils.Destinations
-import com.merkost.suby.utils.appState
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun SubyMainApp() {
+fun SubyMainNavigation() {
     val navController = rememberNavController()
-
-    val appState by appState()
+    val appState = LocalAppState.current
     val startDestination =
         if (appState.isFirstTimeLaunch) Destinations.GREETING else Destinations.MAIN_SCREEN
 //    val startDestination = Destinations.GREETING
@@ -83,15 +82,19 @@ private fun NavGraphBuilder.NavGraph(
     }
 
     composable(Destinations.MAIN_SCREEN) { backStackEntry ->
-        SubscriptionsScreen(onAddClicked = {
-            navController.navigate(Destinations.NEW_SUBSCRIPTION)
-        }, onCurrencyClick = {
-            navController.navigate(Destinations.CurrencyPick(true))
-        }, onSubscriptionInfo = { subId ->
-            navController.navigate(Destinations.SubscriptionInfo(subId))
-        }, onPremiumClick = {
-            navController.navigate(Destinations.PremiumFeatures)
-        })
+        SubscriptionsScreen(
+            onAddClicked = {
+                navController.navigate(Destinations.NEW_SUBSCRIPTION)
+            }, onCurrencyClick = {
+                navController.navigate(Destinations.CurrencyPick(true))
+            }, onSubscriptionInfo = { subId ->
+                navController.navigate(Destinations.SubscriptionInfo(subId))
+            }, onCalendarViewClick = {
+                navController.navigate(Destinations.CalendarView)
+            }, onPremiumClick = {
+                navController.navigate(Destinations.PremiumFeatures)
+            }
+        )
     }
 
     composable(Destinations.NEW_SUBSCRIPTION) { backStackEntry ->
@@ -160,6 +163,15 @@ private fun NavGraphBuilder.NavGraph(
 
     composable<Destinations.PremiumFeatures> {
         PremiumFeaturesScreen(onBackClick = upPress)
+    }
+
+    composable<Destinations.CalendarView> {
+        CalendarViewScreen(
+            upPress = upPress,
+            onSubscriptionClick = {
+                navController.navigate(Destinations.SubscriptionInfo(it.id))
+            }
+        )
     }
 
 }

@@ -1,39 +1,44 @@
 [versions]
+#Bom
+koin-bom = "4.0.2"
+compose-bom = "2025.02.00"
+firebase-bom = "33.9.0"
+
+
 agp = "8.7.3"
 amplitude = "1.19.2"
 billing-ktx = "7.1.1"
-koin-android = "3.5.6"
+compose-multiplatform-android = "2.6.2"
+koin-android = "4.0.2"
 kotlin = "2.1.0"
 core-ktx = "1.15.0"
 junit = "4.13.2"
 androidx-test-ext-junit = "1.2.1"
 espresso-core = "3.6.1"
 lifecycle-runtime-ktx = "2.8.7"
-activity-compose = "1.9.3"
-compose-bom = "2024.12.01"
+activity-compose = "1.10.0"
 coil = "2.7.0"
 lottie = "6.5.2"
 material = "1.12.0"
 sdk = "7.5.2"
 supabase = "2.5.4"
-navigation = "2.8.5"
-accompanist = "0.36.0"
+navigation = "2.8.7"
 room = "2.6.1"
 ksp = "2.1.0-1.0.29"
 dagger-hilt = "2.54"
 hilt = "1.2.0"
 ktor = "2.3.12"
 secrets = "2.0.1"
-datastore = "1.1.1"
-serialization = "1.7.1"
+datastore = "1.1.2"
+serialization = "1.7.3"
 timber = "5.0.1"
-firebase = "33.7.0"
 
 
 [libraries]
 analytics-android = { module = "com.amplitude:analytics-android", version.ref = "amplitude" }
 billing-ktx = { module = "com.android.billingclient:billing-ktx", version.ref = "billing-ktx" }
-firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase" }
+compose-multiplatform-android = { module = "com.kizitonwose.calendar:compose-multiplatform-android", version.ref = "compose-multiplatform-android" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-perf = { module = "com.google.firebase:firebase-perf" }
@@ -43,6 +48,7 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
 
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
 koin = { module = "io.insert-koin:koin-android", version.ref = "koin-android" }
 koin-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin-android" }
 

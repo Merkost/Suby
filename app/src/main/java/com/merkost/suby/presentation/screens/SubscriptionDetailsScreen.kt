@@ -1,16 +1,23 @@
 package com.merkost.suby.presentation.screens
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,14 +30,13 @@ import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,6 +46,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,7 +58,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.merkost.suby.R
-import com.merkost.suby.SubySmallShape
+import com.merkost.suby.SubyShape
 import com.merkost.suby.domain.ui.LocalCurrencyFormatter
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.Status
@@ -60,11 +67,10 @@ import com.merkost.suby.model.entity.full.upcomingPayments
 import com.merkost.suby.presentation.base.BaseUiState
 import com.merkost.suby.presentation.base.DeleteConfirmationDialog
 import com.merkost.suby.presentation.base.Icon
-import com.merkost.suby.presentation.base.SubyTopAppBar
-import com.merkost.suby.presentation.base.TitleColumn
+import com.merkost.suby.presentation.base.SubyLargeTopAppBar
 import com.merkost.suby.presentation.base.components.ScreenStateHandler
 import com.merkost.suby.presentation.base.components.service.ServiceLogo
-import com.merkost.suby.presentation.home.StatusBubble
+import com.merkost.suby.presentation.base.components.subscription.StatusBubble
 import com.merkost.suby.presentation.viewModel.SubscriptionDetailsViewModel
 import com.merkost.suby.showToast
 import com.merkost.suby.utils.analytics.ScreenLog
@@ -113,7 +119,7 @@ fun SubscriptionDetailsScreen(
 
     Scaffold(
         topBar = {
-            SubyTopAppBar(
+            SubyLargeTopAppBar(
                 title = {
                     Text(
                         text = (uiState as? BaseUiState.Success<Subscription>)?.data?.serviceName.orEmpty(),
@@ -121,7 +127,7 @@ fun SubscriptionDetailsScreen(
                 },
                 upPress = upPress,
                 actions = {
-                    if (showActions.not()) return@SubyTopAppBar
+                    if (showActions.not()) return@SubyLargeTopAppBar
                     SubscriptionDetailsActionMenu(
                         onEditClick = onEditClick,
                         onDeleteClick = { deleteDialog.value = true }
@@ -147,43 +153,59 @@ fun SubscriptionDetailsScreen(
 }
 
 @Composable
-fun SubscriptionDetailsActionMenu(onEditClick: () -> Unit, onDeleteClick: () -> Unit) {
-    val menuExpanded = remember { mutableStateOf(false) }
+fun SubscriptionDetailsActionMenu(
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit
+) {
+    var menuExpanded by remember { mutableStateOf(false) }
 
-    IconButton(onClick = { menuExpanded.value = true }) {
-        androidx.compose.material3.Icon(
-            imageVector = Icons.Default.MoreVert,
-            contentDescription = stringResource(R.string.cd_more_options),
-            tint = MaterialTheme.colorScheme.onSurface
-        )
-    }
+    Box {
+        IconButton(onClick = { menuExpanded = true }) {
+            Icon(
+                imageVector = Icons.Default.MoreVert,
+                contentDescription = stringResource(R.string.cd_more_options),
+            )
+        }
+        DropdownMenu(
+            expanded = menuExpanded,
+            onDismissRequest = { menuExpanded = false },
+            shape = SubyShape,
+            containerColor = MaterialTheme.colorScheme.surface,
+            modifier = Modifier,
+        ) {
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        text = stringResource(R.string.option_edit),
+                    )
+                },
+                onClick = {
+                    menuExpanded = false
+                    onEditClick()
+                },
+                contentPadding = PaddingValues(horizontal = 16.dp)
+            )
 
-    DropdownMenu(
-        shape = SubySmallShape,
-        expanded = menuExpanded.value,
-        onDismissRequest = { menuExpanded.value = false }
-    ) {
-        DropdownMenuItem(
-            text = { Text(stringResource(R.string.option_edit)) },
-            onClick = {
-                menuExpanded.value = false
-                onEditClick()
-            }
-        )
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
+                thickness = 1.dp,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
 
-        HorizontalDivider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp)
-        )
-
-        DropdownMenuItem(
-            text = { Text(stringResource(R.string.action_delete)) },
-            onClick = {
-                menuExpanded.value = false
-                onDeleteClick()
-            },
-        )
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        text = stringResource(R.string.action_delete),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                },
+                onClick = {
+                    menuExpanded = false
+                    onDeleteClick()
+                },
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+            )
+        }
     }
 }
 
@@ -192,133 +214,88 @@ internal fun SubscriptionInfo(
     subscription: Subscription,
     modifier: Modifier = Modifier
 ) {
-    val heroBrush = Brush.verticalGradient(
-        colors = listOf(
-            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
-            MaterialTheme.colorScheme.background
-        )
-    )
-
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(heroBrush)
-                .padding(horizontal = 16.dp)
-                .padding(top = 16.dp)
-        ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                horizontalAlignment = Alignment.Start
-            ) {
-                StatusBubble(
-                    status = subscription.status,
-                    textStyle = MaterialTheme.typography.labelLarge,
-                    padding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    ServiceLogo(
-                        modifier = Modifier
-                            .heightIn(max = 64.dp)
-                            .weight(1f, false),
-                        service = subscription.toService(),
-                    )
-                    Spacer(modifier = Modifier.width(32.dp))
-                    Column(
-                        modifier = Modifier,
-                        horizontalAlignment = Alignment.End,
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        PriceWithCurrency(
-                            price = subscription.price,
-                            currency = subscription.currency,
-                        )
-                    }
-                }
-            }
-        }
+        HeroSection(subscription)
 
-        TitleColumn(
-            title = stringResource(R.string.subscription_details),
-            modifier = Modifier.padding(horizontal = 16.dp)
-        ) {
-            ElevatedCard(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                shape = MaterialTheme.shapes.large,
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(24.dp)
-                ) {
+        SubscriptionDetailsSection(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            subscription = subscription
+        )
 
-                    DetailRowWithIcon(
-                        label = stringResource(R.string.renewal_period),
-                        value = "${subscription.period.duration} ${
-                            subscription.period.type.getTitle(subscription.period.duration.toInt())
-                        }",
-                        icon = Icons.Default.CurrencyExchange
-                    )
-
-                    if (subscription.status == Status.ACTIVE) {
-                        val nextPaymentDateString =
-                            subscription.nextPaymentDate.toJavaLocalDate().dateString()
-                        DetailRowWithIcon(
-                            label = stringResource(R.string.next_payment_date),
-                            value = nextPaymentDateString,
-                            icon = Icons.Default.Event
-                        )
-
-                        val daysUntilNext = ChronoUnit.DAYS.between(
-                            LocalDate.now().toJavaLocalDate(),
-                            subscription.nextPaymentDate.toJavaLocalDate()
-                        )
-                        if (daysUntilNext > 0) {
-                            DetailRowWithIcon(
-                                label = stringResource(R.string.days_until_next_payment),
-                                value = pluralStringResource(
-                                    R.plurals.days,
-                                    daysUntilNext.toInt(),
-                                    daysUntilNext
-                                ),
-                                icon = Icons.Default.Schedule
-                            )
-                        }
-                    }
-
-
-                    if (subscription.description.isNotBlank()) {
-                        HorizontalDivider()
-
-                        DetailRowWithIcon(
-                            label = stringResource(R.string.title_description),
-                            value = subscription.description,
-                            icon = Icons.Default.Info
-                        )
-                    }
-                }
-            }
-        }
-
-        UpcomingPaymentsList(
+        UpcomingPaymentsListSection(
             currency = subscription.currency,
             upcomingPayments = subscription.upcomingPayments(),
             getPriceForDate = { subscription.price },
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
+            modifier = Modifier.padding(horizontal = 16.dp)
         )
+    }
+}
+
+@Composable
+private fun SubscriptionDetailsSection(modifier: Modifier, subscription: Subscription) {
+    SectionColumn(modifier = modifier) {
+        SectionTitle(text = stringResource(R.string.subscription_details))
+
+        OutlinedCard(
+            modifier = Modifier
+                .fillMaxWidth(),
+            shape = MaterialTheme.shapes.medium,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                DetailRowWithIcon(
+                    label = stringResource(R.string.renewal_period),
+                    value = "${subscription.period.duration} " +
+                            subscription.period.type.getTitle(subscription.period.duration.toInt()),
+                    icon = Icons.Default.CurrencyExchange
+                )
+
+                if (subscription.status == Status.ACTIVE) {
+                    val nextPaymentDateString =
+                        subscription.nextPaymentDate.toJavaLocalDate().dateString()
+                    DetailRowWithIcon(
+                        label = stringResource(R.string.next_payment_date),
+                        value = nextPaymentDateString,
+                        icon = Icons.Default.Event
+                    )
+
+                    val daysUntilNext = ChronoUnit.DAYS.between(
+                        LocalDate.now().toJavaLocalDate(),
+                        subscription.nextPaymentDate.toJavaLocalDate()
+                    )
+                    if (daysUntilNext > 0) {
+                        DetailRowWithIcon(
+                            label = stringResource(R.string.days_until_next_payment),
+                            value = pluralStringResource(
+                                R.plurals.days,
+                                daysUntilNext.toInt(),
+                                daysUntilNext
+                            ),
+                            icon = Icons.Default.Schedule
+                        )
+                    }
+                }
+
+                if (subscription.description.isNotBlank()) {
+                    HorizontalDivider()
+                    DetailRowWithIcon(
+                        label = stringResource(R.string.title_description),
+                        value = subscription.description,
+                        icon = Icons.Default.Info
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -327,21 +304,20 @@ fun PriceWithCurrency(price: Double, currency: Currency) {
     val currencyFormatter = LocalCurrencyFormatter.current
     Column(
         horizontalAlignment = Alignment.End,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(50))
                 .background(MaterialTheme.colorScheme.primaryContainer)
-                .padding(horizontal = 8.dp, vertical = 4.dp)
+                .padding(horizontal = 10.dp, vertical = 4.dp)
         ) {
             Text(
-                text = currency.code + " " + currency.flagEmoji,
+                text = "${currency.code} ${currency.flagEmoji}",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
-
         Text(
             text = currencyFormatter.formatCurrencyStyle(
                 price.toBigDecimal(),
@@ -354,20 +330,19 @@ fun PriceWithCurrency(price: Double, currency: Currency) {
 }
 
 @Composable
-fun DetailRowWithIcon(
+private fun DetailRowWithIcon(
     label: String,
     value: String,
     icon: ImageVector
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.weight(1f, false),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.weight(1f)
         ) {
             Icon(
                 imageVector = icon,
@@ -375,15 +350,12 @@ fun DetailRowWithIcon(
                 modifier = Modifier.size(24.dp)
             )
             Text(
-                modifier = Modifier,
                 text = label,
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f)
             )
         }
-        Spacer(
-            modifier = Modifier.width(8.dp)
-        )
+
         Text(
             text = value,
             style = MaterialTheme.typography.bodyMedium,
@@ -393,48 +365,42 @@ fun DetailRowWithIcon(
 }
 
 @Composable
-fun UpcomingPaymentsList(
+private fun UpcomingPaymentsListSection(
+    modifier: Modifier = Modifier,
     currency: Currency,
     upcomingPayments: List<LocalDate>,
     getPriceForDate: (LocalDate) -> Double,
-    modifier: Modifier = Modifier
 ) {
     if (upcomingPayments.isNotEmpty()) {
         val currencyFormatter = LocalCurrencyFormatter.current
 
-        TitleColumn(
-            modifier = modifier,
-            title = stringResource(R.string.upcoming_payments_title)
-        ) {
+        SectionColumn(modifier = modifier) {
+            SectionTitle(text = stringResource(R.string.upcoming_payments_title))
 
-            ElevatedCard(
-                shape = MaterialTheme.shapes.large,
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                modifier = Modifier.fillMaxWidth()
+            OutlinedCard(
+                shape = MaterialTheme.shapes.medium,
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
+                modifier = Modifier
+                    .fillMaxWidth()
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        upcomingPayments.forEachIndexed { i, paymentDate ->
-                            val price = getPriceForDate(paymentDate)
-                            UpcomingPaymentItem(
-                                paymentDate = paymentDate,
-                                priceString = currencyFormatter.formatCurrencyStyle(
-                                    price.toBigDecimal(),
-                                    currency.code
-                                )
+                    upcomingPayments.forEachIndexed { i, paymentDate ->
+                        val price = getPriceForDate(paymentDate)
+                        UpcomingPaymentItem(
+                            paymentDate = paymentDate,
+                            priceString = currencyFormatter.formatCurrencyStyle(
+                                price.toBigDecimal(),
+                                currency.code
                             )
-                            if (i != upcomingPayments.lastIndex) {
-                                HorizontalDivider(
-                                    thickness = 1.dp,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-                                )
-                            }
+                        )
+                        if (i != upcomingPayments.lastIndex) {
+                            HorizontalDivider(
+                                thickness = 1.dp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                            )
                         }
                     }
                 }
@@ -444,7 +410,7 @@ fun UpcomingPaymentsList(
 }
 
 @Composable
-fun UpcomingPaymentItem(
+private fun UpcomingPaymentItem(
     paymentDate: LocalDate,
     priceString: String,
     modifier: Modifier = Modifier
@@ -453,11 +419,14 @@ fun UpcomingPaymentItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 4.dp, vertical = 4.dp),
+            .padding(vertical = 4.dp, horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             Icon(
                 imageVector = Icons.Default.Event,
                 tint = MaterialTheme.colorScheme.primary,
@@ -466,11 +435,9 @@ fun UpcomingPaymentItem(
             Text(
                 text = dateString,
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(start = 8.dp)
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
-
         Text(
             text = priceString,
             style = MaterialTheme.typography.bodyMedium,
@@ -479,3 +446,105 @@ fun UpcomingPaymentItem(
     }
 }
 
+@Composable
+fun SectionTitle(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .width(4.dp)
+                .height(24.dp)
+                .background(MaterialTheme.colorScheme.primary)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = text,
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+            color = MaterialTheme.colorScheme.onBackground
+        )
+    }
+}
+
+@Composable
+fun SectionColumn(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        content = content
+    )
+}
+
+@Composable
+fun HeroSection(
+    subscription: Subscription,
+    modifier: Modifier = Modifier
+) {
+    val heroBrush = Brush.verticalGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.primaryContainer.copy(0.25f),
+            MaterialTheme.colorScheme.background
+        )
+    )
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(
+                heroBrush,
+                shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
+            )
+    ) {
+        var visible by remember { mutableStateOf(false) }
+        LaunchedEffect(Unit) { visible = true }
+
+        AnimatedVisibility(
+            visible = visible,
+            enter = fadeIn(animationSpec = tween(400)) + scaleIn(
+                initialScale = 0.8f,
+                animationSpec = tween(400)
+            ),
+            exit = fadeOut()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                StatusBubble(
+                    status = subscription.status,
+                    textStyle = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                    padding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+
+                    ServiceLogo(
+                        modifier = Modifier
+                            .height(64.dp)
+                            .weight(1f, false),
+                        service = subscription.toService()
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    PriceWithCurrency(
+                        price = subscription.price,
+                        currency = subscription.currency
+                    )
+                }
+            }
+        }
+    }
+}

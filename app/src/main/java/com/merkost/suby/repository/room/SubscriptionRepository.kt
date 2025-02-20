@@ -4,8 +4,10 @@ import com.merkost.suby.model.entity.full.Subscription
 import com.merkost.suby.model.room.entity.PartialSubscriptionDb
 import com.merkost.suby.model.room.entity.SubscriptionDb
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 interface SubscriptionRepository {
+    val subscriptionsState: StateFlow<List<Subscription>>
     val subscriptions: Flow<List<Subscription>>
     val hasAnySubscriptions: Flow<Boolean>
 

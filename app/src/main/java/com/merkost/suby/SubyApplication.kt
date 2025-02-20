@@ -63,6 +63,8 @@ class SubyApplication : Application(), ImageLoaderFactory {
     }
 
     private fun initSentry() {
+        if (BuildConfig.DEBUG) return
+
         SentryAndroid.init(this) { options: SentryAndroidOptions ->
             options.isEnablePerformanceV2 = true
             options.beforeSend =

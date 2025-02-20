@@ -20,12 +20,12 @@ class MainActivity : ComponentActivity() {
 
         val splashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition {
-            viewModel.isReadyForLaunch.value
+            !viewModel.isAppReady.value
         }
 
         setContent {
             SubyTheme {
-                SubyMainApp()
+                SubyMainNavigation()
             }
         }
     }

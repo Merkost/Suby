@@ -82,6 +82,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.compose.multiplatform.android)
+
     implementation(libs.material)
     implementation(libs.analytics.android)
     implementation(libs.qonversion.sdk)

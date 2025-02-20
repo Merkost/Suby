@@ -1,7 +1,6 @@
 package com.merkost.suby.ui.theme
 
 import android.os.Build
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -13,10 +12,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.repository.datastore.AppStateRepository
 import org.koin.compose.koinInject
@@ -45,14 +44,11 @@ private val LightColorScheme = lightColorScheme(
 )
 
 val LocalAppColors = staticCompositionLocalOf { lightColors }
-val LocalActivity = staticCompositionLocalOf<ComponentActivity> {
-    error("No LocalActivity provided")
-}
 
 data class AppState(
     val isFirstTimeLaunch: Boolean = true,
     val hasPremium: Boolean = false,
-    val hasSubscriptions: Boolean = false,
+    val hasSubscriptions: Boolean = true,
     val mainCurrency: Currency = Currency.USD
 )
 
@@ -71,8 +67,13 @@ fun SubyTheme(
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val appStateRepository = koinInject<AppStateRepository>()
-    val appState by appStateRepository.appState.collectAsState()
+    val isPreview = LocalInspectionMode.current
+    val appState = if (isPreview) {
+        AppState()
+    } else {
+        val appStateRepository = koinInject<AppStateRepository>()
+        appStateRepository.appState.collectAsState().value
+    }
 
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
@@ -90,7 +91,6 @@ fun SubyTheme(
     }
 
     CompositionLocalProvider(
-        LocalActivity provides LocalContext.current as ComponentActivity,
         LocalAppColors provides colors,
         LocalAppState provides appState,
     ) {
@@ -108,7 +108,10 @@ val lightColors = AppColors(
     statusOrange = Color(0xFFEF6C00),
     statusGreen = Color(0xFF2E7D32),
     statusRed = Color(0xFFC62828),
-    statusYellow = Color(0xFFF9A825)
+    statusYellow = Color(0xFFF9A825),
+
+    todayBorderColor = Color(0xFF6200EE),
+    selectedBackgroundColor = Color(0xFF6200EE).copy(alpha = 0.2f)
 )
 
 val darkColors = AppColors(
@@ -117,7 +120,10 @@ val darkColors = AppColors(
     statusOrange = Color.StatusOrange,
     statusGreen = Color.StatusGreen,
     statusRed = Color.StatusRed,
-    statusYellow = Color.StatusYellow
+    statusYellow = Color.StatusYellow,
+
+    todayBorderColor = Color(0xFFBB86FC),
+    selectedBackgroundColor = Color(0xFFBB86FC).copy(alpha = 0.2f)
 )
 
 @Stable
@@ -127,5 +133,8 @@ data class AppColors(
     val statusOrange: Color,
     val statusGreen: Color,
     val statusRed: Color,
-    val statusYellow: Color
+    val statusYellow: Color,
+
+    val todayBorderColor: Color,
+    val selectedBackgroundColor: Color
 )

@@ -1,5 +1,6 @@
 package com.merkost.suby.utils
 
+import androidx.compose.ui.unit.dp
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import kotlinx.datetime.DatePeriod
@@ -8,6 +9,7 @@ import kotlin.time.Duration.Companion.days
 
 object Constants {
 
+    val LAZY_PADDING = 64.dp
     val SUBY_UPDATE_THRESHOLD = 2.days
     const val DEFAULT_CUSTOM_PERIOD_DAYS: Long = 1
 
@@ -25,4 +27,6 @@ object Constants {
             val dateFormatString = "dd/MM/yyyy"
             return DateTimeFormatter.ofPattern(dateFormatString)
         }
+
+    val fullDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy")
 }

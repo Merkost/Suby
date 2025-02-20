@@ -5,9 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.merkost.suby.model.billing.BillingService
 import com.merkost.suby.repository.datastore.AppSettings
 import com.merkost.suby.repository.datastore.AppStateRepository
+import com.merkost.suby.repository.room.SubscriptionRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -15,18 +15,20 @@ import timber.log.Timber
 class AppViewModel(
     private val billingService: BillingService,
     private val appSettings: AppSettings,
-    private val appStateRepository: AppStateRepository
+    private val appStateRepository: AppStateRepository,
+    private val subscriptionRepository: SubscriptionRepository
 ) : ViewModel() {
 
-    val isReadyForLaunch = MutableStateFlow(false)
+    val isAppReady = MutableStateFlow(false)
 
     init {
-        getReadyForAppLaunch()
+        preloadAppData()
     }
 
-    private fun getReadyForAppLaunch() {
+    private fun preloadAppData() {
         viewModelScope.launch {
             appStateRepository.appState.firstOrNull()
+
             val entitlements = billingService.getEntitlements()
             if (entitlements.isEmpty()) {
                 appSettings.saveHasPremium(false)
@@ -34,7 +36,8 @@ class AppViewModel(
                 Timber.tag("AppViewModel").w("Entitlements: $entitlements")
                 appSettings.saveHasPremium(entitlements.any { it.isActive })
             }
-            isReadyForLaunch.update { true }
+            subscriptionRepository.subscriptions
+            isAppReady.value = true
         }
     }
 
@@ -43,4 +46,5 @@ class AppViewModel(
             appSettings.saveFirstTimeLaunch(false)
         }
     }
+
 }

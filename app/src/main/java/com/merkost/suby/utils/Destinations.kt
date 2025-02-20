@@ -38,6 +38,9 @@ object Destinations {
 
     @Serializable
     data object PremiumFeatures
+
+    @Serializable
+    data object CalendarView
 }
 
 object Arguments {

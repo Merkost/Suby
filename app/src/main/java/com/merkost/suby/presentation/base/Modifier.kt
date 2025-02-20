@@ -3,6 +3,7 @@ package com.merkost.suby.presentation.base
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +43,15 @@ fun Modifier.rotatingOnClick(
             }
             true
         }
+}
+
+fun Modifier.noRippleClickable(
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) = composed {
+    clickable(enabled = enabled, interactionSource = null, indication = null) {
+        onClick()
+    }
 }
 
 @Composable

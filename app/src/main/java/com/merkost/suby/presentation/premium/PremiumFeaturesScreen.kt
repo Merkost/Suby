@@ -43,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -57,7 +58,6 @@ import com.merkost.suby.presentation.base.SubyTopAppBar
 import com.merkost.suby.presentation.viewModel.BillingViewModel
 import com.merkost.suby.presentation.viewModel.UiEvent
 import com.merkost.suby.ui.theme.AppState
-import com.merkost.suby.ui.theme.LocalActivity
 import com.merkost.suby.ui.theme.LocalAppState
 import com.merkost.suby.ui.theme.StatusGreen
 import com.merkost.suby.utils.analytics.ScreenLog
@@ -72,7 +72,7 @@ fun PremiumFeaturesScreen(
     ScreenLog(Screens.Premium)
     val viewModel = koinViewModel<BillingViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val activity = LocalActivity.current
+    val activity = LocalContext.current as androidx.activity.ComponentActivity
 
     LaunchedEffect(Unit) { viewModel.loadProducts() }
     HandlePurchaseDialogs(viewModel)

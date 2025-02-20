@@ -7,13 +7,11 @@ import com.merkost.suby.model.entity.BasePeriod
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.Period
 import com.merkost.suby.model.entity.Status
-import com.merkost.suby.utils.Constants
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.daysUntil
-import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDate
 import kotlinx.datetime.toKotlinLocalDateTime
 import kotlinx.datetime.toLocalDateTime
@@ -54,7 +52,9 @@ data class Subscription(
         }
 
     fun getRemainingDurationString(context: Context): String {
-        val formattedDate = paymentDate.toJavaLocalDateTime().format(Constants.dataFormat)
+        val formattedDate = paymentDate.toString()
+        // FIXME: This is not working for preview
+//        .toJavaLocalDateTime().format(Constants.dataFormat)
 
         return when (status) {
             Status.ACTIVE -> when (remainingDays) {
@@ -111,7 +111,6 @@ data class Subscription(
 }
 
 fun Subscription.upcomingPayments(count: Int = 3): List<LocalDate> {
-    // For CANCELED and EXPIRED, no upcoming payments
     if (status == Status.CANCELED || status == Status.EXPIRED) {
         return emptyList()
     }
@@ -135,4 +134,18 @@ fun Subscription.upcomingPayments(count: Int = 3): List<LocalDate> {
             date.dayOfMonth,
         ).toKotlinLocalDate()
     }
+}
+
+fun Subscription.allPaydays(from: LocalDate, to: LocalDate): List<LocalDate> {
+    if (status == Status.CANCELED || status == Status.EXPIRED) return emptyList()
+    val paydays = mutableListOf<LocalDate>()
+    var nextDate = paymentDate.date
+    while (nextDate < from) {
+        nextDate = period.nextBillingDate(nextDate)
+    }
+    while (nextDate <= to) {
+        paydays.add(nextDate)
+        nextDate = period.nextBillingDate(nextDate)
+    }
+    return paydays
 }
