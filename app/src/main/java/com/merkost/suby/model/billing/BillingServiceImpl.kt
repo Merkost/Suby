@@ -1,6 +1,6 @@
 package com.merkost.suby.model.billing
 
-import androidx.activity.ComponentActivity
+import android.app.Activity
 import com.merkost.suby.utils.analytics.Analytics
 import com.qonversion.android.sdk.Qonversion
 import com.qonversion.android.sdk.dto.QUser
@@ -38,7 +38,7 @@ class BillingServiceImpl : BillingService {
     }
 
     override suspend fun purchase(
-        activity: ComponentActivity,
+        activity: Activity,
         product: QProduct,
         offerId: String?
     ) =

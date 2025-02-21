@@ -1,5 +1,6 @@
 package com.merkost.suby.presentation.premium
 
+import androidx.activity.compose.LocalActivity
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
@@ -43,13 +44,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.merkost.suby.BuildConfig
 import com.merkost.suby.R
 import com.merkost.suby.presentation.base.BaseUiState
 import com.merkost.suby.presentation.base.Icon
@@ -72,14 +73,18 @@ fun PremiumFeaturesScreen(
     ScreenLog(Screens.Premium)
     val viewModel = koinViewModel<BillingViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val activity = LocalContext.current as androidx.activity.ComponentActivity
+    val activity = LocalActivity.current
 
-    LaunchedEffect(Unit) { viewModel.loadProducts() }
+    LaunchedEffect(Unit) {
+        if (BuildConfig.DEBUG.not()) {
+            viewModel.loadProducts()
+        }
+    }
     HandlePurchaseDialogs(viewModel)
 
     PremiumScreenContent(
         uiState = uiState,
-        onSubscribe = { viewModel.purchase(activity) },
+        onSubscribe = { activity?.let { viewModel.purchase(it) } },
         onRestorePurchase = viewModel::restorePurchase,
         onBackClick = onBackClick,
     )

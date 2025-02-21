@@ -1,6 +1,6 @@
 package com.merkost.suby.model.billing
 
-import androidx.activity.ComponentActivity
+import android.app.Activity
 import com.qonversion.android.sdk.dto.QUser
 import com.qonversion.android.sdk.dto.entitlements.QEntitlement
 import com.qonversion.android.sdk.dto.offerings.QOffering
@@ -14,5 +14,5 @@ interface BillingService {
     suspend fun restorePurchase(): Result<List<QEntitlement>>
     suspend fun getEntitlements(): List<QEntitlement>
     suspend fun getUserInfo(): Result<QUser>
-    suspend fun purchase(activity: ComponentActivity, product: QProduct, offerId: String?): Result<QEntitlement?>
+    suspend fun purchase(activity: Activity, product: QProduct, offerId: String?): Result<QEntitlement?>
 }

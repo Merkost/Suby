@@ -1,6 +1,6 @@
 package com.merkost.suby.presentation.viewModel
 
-import androidx.activity.ComponentActivity
+import android.app.Activity
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -59,7 +59,7 @@ class BillingViewModel(
         }
     }
 
-    fun purchase(activity: ComponentActivity) {
+    fun purchase(activity: Activity) {
         viewModelScope.launch {
             val product = _offering.value?.products?.firstOrNull()
             if (product == null) {
