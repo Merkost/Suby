@@ -1,6 +1,7 @@
 package com.merkost.suby.model.entity
 
 import android.os.Parcelable
+import com.merkost.suby.model.entity.Currency.entries
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
@@ -44,7 +45,9 @@ enum class Currency(val fullName: String, val symbol: String, val flagEmoji: Str
     TRY("Turkish Lira", "₺", "🇹🇷"),
     USD("US Dollar", "$", "🇺🇸"),
     VND("Vietnamese Dong", "₫", "🇻🇳"),
-    ZAR("South African Rand", "R", "🇿🇦");
+    ZAR("South African Rand", "R", "🇿🇦"),
+    OMR("Omani Rial", "ر.ع.", "🇴🇲"),
+    QAR("Qatari Riyal", "ر.ق", "🇶🇦");
 
     @IgnoredOnParcel
     val code = this.name
