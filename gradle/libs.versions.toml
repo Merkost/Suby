@@ -1,62 +1,71 @@
 [versions]
-#Bom
-koin-bom = "4.0.2"
-compose-bom = "2025.02.00"
-firebase-bom = "33.9.0"
+compose-bom = "2025.04.01"
+supabase-bom = "3.1.4"
 
+compose-multiplatform = "1.8.0-rc01"
+agp = "8.9.2"
 
-agp = "8.7.3"
-amplitude = "1.19.2"
-billing-ktx = "7.1.1"
-compose-multiplatform-android = "2.6.2"
-koin-android = "4.0.2"
-kotlin = "2.1.0"
-core-ktx = "1.15.0"
+firebase = "2.1.0"
+
+amplitude = "1.20.6"
+sentry = "0.11.0"
+calendar = "2.6.2"
+koin = "4.0.4"
+kotlin = "2.1.20"
+core-ktx = "1.16.0"
 junit = "4.13.2"
 androidx-test-ext-junit = "1.2.1"
 espresso-core = "3.6.1"
 lifecycle-runtime-ktx = "2.8.7"
-activity-compose = "1.10.0"
-coil = "2.7.0"
-lottie = "6.5.2"
+activity-compose = "1.10.1"
+coil = "3.1.0"
+kotlinx-datetime = "0.6.2"
+lottie = "2.0.0-rc04"
 material = "1.12.0"
-sdk = "7.5.2"
-supabase = "2.5.4"
-navigation = "2.8.7"
-room = "2.6.1"
-ksp = "2.1.0-1.0.29"
-dagger-hilt = "2.54"
+qonversion = "8.2.5"
+navigation = "2.9.0-alpha17"
+room = "2.7.1"
+sqlite = "2.5.0"
+desugarJdkLibs = "2.1.5"
+ksp = "2.1.20-1.0.32"
+dagger-hilt = "2.56.2"
 hilt = "1.2.0"
-ktor = "2.3.12"
+ktor = "3.1.2"
 secrets = "2.0.1"
-datastore = "1.1.2"
-serialization = "1.7.3"
+datastore = "1.1.4"
+serialization = "1.8.1"
 timber = "5.0.1"
 
 
 [libraries]
+desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugarJdkLibs" }
+
 analytics-android = { module = "com.amplitude:analytics-android", version.ref = "amplitude" }
-billing-ktx = { module = "com.android.billingclient:billing-ktx", version.ref = "billing-ktx" }
-compose-multiplatform-android = { module = "com.kizitonwose.calendar:compose-multiplatform-android", version.ref = "compose-multiplatform-android" }
-firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
-firebase-perf = { module = "com.google.firebase:firebase-perf" }
-firebase-config = { module = "com.google.firebase:firebase-config" }
+compose-calendar = { module = "com.kizitonwose.calendar:compose-multiplatform", version.ref = "calendar" }
+firebase-crashlytics = { module = "dev.gitlive:firebase-crashlytics", version.ref = "firebase" }
+firebase-analytics = { module = "dev.gitlive:firebase-analytics", version.ref = "firebase" }
+firebase-perf = { module = "dev.gitlive:firebase-perf", version.ref = "firebase" }
+firebase-config = { module = "dev.gitlive:firebase-config", version.ref = "firebase" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
 
-koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
-koin = { module = "io.insert-koin:koin-android", version.ref = "koin-android" }
-koin-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin-android" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
+
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+
 
 lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
-qonversion-sdk = { module = "io.qonversion.android.sdk:sdk", version.ref = "sdk" }
+qonversion-sdk = { module = "io.qonversion.android.sdk:sdk", version.ref = "qonversion" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 
 ui = { group = "androidx.compose.ui", name = "ui" }
@@ -69,50 +78,46 @@ ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 material3 = { group = "androidx.compose.material3", name = "material3" }
 icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
+navigation = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
 datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
-kotlin-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.4.0" }
+kotlin-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime" }
 splashscreen = { group = "androidx.core", name = "core-splashscreen", version = "1.0.1" }
-lottie = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
+compottie = { group = "io.github.alexzhirkevich", name = "compottie", version.ref = "lottie" }
 kotlin-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
 
-coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
-coil-svg = { group = "io.coil-kt", name = "coil-svg", version.ref = "coil" }
+coil = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+coil-svg = { group = "io.coil-kt.coil3", name = "coil-svg", version.ref = "coil" }
 
-ktor = { group = "io.ktor", name = "ktor-client-android", version.ref = "ktor" }
+ktor = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
 ktor-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
-ktor-logging = { group = "io.ktor", name = "ktor-client-logging-jvm", version.ref = "ktor" }
+ktor-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
 
-
-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
-
-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "dagger-hilt" }
-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "dagger-hilt" }
-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "hilt" }
-hilt-kapt = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hilt" }
-hilt-navigation = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt" }
-
-supabase-bom = { group = "io.github.jan-tennert.supabase", name = "bom", version.ref = "supabase" }
+supabase-bom = { group = "io.github.jan-tennert.supabase", name = "bom", version.ref = "supabase-bom" }
 supabase-database = { group = "io.github.jan-tennert.supabase", name = "postgrest-kt" }
 supabase-storage = { group = "io.github.jan-tennert.supabase", name = "storage-kt" }
 supabase-compose-auth = { group = "io.github.jan-tennert.supabase", name = "compose-auth" }
 
 [bundles]
 ktor = ["ktor", "ktor-logging", "ktor-negotiation", "ktor-serialization"]
+koin = ["koin-core", "koin-compose", "koin-compose-viewmodel"]
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 googleServices = { id = "com.google.gms.google-services", version = "4.4.2" }
-firebaseCrashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.2" }
+firebaseCrashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.3" }
 firebasePerformance = { id = "com.google.firebase.firebase-perf", version = "1.4.2" }
 kotlinParcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "dagger-hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-sentry = { id = "io.sentry.android.gradle", version = "4.1.0" }
+sentry = { id = "io.sentry.kotlin.multiplatform.gradle", version.ref = "sentry" }
+room = { id = "androidx.room", version.ref = "room" }
+
+
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 

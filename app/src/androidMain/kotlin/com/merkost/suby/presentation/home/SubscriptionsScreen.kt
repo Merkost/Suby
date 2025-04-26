@@ -1,0 +1,172 @@
+package com.merkost.suby.presentation.home
+
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.merkost.suby.presentation.base.DoubleBackPressHandler
+import com.merkost.suby.presentation.base.Icon
+import com.merkost.suby.presentation.base.SubyTopAppBar
+import com.merkost.suby.presentation.base.components.EmptyStateView
+import com.merkost.suby.presentation.base.components.subscription.HorizontalSubscriptionItem
+import com.merkost.suby.presentation.viewModel.MainViewModel
+import com.merkost.suby.ui.theme.LocalAppState
+import com.merkost.suby.ui.theme.SubyTheme
+import com.merkost.suby.utils.Constants
+import com.merkost.suby.utils.Constants.MAX_FREE_SERVICES
+import com.merkost.suby.utils.all
+import com.merkost.suby.utils.analytics.ScreenLog
+import com.merkost.suby.utils.analytics.Screens
+import com.merkost.suby.utils.anim.AnimatedVisibilityCrossfade
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
+import suby.app.generated.resources.Res
+import suby.app.generated.resources.no_subscriptions_by_filter
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SubscriptionsScreen(
+    onAddClicked: () -> Unit,
+    onCurrencyClick: () -> Unit,
+    onPremiumClick: () -> Unit,
+    onCalendarViewClick: () -> Unit,
+    onSubscriptionInfo: (subscriptionId: Int) -> Unit,
+) {
+    ScreenLog(Screens.Main)
+    val appState = LocalAppState.current
+    val viewModel = koinViewModel<MainViewModel>()
+
+    val hasSubscriptions = appState.hasSubscriptions
+    val subscriptions by viewModel.filteredAndSortedSubscriptions.collectAsState()
+    val mainCurrency by viewModel.mainCurrency.collectAsState()
+    val totalState by viewModel.total.collectAsState()
+
+    val selectedPeriod by viewModel.period.collectAsState()
+
+    DoubleBackPressHandler(true)
+
+    Scaffold(
+        contentWindowInsets = WindowInsets(0.dp),
+        topBar = {
+            SubyTopAppBar(
+                title = {
+                    MainScreenTitle(onLogoClick = onPremiumClick)
+                },
+                actions = {
+                    ElevatedButton(
+                        modifier = Modifier.padding(end = 8.dp),
+                        onClick = {
+                            if (appState.hasPremium || subscriptions.size < MAX_FREE_SERVICES) {
+                                onAddClicked()
+                            } else {
+                                onPremiumClick()
+                            }
+                        }
+                    ) { Icon(Icons.Default.Add) }
+                }
+            )
+        },
+        floatingActionButton = {
+            AnimatedVisibilityCrossfade(hasSubscriptions) {
+                FloatingActionButton(
+                    modifier = Modifier.systemBarsPadding(),
+                    onClick = onCalendarViewClick
+                ) {
+                    Icon(Icons.Default.CalendarMonth)
+                }
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End,
+    ) {
+        AnimatedContent(
+            modifier = Modifier.padding(it),
+            targetState = hasSubscriptions,
+            label = ""
+        ) { hasSubs ->
+            if (hasSubs.not()) {
+                EmptySubscriptions(onAddClicked)
+            } else {
+                LazyColumn(
+                    modifier = Modifier,
+                    contentPadding =
+                    WindowInsets.navigationBars.add(WindowInsets.all(16.dp)).asPaddingValues(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    item {
+                        MainBalance(
+                            totalPrice = totalState,
+                            mainCurrency = mainCurrency,
+                            period = selectedPeriod,
+                            onCurrencyClick = onCurrencyClick,
+                            onUpdateClick = viewModel::onUpdateRatesClicked,
+                            onPeriodClick = viewModel::updateMainPeriod
+                        )
+                    }
+
+                    item {
+                        Sorting(viewModel)
+                    }
+
+                    if (subscriptions.size >= MAX_FREE_SERVICES && !appState.hasPremium) {
+                        item { AddMoreServicesItem(onClick = { onPremiumClick() }) }
+                    }
+
+                    items(subscriptions, key = { it.id }) { subscription ->
+                        HorizontalSubscriptionItem(
+                            modifier = Modifier
+                                .animateItem(),
+                            subscription = subscription,
+                            selectedPeriod = selectedPeriod,
+                            onClick = { onSubscriptionInfo(subscription.id) }
+                        )
+                    }
+
+                    if (subscriptions.isEmpty()) {
+                        item {
+                            EmptyStateView(
+                                modifier = Modifier.fillMaxSize(),
+                                message = stringResource(Res.string.no_subscriptions_by_filter),
+                                onResetFilters = viewModel::onFiltersReset
+                            )
+                        }
+                    }
+
+                    item {
+                        Spacer(modifier = Modifier.height(Constants.LAZY_PADDING))
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun SubscriptionsScreenPreview() {
+    SubyTheme {
+        SubscriptionsScreen({}, {}, {}, {}, { _ -> })
+    }
+}

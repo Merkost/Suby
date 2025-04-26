@@ -1,7 +1,7 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
     alias(libs.plugins.androidApplication) apply false
-    alias(libs.plugins.kotlinAndroid) apply false
+    alias(libs.plugins.kotlinMultiplatform) apply false
+    alias(libs.plugins.composeMultiplatform) apply false
     alias(libs.plugins.kotlinParcelize) apply false
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.ksp) apply false
@@ -11,4 +11,5 @@ plugins {
     alias(libs.plugins.firebasePerformance) apply false
     alias(libs.plugins.firebaseCrashlytics) apply false
     alias(libs.plugins.sentry) apply false
+    alias(libs.plugins.kotlinAndroid) apply false
 }
