@@ -35,8 +35,7 @@ fun SubyMainNavigation() {
     val navController = rememberNavController()
     val appState = LocalAppState.current
     val startDestination =
-        if (appState.isFirstTimeLaunch) Destinations.GREETING else Destinations.MAIN_SCREEN
-//    val startDestination = Destinations.GREETING
+        if (appState.isFirstTimeLaunch) Destinations.Greeting else Destinations.MainScreen
     Scaffold(
         modifier = Modifier,
         contentWindowInsets = WindowInsets(0)
@@ -51,7 +50,7 @@ fun SubyMainNavigation() {
                 navController = navController,
                 upPress = {
                     if (!navController.popBackStack()) {
-                        navController.navigate(Destinations.MAIN_SCREEN)
+                        navController.navigate(Destinations.MainScreen)
                     }
                 },
             )
@@ -60,31 +59,33 @@ fun SubyMainNavigation() {
 }
 
 private fun NavGraphBuilder.NavGraph(
-    modifier: Modifier = Modifier,
     upPress: () -> Unit,
     navController: NavController,
 ) {
-    composable(Destinations.GREETING) {
-        GreetingScreen(onContinueClick = { navController.navigate(Destinations.ONBOARDING) })
+    composable<Destinations.Greeting> {
+        GreetingScreen(onContinueClick = { navController.navigate(Destinations.Onboarding) })
     }
 
-    navigation(Destinations.ONBOARDING_CURRENCY, Destinations.ONBOARDING) {
-        composable(Destinations.ONBOARDING_CURRENCY) {
+    navigation(
+        route = Destinations.Onboarding::class,
+        startDestination = Destinations.OnboardingCurrency::class
+    ) {
+        composable<Destinations.OnboardingCurrency> {
             val onboardingViewModel = koinViewModel<OnboardingViewModel>()
 
             OnboardingCurrencyScreen(onCurrencySelected = {
                 onboardingViewModel.saveMainCurrency(it)
-                navController.navigate(Destinations.MAIN_SCREEN)
+                navController.navigate(Destinations.MainScreen)
             })
         }
 
         //Other onboarding screens
     }
 
-    composable(Destinations.MAIN_SCREEN) { backStackEntry ->
+    composable<Destinations.MainScreen> { backStackEntry ->
         SubscriptionsScreen(
             onAddClicked = {
-                navController.navigate(Destinations.NEW_SUBSCRIPTION)
+                navController.navigate(Destinations.NewSubscription)
             }, onCurrencyClick = {
                 navController.navigate(Destinations.CurrencyPick(true))
             }, onSubscriptionInfo = { subId ->
@@ -97,7 +98,7 @@ private fun NavGraphBuilder.NavGraph(
         )
     }
 
-    composable(Destinations.NEW_SUBSCRIPTION) { backStackEntry ->
+    composable<Destinations.NewSubscription> { backStackEntry ->
         NewSubscriptionScreen(
             pickedCurrency = backStackEntry.savedStateHandle.get<Currency>(Arguments.CURRENCY),
             onCurrencyClicked = { navController.navigate(Destinations.CurrencyPick(false)) },
@@ -131,13 +132,18 @@ private fun NavGraphBuilder.NavGraph(
 
     composable<Destinations.SubscriptionInfo> {
         val subscriptionInfo = it.toRoute<Destinations.SubscriptionInfo>()
-        SubscriptionDetailsScreen(upPress = upPress, onEditClick = {
-            navController.navigate(
-                Destinations.EditSubscription(
-                    subscriptionInfo.subscriptionId
+        SubscriptionDetailsScreen(
+            upPress = upPress,
+            onEditClick = {
+                navController.navigate(
+                    Destinations.EditSubscription(
+                        subscriptionInfo.subscriptionId
+                    )
                 )
-            )
-        })
+            },
+            onCalendarClick = {
+                navController.navigate(Destinations.CalendarView)
+            })
     }
 
     composable<Destinations.CurrencyPick> {
@@ -173,5 +179,4 @@ private fun NavGraphBuilder.NavGraph(
             }
         )
     }
-
 }
