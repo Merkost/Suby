@@ -106,8 +106,7 @@ class SubyApplication : Application(), ImageLoaderFactory {
         ).setEnvironment(
             if (BuildConfig.DEBUG) QEnvironment.Sandbox
             else QEnvironment.Production
-        )
-            .build()
+        ).build()
         Qonversion.initialize(qonversionConfig)
     }
 

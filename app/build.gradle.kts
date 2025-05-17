@@ -18,8 +18,6 @@ android {
     namespace = "com.merkost.suby"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
-
-
     defaultConfig {
         applicationId = "com.merkost.suby"
         minSdk = libs.versions.minSdk.get().toInt()
@@ -82,6 +80,10 @@ android {
     }
     ksp {
         arg("room.schemaLocation", "$projectDir/schemas")
+    }
+
+    sentry {
+        authToken = findProperty("SENTRY_AUTH_TOKEN").toString()
     }
 
     applicationVariants.configureEach {
