@@ -2,9 +2,12 @@ package com.merkost.suby.presentation.select
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -28,6 +31,7 @@ import com.merkost.suby.presentation.sheets.CreateCustomServiceSheet
 import com.merkost.suby.presentation.sheets.EditCustomServiceSheet
 import com.merkost.suby.ui.theme.LocalAppState
 import com.merkost.suby.utils.Constants
+import com.merkost.suby.utils.all
 import com.merkost.suby.utils.analytics.ScreenLog
 import com.merkost.suby.utils.analytics.Screens
 
@@ -58,7 +62,10 @@ internal fun CustomServicesList(
 
     Column(modifier = Modifier.fillMaxHeight()) {
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(16.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp), contentPadding =
+                WindowInsets.navigationBars.add(
+                    WindowInsets.all(16.dp)
+                ).asPaddingValues()
         ) {
             if (canAddMoreCustomServices.not()) {
                 item {

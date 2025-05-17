@@ -2,9 +2,11 @@ package com.merkost.suby.presentation.select
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -29,6 +31,7 @@ import com.merkost.suby.presentation.base.Icon
 import com.merkost.suby.presentation.base.components.service.ServiceRowItem
 import com.merkost.suby.presentation.sheets.OtherServiceOption
 import com.merkost.suby.presentation.viewModel.SelectServiceViewModel
+import com.merkost.suby.utils.all
 import com.merkost.suby.utils.analytics.ScreenLog
 import com.merkost.suby.utils.analytics.Screens
 
@@ -88,7 +91,9 @@ internal fun ServicesList(
             content = {
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(8.dp)
+                    contentPadding = WindowInsets.navigationBars.add(
+                        WindowInsets.all(8.dp)
+                    ).asPaddingValues()
                 ) {
                     val filteredServices = viewModel.filterServices(services, searchString)
                     items(filteredServices, key = { it.id }) {
@@ -104,7 +109,10 @@ internal fun ServicesList(
         )
 
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(16.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = WindowInsets.navigationBars.add(
+                WindowInsets.all(16.dp)
+            ).asPaddingValues()
         ) {
             items(services, key = { "service_" + it.id }) {
                 ServiceRowItem(service = it, onClick = { onServiceSelected(it) })

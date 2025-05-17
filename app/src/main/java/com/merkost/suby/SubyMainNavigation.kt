@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
@@ -38,11 +39,10 @@ fun SubyMainNavigation() {
         if (appState.isFirstTimeLaunch) Destinations.Greeting else Destinations.MainScreen
     Scaffold(
         modifier = Modifier,
-        contentWindowInsets = WindowInsets(0)
+        contentWindowInsets = WindowInsets(0.dp)
     ) { scaffoldPadding ->
         NavHost(
-            modifier = Modifier
-                .padding(scaffoldPadding),
+            modifier = Modifier.padding(scaffoldPadding),
             navController = navController,
             startDestination = startDestination,
         ) {

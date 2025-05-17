@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -108,11 +109,11 @@ fun CustomServiceUiStateHandler(uiState: CustomServiceUiState?, onCreated: () ->
             CustomServiceUiState.ServiceNotFound -> {
                 Toast.makeText(context, "Service not found", Toast.LENGTH_SHORT).show()
             }
-            
+
             CustomServiceUiState.ImageProcessingError -> {
                 Toast.makeText(context, "Failed to process image", Toast.LENGTH_SHORT).show()
             }
-            
+
             is CustomServiceUiState.UnknownError -> {
                 Toast.makeText(context, uiState.message, Toast.LENGTH_SHORT).show()
             }
@@ -198,7 +199,9 @@ fun CustomServiceForm(
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Button(

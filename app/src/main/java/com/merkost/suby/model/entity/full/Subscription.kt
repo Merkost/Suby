@@ -8,6 +8,7 @@ import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.Period
 import com.merkost.suby.model.entity.Status
 import com.merkost.suby.utils.Constants
+import com.merkost.suby.utils.now
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -15,7 +16,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDate
-import kotlinx.datetime.toKotlinLocalDateTime
 import kotlinx.datetime.toLocalDateTime
 
 data class Subscription(
@@ -39,7 +39,7 @@ data class Subscription(
     val paymentDate: LocalDateTime,
     val paymentStartDate: LocalDateTime? = null,
 
-    val createdDate: LocalDateTime = java.time.LocalDateTime.now().toKotlinLocalDateTime(),
+    val createdDate: LocalDateTime = LocalDateTime.now(),
     val description: String,
 ) {
 
@@ -47,12 +47,10 @@ data class Subscription(
         get() = period.nextBillingDateFromToday(paymentDate.date)
 
     val remainingDays: Long
-        get() {
-            val currentDate =
-                Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-            val nextBilling = period.nextBillingDateFromToday(paymentDate.date)
-            return currentDate.daysUntil(nextBilling).toLong()
-        }
+        get() = LocalDate.now()
+            .daysUntil(
+                period.nextBillingDateFromToday(paymentDate.date),
+            ).toLong()
 
     fun getRemainingDurationString(context: Context): String {
         val formattedDate = paymentDate.toJavaLocalDateTime().format(Constants.dataFormat)
