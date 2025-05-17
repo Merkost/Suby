@@ -10,6 +10,11 @@ import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+data class ServiceRequest(
+    val serviceName: String,
+    val website: String = "",
+    val description: String = ""
+)
 
 class FeedbackViewModel(
     private val supabaseApi: SupabaseApi
@@ -18,15 +23,18 @@ class FeedbackViewModel(
     private val _feedbackState = MutableStateFlow<BaseViewState<Unit>?>(null)
     val feedbackState = _feedbackState.asStateFlow()
 
-    fun submitServiceRequest(serviceName: String) {
+    fun submitServiceRequest(
+        serviceName: String,
+        website: String = "",
+        description: String = ""
+    ) {
         viewModelScope.launch {
-            // TODO: replace to the repo interface
             _feedbackState.update { BaseViewState.Loading }
-            val result = supabaseApi.submitServiceRequest(serviceName).single()
+            val request = ServiceRequest(serviceName, website, description)
+            val result = supabaseApi.submitServiceRequest(request).single()
             _feedbackState.update { result.toState() }
         }
     }
-
 }
 
 private fun <T> Result<T>.toState(): BaseViewState<T> {

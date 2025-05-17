@@ -174,4 +174,11 @@
     <string name="per_month">%s/mo</string>
     <string name="per_year">%s/yr</string>
     <string name="currency">Currency:</string>
+
+    <!-- Feedback Screen -->
+    <string name="feedback_title">Request New Service</string>
+    <string name="feedback_description">It looks like the service you searched for isn\'t available. Please provide the details below and we will add it.</string>
+    <string name="feedback_website_hint">Website URL (optional)</string>
+    <string name="feedback_details_hint">Additional details (optional)</string>
+    <string name="feedback_submit_button">Submit Request</string>
 </resources>
