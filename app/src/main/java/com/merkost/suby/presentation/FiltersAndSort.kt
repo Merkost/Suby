@@ -74,15 +74,19 @@ fun TinySortFilterRow(
                 selected = selectedFilterCount > 0,
                 onClick = onFilterClick,
                 label = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        if (selectedFilters.contains(FilterOption.ALL)) {
-                            Text(text = "All")
-                        } else if (selectedFilterCount == 1) {
-                            Text(text = selectedFilters.firstOrNull()?.displayName.orEmpty())
-                        } else {
-                            Text(text = "Filter")
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(text = "($selectedFilterCount)")
+                    AnimatedContent(
+                        selectedFilters
+                    ) { selected ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (selected.contains(FilterOption.ALL)) {
+                                Text(text = "All")
+                            } else if (selected.size == 1) {
+                                Text(text = selectedFilters.firstOrNull()?.displayName.orEmpty())
+                            } else {
+                                Text(text = "Filter")
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(text = "(${selected.size})")
+                            }
                         }
                     }
                 }
@@ -98,10 +102,11 @@ fun TinySortFilterRow(
                     )
                 },
                 label = {
-                    Text(text = selectedSort.selectedOption.displayName)
+                    AnimatedContent(selectedSort.selectedOption) { option ->
+                        Text(text = option.displayName)
+                    }
                 }
             )
-
         }
 
         AnimatedVisibility(
