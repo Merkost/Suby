@@ -4,63 +4,38 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.SearchBar
-import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.merkost.suby.model.entity.full.Service
-import com.merkost.suby.presentation.base.DeleteConfirmationDialog
-import com.merkost.suby.presentation.base.Icon
-import com.merkost.suby.presentation.base.components.SheetDialog
-import com.merkost.suby.presentation.base.components.service.ServiceRowItem
-import com.merkost.suby.presentation.base.components.service.SwipeableServiceRow
-import com.merkost.suby.presentation.home.AddMoreServicesItem
 import com.merkost.suby.presentation.screens.AbsentItem
+import com.merkost.suby.presentation.select.CustomServicesList
+import com.merkost.suby.presentation.select.ServicesList
 import com.merkost.suby.presentation.viewModel.SelectServiceViewModel
-import com.merkost.suby.ui.theme.LocalAppState
 import com.merkost.suby.utils.AndroidConstants.SubyShape
 import com.merkost.suby.utils.BaseViewState
-import com.merkost.suby.utils.Constants
-import com.merkost.suby.utils.analytics.ScreenLog
-import com.merkost.suby.utils.analytics.Screens
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import suby.app.generated.resources.Res
-import suby.app.generated.resources.btn_add_custom_service
 import suby.app.generated.resources.custom_services
-import suby.app.generated.resources.delete_custom_service_description
-import suby.app.generated.resources.delete_custom_service_title
-import suby.app.generated.resources.label_find_a_service
 import suby.app.generated.resources.list
 
 @Composable
@@ -156,7 +131,8 @@ fun SelectServiceSheet(
                             ServicesList(
                                 services = state.data,
                                 onServiceSelected = onServiceSelected,
-                                onSuggestService = onSuggestService
+                                onSuggestService = onSuggestService,
+                                viewModel = selectServiceViewModel
                             )
                         }
                     }
@@ -164,194 +140,6 @@ fun SelectServiceSheet(
             }
         }
     }
-}
-
-@Composable
-internal fun CustomServicesList(
-    customServices: List<Service>,
-    onCustomServiceSelected: (Service) -> Unit,
-    onDeleteCustomService: (Service) -> Unit,
-    onPremiumClicked: () -> Unit
-) {
-    ScreenLog(Screens.CustomServices)
-    var createCustomServiceSheet by remember { mutableStateOf(false) }
-
-    val appState = LocalAppState.current
-    val canAddMoreCustomServices =
-        (customServices.size < Constants.MAX_FREE_CUSTOM_SERVICES || appState.hasPremium)
-
-    SheetDialog(
-        isShown = createCustomServiceSheet,
-        onDismiss = { createCustomServiceSheet = false }
-    ) {
-        CreateCustomServiceSheet(
-            onCreated = {
-                createCustomServiceSheet = false
-            }
-        )
-    }
-
-    Column(modifier = Modifier.fillMaxHeight()) {
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(16.dp)
-        ) {
-            if (canAddMoreCustomServices.not()) {
-                item {
-                    AddMoreServicesItem { onPremiumClicked() }
-                }
-            }
-            items(customServices) { service ->
-                var deleteDialog by remember { mutableStateOf(false) }
-                var editDialog by remember { mutableStateOf(false) }
-
-
-                if (deleteDialog) {
-                    DeleteConfirmationDialog(
-                        title = String.format(
-                            stringResource(Res.string.delete_custom_service_title),
-                            service.name
-                        ),
-                        message = stringResource(Res.string.delete_custom_service_description),
-                        onDismissRequest = {
-                            deleteDialog = false
-                        }, onConfirm = {
-                            onDeleteCustomService(service)
-                            deleteDialog = false
-                        }
-                    )
-                }
-
-                SheetDialog(
-                    isShown = editDialog,
-                    onDismiss = { editDialog = false }
-                ) {
-                    EditCustomServiceSheet(
-                        service = service,
-                        onCreated = {
-                            editDialog = false
-                        }
-                    )
-                }
-
-                SwipeableServiceRow(
-                    modifier = Modifier.animateItem(),
-                    service = service,
-                    onCustomServiceSelected = onCustomServiceSelected,
-                    onEditService = { editDialog = true },
-                    onDeleteService = { deleteDialog = true }
-                )
-            }
-            item {
-                Button(
-                    onClick = { createCustomServiceSheet = true },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp)
-                ) {
-                    Text(stringResource(Res.string.btn_add_custom_service))
-                }
-            }
-        }
-    }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-internal fun ServicesList(
-    services: List<Service>,
-    onServiceSelected: (Service) -> Unit,
-    onSuggestService: (name: String) -> Unit,
-) {
-    ScreenLog(Screens.Services)
-    var searchString by remember {
-        mutableStateOf("")
-    }
-    var searchEnabled by remember {
-        mutableStateOf(false)
-    }
-    Column {
-        val searchBarColors = SearchBarDefaults.colors()
-        SearchBar(
-            inputField = {
-                SearchBarDefaults.InputField(
-                    query = searchString,
-                    onQueryChange = {
-                        searchString = it
-                        if (it.isNotEmpty()) searchEnabled = true
-                    },
-                    onSearch = {},
-                    expanded = searchEnabled,
-                    onExpandedChange = { searchEnabled = it },
-                    enabled = true,
-                    placeholder = {
-                        Text(text = stringResource(Res.string.label_find_a_service))
-                    },
-                    leadingIcon = null,
-                    trailingIcon = {
-                        if (searchEnabled) {
-                            IconButton(onClick = { searchEnabled = false; searchString = "" }) {
-                                Icon(Icons.Default.Close)
-                            }
-                        }
-                    },
-                    interactionSource = null,
-                )
-            },
-            expanded = searchEnabled,
-            onExpandedChange = { searchEnabled = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            shape = SearchBarDefaults.inputFieldShape,
-            colors = searchBarColors,
-            tonalElevation = SearchBarDefaults.TonalElevation,
-            shadowElevation = SearchBarDefaults.ShadowElevation,
-            windowInsets = WindowInsets(0, 0, 0, 0),
-            content = {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(8.dp)
-                ) {
-                    items(services.filter {
-                        // TODO: Extract to viewModel
-                        it.name.contains(
-                            searchString, true
-                        )
-                    }.sortedBy { service ->
-                        when {
-                            service.name.startsWith(
-                                searchString, ignoreCase = true
-                            ) -> 0
-
-                            else -> 1
-                        }
-                    }) {
-                        ServiceRowItem(service = it, onClick = { onServiceSelected(it) })
-                    }
-                    item {
-                        OtherServiceOption(onClick = {
-                            onSuggestService(searchString)
-                        })
-                    }
-                }
-            },
-        )
-
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(16.dp)
-        ) {
-            items(services) {
-                ServiceRowItem(service = it, onClick = { onServiceSelected(it) })
-            }
-            item {
-                OtherServiceOption(onClick = {
-                    onSuggestService(searchString)
-                })
-            }
-        }
-    }
-
 }
 
 @Composable

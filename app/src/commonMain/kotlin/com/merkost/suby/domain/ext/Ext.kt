@@ -1,6 +1,6 @@
 package com.merkost.suby.domain.ext
 
-import com.merkost.suby.model.room.entity.Service
+import com.merkost.suby.model.room.entity.ServiceDb
 import com.merkost.suby.repository.ktor.supaClient
 import io.github.jan.supabase.storage.storage
 
@@ -10,7 +10,7 @@ import io.github.jan.supabase.storage.storage
  * - For backend services, constructs the URL using `logoName`.
  * - For custom services, uses the provided `customImageUri`.
  */
-val Service.imageLink: String?
+val ServiceDb.imageLink: String?
     get() = if (backendId != null && logoName != null) {
         runCatching { supaClient.storage["service_logo"].publicUrl(logoName.orEmpty()) }
             .getOrElse {

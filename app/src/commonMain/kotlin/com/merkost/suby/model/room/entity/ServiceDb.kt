@@ -22,7 +22,7 @@ import kotlinx.datetime.LocalDateTime
         Index(value = ["backendId"], unique = true)
     ]
 )
-data class Service(
+data class ServiceDb(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val backendId: Int? = null,

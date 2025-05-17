@@ -20,7 +20,7 @@ fun <T> ScreenStateHandler(
     loadingContent: @Composable () -> Unit = {
         LottieLoading(
             modifier = Modifier.size(226.dp),
-            LottieFiles.loading
+            LottieFiles.Loading
         )
     },
     errorContent: @Composable (String) -> Unit = { message ->

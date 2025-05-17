@@ -65,10 +65,11 @@ class SubyApplication : Application(), SingletonImageLoader.Factory {
     }
 
     private fun initSentry() {
-        if (BuildConfig.DEBUG) return
-
         SentryAndroid.init(this) { options: SentryAndroidOptions ->
+            options.dsn = BuildConfig.SENTRY_DSN
             options.isEnablePerformanceV2 = true
+            options.isDebug = false
+            options.environment = if (BuildConfig.DEBUG) "debug" else "production"
             options.beforeSend =
                 SentryOptions.BeforeSendCallback { event: SentryEvent, hint: Hint? ->
                     if (event.level == null) return@BeforeSendCallback null
@@ -107,8 +108,7 @@ class SubyApplication : Application(), SingletonImageLoader.Factory {
         ).setEnvironment(
             if (BuildConfig.DEBUG) QEnvironment.Sandbox
             else QEnvironment.Production
-        )
-            .build()
+        ).build()
         Qonversion.initialize(qonversionConfig)
     }
 

@@ -1,8 +1,18 @@
 [versions]
+appVersionCode = "20"
+appVersionName = "0.1.16"
+
+# SDK Versions
+minSdk = "26"
+compileSdk = "36"
+targetSdk = "36"
+javaVersion = "21"
+jvmVersion = "JVM_21"
+
 compose-bom = "2025.04.01"
 supabase-bom = "3.1.4"
 
-compose-multiplatform = "1.8.0-rc01"
+compose-multiplatform = "1.8.0"
 agp = "8.9.2"
 
 firebase = "2.1.0"
@@ -87,8 +97,10 @@ kotlin-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serial
 
 coil = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-svg = { group = "io.coil-kt.coil3", name = "coil-svg", version.ref = "coil" }
+coil-network = { group = "io.coil-kt.coil3", name = "coil-network-ktor3", version.ref = "coil" }
 
 ktor = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
+ktor-ios = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
 ktor-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
@@ -120,4 +132,3 @@ room = { id = "androidx.room", version.ref = "room" }
 
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-

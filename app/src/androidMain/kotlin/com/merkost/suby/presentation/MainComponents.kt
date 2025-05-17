@@ -37,7 +37,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -58,6 +57,7 @@ import com.merkost.suby.ui.theme.subyColors
 import com.merkost.suby.utils.AndroidConstants.SubyShape
 import com.merkost.suby.utils.Constants.DEFAULT_CUSTOM_PERIOD_DAYS
 import com.merkost.suby.utils.dateString
+import org.jetbrains.compose.resources.stringResource
 import suby.app.generated.resources.Res
 import suby.app.generated.resources.select_payday
 import suby.app.generated.resources.title_description
@@ -150,6 +150,7 @@ fun BillingDate(
     modifier: Modifier = Modifier,
     billingDate: Long?,
     onBillingDateSelected: (Long?) -> Unit,
+    placeholder: String = stringResource(Res.string.select_payday)
 ) {
     val datePickerDate = rememberDatePickerState()
     var showDatePicker by rememberSaveable { mutableStateOf(false) }
@@ -208,7 +209,7 @@ fun BillingDate(
                     )
                 } else {
                     Text(
-                        text = stringResource(Res.string.select_payday),
+                        text = placeholder,
                         style = MaterialTheme.typography.bodyLarge,
                     )
                 }

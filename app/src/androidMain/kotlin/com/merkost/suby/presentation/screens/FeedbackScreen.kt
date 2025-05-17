@@ -4,10 +4,9 @@ import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -22,6 +21,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -38,6 +38,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -53,6 +55,11 @@ import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import suby.app.generated.resources.Res
+import suby.app.generated.resources.feedback_description
+import suby.app.generated.resources.feedback_details_hint
+import suby.app.generated.resources.feedback_submit_button
+import suby.app.generated.resources.feedback_title
+import suby.app.generated.resources.feedback_website_hint
 import suby.app.generated.resources.support
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,8 +70,10 @@ fun FeedbackScreen(upPress: () -> Unit, feedbackAction: FeedbackAction, text: St
     val context = LocalContext.current
     val viewModel = koinViewModel<FeedbackViewModel>()
     val feedbackState by viewModel.feedbackState.collectAsState()
-    var userAnswer by remember { mutableStateOf(TextFieldValue(text, TextRange(text.length))) }
-    val insets = remember { 32.dp }
+
+    var serviceName by remember { mutableStateOf(TextFieldValue(text, TextRange(text.length))) }
+    var website by remember { mutableStateOf(TextFieldValue()) }
+    var description by remember { mutableStateOf(TextFieldValue()) }
 
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -93,83 +102,126 @@ fun FeedbackScreen(upPress: () -> Unit, feedbackAction: FeedbackAction, text: St
     }
 
     Scaffold(
-        contentWindowInsets = WindowInsets(insets, insets, insets, insets),
         topBar = {
             SubyTopAppBar(title = {
                 Text(text = stringResource(Res.string.support))
             }, upPress = upPress)
         }
     ) {
-        Column(
+        Surface(
             modifier = Modifier
                 .padding(it)
-                .padding(horizontal = 16.dp, vertical = 32.dp)
-                .imePadding()
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxWidth()
         ) {
-
             Column(
-                modifier = Modifier,
-                verticalArrangement = Arrangement.spacedBy(64.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier
+                    .navigationBarsPadding()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Icon(
-                    Icons.Outlined.Feedback,
-                    contentDescription = null,
-                    modifier = Modifier.size(80.dp),
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-
-                Text(
-                    text = "Request New Service",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-
-                Text(
-                    text = "It looks like the service you searched for isn't available. Please provide the service name below and we will add it.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-
-                SubyTextField(
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .focusRequester(focusRequester),
-                    value = userAnswer,
-                    onValueChange = { userAnswer = it },
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = androidx.compose.ui.text.input.ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            focusManager.clearFocus()
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        Icons.Outlined.Feedback,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(80.dp)
+                            .padding(top = 16.dp),
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+
+                    Text(
+                        text = stringResource(Res.string.feedback_title),
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    Text(
+                        text = stringResource(Res.string.feedback_description),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+
+                    SubyTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester),
+                        value = serviceName,
+                        onValueChange = { serviceName = it },
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = { focusManager.moveFocus(androidx.compose.ui.focus.FocusDirection.Down) }
+                        ),
+                        placeholder = {
+                            Text(text = stringResource(feedbackAction.questionRes))
                         }
-                    ),
-                    placeholder = {
-                        Text(text = stringResource(feedbackAction.questionRes))
-                    }
-                )
+                    )
+
+                    SubyTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = website,
+                        onValueChange = { website = it },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Uri,
+                            imeAction = ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = { focusManager.moveFocus(androidx.compose.ui.focus.FocusDirection.Down) }
+                        ),
+                        placeholder = {
+                            Text(text = stringResource(Res.string.feedback_website_hint))
+                        }
+                    )
+
+                    SubyTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = description,
+                        onValueChange = { description = it },
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = { focusManager.clearFocus() }
+                        ),
+                        placeholder = {
+                            Text(text = stringResource(Res.string.feedback_details_hint))
+                        }
+                    )
+                }
 
                 Button(
-                    enabled = feedbackState !is BaseViewState.Loading,
+                    enabled = feedbackState !is BaseViewState.Loading && serviceName.text.isNotBlank(),
                     onClick = {
-                        viewModel.submitServiceRequest(userAnswer.text)
+                        viewModel.submitServiceRequest(
+                            serviceName = serviceName.text,
+                            website = website.text,
+                            description = description.text
+                        )
                     },
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .imePadding()
                 ) {
                     AnimatedContent(feedbackState) {
                         if (it is BaseViewState.Loading) {
                             CircularProgressIndicator(
-                                modifier = Modifier.size(16.dp)
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.onPrimary
                             )
                         } else {
-                            Text(text = "Send Request")
+                            Text(
+                                text = stringResource(Res.string.feedback_submit_button),
+                                style = MaterialTheme.typography.titleMedium
+                            )
                         }
                     }
                 }
@@ -179,6 +231,5 @@ fun FeedbackScreen(upPress: () -> Unit, feedbackAction: FeedbackAction, text: St
 
     LaunchedEffect(focusRequester) {
         awaitFrame()
-//        focusRequester.requestFocus()
     }
 }

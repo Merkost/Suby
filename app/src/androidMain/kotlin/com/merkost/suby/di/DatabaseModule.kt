@@ -8,6 +8,7 @@ import com.merkost.suby.di.Migrations.MIGRATION_1_2
 import com.merkost.suby.di.Migrations.MIGRATION_2_3
 import com.merkost.suby.di.Migrations.MIGRATION_3_4
 import com.merkost.suby.di.Migrations.MIGRATION_4_5
+import com.merkost.suby.di.Migrations.MIGRATION_5_6
 import com.merkost.suby.model.room.AppDatabase
 import com.merkost.suby.model.room.dao.CategoryDao
 import com.merkost.suby.model.room.dao.CurrencyRatesDao
@@ -19,7 +20,7 @@ import org.koin.dsl.module
 val databaseModule = module {
     single<AppDatabase> {
         get<RoomDatabase.Builder<AppDatabase>>()
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
             .fallbackToDestructiveMigrationOnDowngrade(dropAllTables = true)
             .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
@@ -177,7 +178,6 @@ object Migrations {
             db.execSQL("ALTER TABLE subscription_new RENAME TO subscription")
 
 
-            // Create the new table for PartialSubscriptionDb
             db.execSQL(
                 """
             CREATE TABLE IF NOT EXISTS PartialSubscriptionDb (
@@ -283,4 +283,10 @@ object Migrations {
         }
     }
 
+    val MIGRATION_5_6 = object : Migration(5, 6) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE subscription ADD COLUMN paymentStartDate TEXT")
+            db.execSQL("ALTER TABLE PartialSubscriptionDb ADD COLUMN paymentStartDate TEXT")
+        }
+    }
 }

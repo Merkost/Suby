@@ -21,20 +21,20 @@ kotlin {
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_21)
+            jvmTarget.set(JvmTarget.valueOf(libs.versions.jvmVersion.get()))
         }
     }
 
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "composeApp"
-            isStatic = true
-        }
-    }
+//    listOf(
+//        iosX64(),
+//        iosArm64(),
+//        iosSimulatorArm64()
+//    ).forEach { iosTarget ->
+//        iosTarget.binaries.framework {
+//            baseName = "composeApp"
+//            isStatic = true
+//        }
+//    }
 
     sourceSets {
         commonMain.dependencies {
@@ -56,6 +56,7 @@ kotlin {
             implementation(libs.core.ktx)
             implementation(libs.coil)
             implementation(libs.coil.svg)
+            implementation(libs.coil.network)
             implementation(libs.datastore)
             implementation(libs.kotlin.serialization)
 
@@ -90,16 +91,33 @@ kotlin {
 
 android {
     namespace = "com.merkost.suby"
-    compileSdk = 35
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.merkost.suby"
-        minSdk = 26
-        targetSdk = 35
-        versionCode = 19
-        versionName = "0.1.15"
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
+        versionCode = libs.versions.appVersionCode.get().toInt()
+        versionName = libs.versions.appVersionName.get().toString()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            "String", "QONVERSION_API_KEY", findProperty("QONVERSION_API_KEY").toString()
+        )
+        buildConfigField(
+            "String", "AMPLITUDE_API_KEY", findProperty("AMPLITUDE_API_KEY").toString()
+        )
+        buildConfigField(
+            "String", "SUPABASE_API_KEY", findProperty("SUPABASE_API_KEY").toString()
+        )
+        buildConfigField(
+            "String", "SUPABASE_ID", findProperty("SUPABASE_ID").toString()
+        )
+        buildConfigField(
+            "String", "SENTRY_DSN", findProperty("SENTRY_DSN").toString()
+        )
+
     }
 
     buildTypes {
@@ -107,22 +125,13 @@ android {
             isMinifyEnabled = true
             isDebuggable = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("debug")
-            buildConfigField("String", "QONVERSION_API_KEY", findProperty("QONVERSION_API_KEY").toString())
-            buildConfigField("String", "AMPLITUDE_API_KEY", findProperty("AMPLITUDE_API_KEY").toString())
-            buildConfigField("String", "SUPABASE_API_KEY", findProperty("SUPABASE_API_KEY").toString())
-            buildConfigField("String", "SUPABASE_ID", findProperty("SUPABASE_ID").toString())
         }
         debug {
             versionNameSuffix = ".debug"
             applicationIdSuffix = ".debug"
-            buildConfigField("String", "QONVERSION_API_KEY", findProperty("QONVERSION_API_KEY").toString())
-            buildConfigField("String", "AMPLITUDE_API_KEY", findProperty("AMPLITUDE_API_KEY").toString())
-            buildConfigField("String", "SUPABASE_API_KEY", findProperty("SUPABASE_API_KEY").toString())
-            buildConfigField("String", "SUPABASE_ID", findProperty("SUPABASE_ID").toString())
         }
     }
     compileOptions {
@@ -146,9 +155,14 @@ android {
         arg("room.schemaLocation", "$projectDir/schemas")
     }
 
+//    sentry {
+//        authToken = findProperty("SENTRY_AUTH_TOKEN").toString()
+//    }
+
     applicationVariants.configureEach {
         outputs.configureEach {
-            (this as? BaseVariantOutputImpl)?.outputFileName = "Suby_${versionName}($versionCode).apk"
+            (this as? BaseVariantOutputImpl)?.outputFileName =
+                "Suby_${versionName}($versionCode).apk"
         }
     }
 }

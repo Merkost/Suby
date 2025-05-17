@@ -36,7 +36,7 @@ class SelectServiceViewModel(
             getServicesUseCase.invoke().first().fold(
                 onSuccess = { result ->
                     _servicesState.update {
-                        BaseViewState.Success(result)
+                        BaseViewState.Success(result.filter { it.isCustomService.not() })
                     }
                 },
                 onFailure = { error ->
@@ -53,6 +53,19 @@ class SelectServiceViewModel(
     fun deleteCustomService(customService: Service) {
         viewModelScope.launch {
             serviceRepository.deleteService(customService.id)
+        }
+    }
+
+    fun filterServices(services: List<Service>, searchQuery: String): List<Service> {
+        if (searchQuery.isBlank()) return services
+
+        return services.filter {
+            it.name.contains(searchQuery, ignoreCase = true)
+        }.sortedBy { service ->
+            when {
+                service.name.startsWith(searchQuery, ignoreCase = true) -> 0
+                else -> 1
+            }
         }
     }
 }

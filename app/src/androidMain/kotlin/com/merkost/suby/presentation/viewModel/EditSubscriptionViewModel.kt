@@ -2,7 +2,6 @@ package com.merkost.suby.presentation.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.merkost.suby.R
 import com.merkost.suby.domain.EditableSubscription
 import com.merkost.suby.model.entity.BasePeriod
 import com.merkost.suby.model.entity.Currency

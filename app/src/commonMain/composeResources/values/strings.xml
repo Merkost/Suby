@@ -18,6 +18,9 @@
         <item quantity="other">%1$s days</item>
     </plurals>
 
+    <string name="months">months</string>
+    <string name="years">years</string>
+
     <string name="trial_ended_on">ended on %1$s</string>
     <string name="canceled_on">on %1$s</string>
     <string name="expired_on">on %1$s</string>
@@ -98,6 +101,7 @@
     <!-- Errors -->
     <string name="error_network">No Internet Connection. Please check your network and try again.</string>
     <string name="error_unknown">Something went wrong. Please try again later.</string>
+    <string name="error_subscription_not_found">Subscription not found</string>
 
     <!-- Toasts -->
     <string name="toast_subscription_deleted">Subscription has been deleted</string>
@@ -156,5 +160,34 @@
     <string name="trial_period_ends_on">Trial period ends on %1$s</string>
     <string name="trial_period_ended_on">Trial period ended on %1$s</string>
     <string name="subscription_status_generic">Subscription status: %1$s</string>
+    <!-- Calendar Navigation -->
+    <string name="cd_view_calendar">View calendar</string>
+    <string name="view_calendar">View Calendar</string>
+    <string name="view_in_calendar">View in calendar</string>
 
+    <!-- Subscription Stats Section -->
+    <string name="category_section_title">Category</string>
+    <string name="category_label">Category</string>
+    <string name="subscriptions_in_category">Subscriptions in category</string>
+    <string name="monthly_category_total">Monthly category total</string>
+
+    <string name="subscription_stats_title">Subscription Stats</string>
+    <string name="budget_impact">Budget Impact</string>
+    <string name="budget_impact_percentage">%d%% of total subscriptions</string>
+    <string name="budget_percent">%d%% of budget</string>
+    <string name="payment_history">Payment History</string>
+    <string name="total_spent">Total spent: %s</string>
+    <string name="total">Total: %s</string>
+    <string name="yearly_cost">Yearly cost: %s</string>
+    <string name="monthly_cost">Monthly cost: %s</string>
+    <string name="per_month">%s/mo</string>
+    <string name="per_year">%s/yr</string>
+    <string name="currency">Currency:</string>
+
+    <!-- Feedback Screen -->
+    <string name="feedback_title">Request New Service</string>
+    <string name="feedback_description">It looks like the service you searched for isn\'t available. Please provide the details below and we will add it.</string>
+    <string name="feedback_website_hint">Website URL (optional)</string>
+    <string name="feedback_details_hint">Additional details (optional)</string>
+    <string name="feedback_submit_button">Submit Request</string>
 </resources>

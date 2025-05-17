@@ -36,9 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
-import com.merkost.suby.R
 import com.merkost.suby.utils.AndroidConstants.SubyShape
 import com.merkost.suby.utils.analytics.ScreenLog
 import com.merkost.suby.utils.analytics.Screens
@@ -77,15 +75,19 @@ fun TinySortFilterRow(
                 selected = selectedFilterCount > 0,
                 onClick = onFilterClick,
                 label = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        if (selectedFilters.contains(FilterOption.ALL)) {
-                            Text(text = "All")
-                        } else if (selectedFilterCount == 1) {
-                            Text(text = selectedFilters.firstOrNull()?.displayName.orEmpty())
-                        } else {
-                            Text(text = "Filter")
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(text = "($selectedFilterCount)")
+                    AnimatedContent(
+                        selectedFilters
+                    ) { selected ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (selected.contains(FilterOption.ALL)) {
+                                Text(text = "All")
+                            } else if (selected.size == 1) {
+                                Text(text = selectedFilters.firstOrNull()?.displayName.orEmpty())
+                            } else {
+                                Text(text = "Filter")
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(text = "(${selected.size})")
+                            }
                         }
                     }
                 }
@@ -101,10 +103,11 @@ fun TinySortFilterRow(
                     )
                 },
                 label = {
-                    Text(text = selectedSort.selectedOption.displayName)
+                    AnimatedContent(selectedSort.selectedOption) { option ->
+                        Text(text = option.displayName)
+                    }
                 }
             )
-
         }
 
         AnimatedVisibility(

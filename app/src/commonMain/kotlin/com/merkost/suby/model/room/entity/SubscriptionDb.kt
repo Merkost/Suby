@@ -14,7 +14,7 @@ import kotlinx.datetime.LocalDateTime
     tableName = "subscription",
     foreignKeys = [
         ForeignKey(
-            entity = Service::class,
+            entity = ServiceDb::class,
             parentColumns = ["id"],
             childColumns = ["serviceId"],
             onDelete = ForeignKey.CASCADE
@@ -34,6 +34,7 @@ data class SubscriptionDb(
 
     val status: Status,
     val paymentDate: LocalDateTime,
+    val paymentStartDate: LocalDateTime? = null,
 
     val createdDate: LocalDateTime = LocalDateTime.now(),
     val description: String,

@@ -1,9 +1,10 @@
 package com.merkost.suby.model.entity
 
-import com.merkost.suby.utils.now
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
+import kotlinx.datetime.todayIn
 import kotlinx.datetime.until
 
 data class BasePeriod(
@@ -11,27 +12,21 @@ data class BasePeriod(
     val duration: Long,
     val period: Period
 ) {
-
     constructor(type: CustomPeriod, duration: Long) : this(
         type, duration, mapToPeriodEnum(type, duration)
     )
 
-    fun nextBillingDate(fromDate: LocalDate): LocalDate {
-        val nextDate = fromDate.plus(duration.toInt(), type.timeUnit)
-        return nextDate
-    }
+    fun nextBillingDate(fromDate: LocalDate): LocalDate =
+        fromDate + type.toDatePeriod(duration.toInt())
 
     fun nextBillingDateFromToday(fromDate: LocalDate): LocalDate {
-        val today = LocalDateTime.now().date
-        var nextDate = fromDate
-
-        if (nextDate < today) {
-            val betweenUnits = nextDate.until(today, type.timeUnit)
-            val multiplier = (betweenUnits / duration) + 1
-            nextDate = nextDate.plus((multiplier * duration).toInt(), type.timeUnit)
-        }
-
-        return nextDate
+        val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+        if (fromDate >= today) return fromDate
+        require(duration > 0)
+        val diff = fromDate.until(today, type.unit)
+        val periods = ((diff + duration - 1) / duration).coerceAtLeast(1)
+        val total = (duration * periods).toInt()
+        return fromDate + type.toDatePeriod(total)
     }
 
     val approxDays: Long
@@ -41,6 +36,7 @@ data class BasePeriod(
             CustomPeriod.MONTHS -> duration * 30
             CustomPeriod.YEARS -> duration * 365
         }
+
 }
 
 /**

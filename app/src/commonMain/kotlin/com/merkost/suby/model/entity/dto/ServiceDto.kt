@@ -1,7 +1,7 @@
 package com.merkost.suby.model.entity.dto
 
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.serializers.LocalDateTimeIso8601Serializer
+import kotlinx.datetime.Instant
+import kotlinx.datetime.serializers.InstantIso8601Serializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -21,6 +21,6 @@ data class ServiceDto(
     val logoName: String? = null,
 
     @SerialName("created_at")
-    @Serializable(with = LocalDateTimeIso8601Serializer::class)
-    val createdAt: LocalDateTime,
+    @Serializable(with = InstantIso8601Serializer::class)
+    val createdAt: Instant,
 )

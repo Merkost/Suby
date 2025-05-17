@@ -9,6 +9,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.todayIn
 import kotlinx.datetime.until
 
 interface PlatformDateTimeFormat {
@@ -57,10 +58,8 @@ fun LocalDateTime.Companion.now(): LocalDateTime {
     return Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 }
 
-val currentMoment: Instant = Clock.System.now()
-
 fun LocalDate.Companion.now() =
-    currentMoment.toLocalDateTime(TimeZone.currentSystemDefault()).date
+    Clock.System.todayIn(TimeZone.currentSystemDefault())
 
 
 val Long.toLocalDate: LocalDate

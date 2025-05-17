@@ -88,6 +88,7 @@ class NewSubscriptionViewModel(
                             currency = currency,
                             price = values.price.toDouble(),
                             paymentDate = values.billingDate.toKotlinLocalDateTime(),
+                            paymentStartDate = values.paymentStartDate?.toKotlinLocalDateTime(),
                             periodType = period.type,
                             periodDuration = period.duration,
                             description = values.description,
@@ -151,6 +152,10 @@ class NewSubscriptionViewModel(
 
     fun onBillingDateSelected(date: Long?) {
         selectedValues.update { it.copy(billingDate = date) }
+    }
+    
+    fun onPaymentStartDateSelected(date: Long?) {
+        selectedValues.update { it.copy(paymentStartDate = date) }
     }
 
     fun onStatusClicked(newStatus: Status) {
