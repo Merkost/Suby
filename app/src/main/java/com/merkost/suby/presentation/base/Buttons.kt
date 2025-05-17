@@ -9,23 +9,28 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.merkost.suby.R
 import com.merkost.suby.SubyShape
@@ -75,6 +80,56 @@ fun SaveButton(modifier: Modifier = Modifier, enabled: Boolean, onClick: () -> U
             Text(
                 text = stringResource(R.string.btn_save),
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+            )
+        }
+    }
+}
+
+@Composable
+fun SubyIconButton(
+    modifier: Modifier = Modifier,
+    icon: ImageVector,
+    text: String,
+    contentDescription: String? = null,
+    outlined: Boolean = true,
+    fullWidth: Boolean = false,
+    iconSize: Int = 18,
+    onClick: () -> Unit
+) {
+    val buttonModifier = if (fullWidth) modifier.fillMaxWidth() else modifier
+    
+    if (outlined) {
+        OutlinedButton(
+            onClick = onClick,
+            modifier = buttonModifier,
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                modifier = Modifier.size(iconSize.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+                textAlign = TextAlign.Center
+            )
+        }
+    } else {
+        Button(
+            onClick = onClick,
+            modifier = buttonModifier,
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                 modifier = Modifier.size(iconSize.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+                textAlign = TextAlign.Center
             )
         }
     }

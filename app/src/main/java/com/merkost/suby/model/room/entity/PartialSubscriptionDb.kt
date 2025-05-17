@@ -18,4 +18,5 @@ data class PartialSubscriptionDb(
     val status: Status,
     val description: String,
     val paymentDate: LocalDateTime,
+    val paymentStartDate: LocalDateTime? = null,
 )

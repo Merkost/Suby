@@ -13,6 +13,7 @@ data class NewSubscription(
     val period: BasePeriod? = null,
     val status: Status? = null,
     val billingDate: Long? = null,
+    val paymentStartDate: Long? = null,
     val description: String = "",
 ) {
     val billingDateInfo: String?

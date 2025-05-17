@@ -3,7 +3,7 @@ package com.merkost.suby.model.room
 import com.merkost.suby.model.entity.dto.CategoryDto
 import com.merkost.suby.model.entity.dto.ServiceDto
 import com.merkost.suby.model.room.entity.CategoryDb
-import com.merkost.suby.model.room.entity.Service
+import com.merkost.suby.model.room.entity.ServiceDb
 import kotlinx.datetime.toKotlinLocalDateTime
 
 object DbMapper {
@@ -16,7 +16,7 @@ object DbMapper {
             createdAt = it.createdAt.toLocalDateTime().toKotlinLocalDateTime()
         )
 
-    fun mapService(it: ServiceDto) = Service(
+    fun mapService(it: ServiceDto) = ServiceDb(
         backendId = it.id,
         name = it.name,
         categoryId = it.categoryId,

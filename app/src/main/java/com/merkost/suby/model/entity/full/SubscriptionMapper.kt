@@ -30,6 +30,7 @@ fun SubscriptionWithDetails.toSubscription() =
         ),
         status = subscription.status,
         paymentDate = subscription.paymentDate,
+        paymentStartDate = subscription.paymentStartDate,
         createdDate = subscription.createdDate,
         description = subscription.description
     )

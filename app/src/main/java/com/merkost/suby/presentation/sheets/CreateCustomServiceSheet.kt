@@ -108,6 +108,14 @@ fun CustomServiceUiStateHandler(uiState: CustomServiceUiState?, onCreated: () ->
             CustomServiceUiState.ServiceNotFound -> {
                 Toast.makeText(context, "Service not found", Toast.LENGTH_SHORT).show()
             }
+            
+            CustomServiceUiState.ImageProcessingError -> {
+                Toast.makeText(context, "Failed to process image", Toast.LENGTH_SHORT).show()
+            }
+            
+            is CustomServiceUiState.UnknownError -> {
+                Toast.makeText(context, uiState.message, Toast.LENGTH_SHORT).show()
+            }
 
             null -> {}
         }

@@ -7,7 +7,7 @@ import com.merkost.suby.model.entity.full.Category
 import com.merkost.suby.model.entity.full.toCategory
 import com.merkost.suby.model.room.dao.CategoryDao
 import com.merkost.suby.model.room.dao.ServiceDao
-import com.merkost.suby.model.room.entity.Service
+import com.merkost.suby.model.room.entity.ServiceDb
 import com.merkost.suby.utils.ImageFileManager
 import com.merkost.suby.utils.analytics.Analytics
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +18,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
+import timber.log.Timber
+import java.io.IOException
 
 class CustomServiceViewModel(
     private val serviceDao: ServiceDao,
@@ -31,13 +32,17 @@ class CustomServiceViewModel(
 
     val categories: StateFlow<List<Category>> = categoryDao.getCategories()
         .map { list -> list.map { it.toCategory() } }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _customServiceData = MutableStateFlow(CustomServiceData())
     val customServiceData = _customServiceData.asStateFlow()
 
+    init {
+        cleanupOrphanedImages()
+    }
+    
     fun setServiceName(newName: String) {
-        _customServiceData.update { it.copy(name = newName) }
+        _customServiceData.update { it.copy(name = newName.trim()) }
     }
 
     fun setImageUri(uri: Uri) {
@@ -48,6 +53,10 @@ class CustomServiceViewModel(
 
     fun setCategory(category: Category) {
         _customServiceData.update { it.copy(category = category) }
+    }
+    
+    fun resetCustomServiceData() {
+        _customServiceData.value = CustomServiceData()
     }
 
     private fun validateServiceData(serviceData: CustomServiceData): CustomServiceUiState? {
@@ -64,28 +73,37 @@ class CustomServiceViewModel(
             _uiState.value = validationState ?: CustomServiceUiState.CategoryRequired
             return
         }
-        val category = serviceData.category
-        val serviceName = serviceData.name
-        val imageUriInput = serviceData.imageUri
-
+        
         viewModelScope.launch {
-            val imageUri = imageUriInput?.let {
-                imageFileManager.saveCustomServiceImageToInternalStorage(it, serviceName)
+            try {
+                val category = serviceData.category
+                val serviceName = serviceData.name
+                val imageUriInput = serviceData.imageUri
+
+                val imageUri = imageUriInput?.let {
+                    imageFileManager.saveCustomServiceImageToInternalStorage(it, serviceName)
+                }
+
+                val customService = ServiceDb(
+                    name = serviceName,
+                    categoryId = category.id,
+                    customImageUri = imageUri
+                )
+                
+                serviceDao.insertService(customService)
+                
+                Analytics.logCreatedCustomService(
+                    serviceName = serviceName,
+                    categoryName = category.name
+                )
+
+                _uiState.value = CustomServiceUiState.Success
+                resetCustomServiceData()
+            } catch (e: IOException) {
+                _uiState.value = CustomServiceUiState.ImageProcessingError
+            } catch (e: Exception) {
+                _uiState.value = CustomServiceUiState.UnknownError(e.message ?: "Unknown error occurred")
             }
-
-            val customService = Service(
-                name = serviceName,
-                categoryId = category.id,
-                customImageUri = imageUri
-            )
-            serviceDao.insertService(customService)
-            Analytics.logCreatedCustomService(
-                serviceName = serviceName,
-                categoryName = category.name
-            )
-
-            _uiState.value = CustomServiceUiState.Success
-            _customServiceData.value = CustomServiceData()
         }
     }
 
@@ -97,16 +115,22 @@ class CustomServiceViewModel(
         }
 
         viewModelScope.launch {
-            val existingService = serviceDao.getServiceById(serviceId)
-            if (existingService != null) {
-
-                val imageUri = serviceData.imageUri?.let {
+            try {
+                val existingService = serviceDao.getCustomServiceById(serviceId)
+                
+                if (existingService == null) {
+                    _uiState.value = CustomServiceUiState.ServiceNotFound
+                    return@launch
+                }
+                
+                val imageUri = if (serviceData.imageUri != null) {
                     existingService.customImageUri?.let {
                         imageFileManager.deleteCustomServiceImageFromInternalStorage(it)
                     }
-
-                    imageFileManager.saveCustomServiceImageToInternalStorage(it, serviceData.name)
-                } ?: existingService.customImageUri
+                    imageFileManager.saveCustomServiceImageToInternalStorage(serviceData.imageUri, serviceData.name)
+                } else {
+                    existingService.customImageUri
+                }
 
                 val updatedService = existingService.copy(
                     name = serviceData.name,
@@ -115,6 +139,7 @@ class CustomServiceViewModel(
                 )
 
                 serviceDao.updateService(updatedService)
+                
                 Analytics.logUpdatedCustomService(
                     oldServiceName = existingService.name,
                     serviceName = serviceData.name,
@@ -122,9 +147,11 @@ class CustomServiceViewModel(
                 )
 
                 _uiState.value = CustomServiceUiState.Success
-                _customServiceData.value = CustomServiceData()
-            } else {
-                _uiState.value = CustomServiceUiState.ServiceNotFound
+                resetCustomServiceData()
+            } catch (e: IOException) {
+                _uiState.value = CustomServiceUiState.ImageProcessingError
+            } catch (e: Exception) {
+                _uiState.value = CustomServiceUiState.UnknownError(e.message ?: "Unknown error occurred")
             }
         }
     }
@@ -132,12 +159,29 @@ class CustomServiceViewModel(
     fun resetUiState() {
         _uiState.value = null
     }
+    
+    fun cleanupOrphanedImages() {
+        viewModelScope.launch {
+            try {
+                val allServices = serviceDao.getCustomServices()
+                val activeImagePaths = allServices
+                    .mapNotNull { it.customImageUri }
+                    .filter { it.isNotBlank() }
+                
+                imageFileManager.cleanupOrphanedImages(activeImagePaths)
+            } catch (e: Exception) {
+                Timber.tag("CustomService").w(e, "Failed to cleanup orphaned images")
+            }
+        }
+    }
 }
 
 sealed class CustomServiceUiState {
     data object ServiceNameRequired : CustomServiceUiState()
     data object CategoryRequired : CustomServiceUiState()
     data object ServiceNotFound : CustomServiceUiState()
+    data object ImageProcessingError : CustomServiceUiState()
+    data class UnknownError(val message: String) : CustomServiceUiState()
     data object Success : CustomServiceUiState()
 }
 

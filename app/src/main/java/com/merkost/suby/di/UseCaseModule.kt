@@ -1,5 +1,6 @@
 package com.merkost.suby.di
 
+import com.merkost.suby.domain.usecase.SubscriptionStatsUseCase
 import com.merkost.suby.use_case.GetCurrencyRatesUseCase
 import com.merkost.suby.use_case.GetServicesUseCase
 import com.merkost.suby.utils.ImageFileManager
@@ -11,5 +12,6 @@ val useCaseModule = module {
     factory<ImageFileManager> { ImageFileManager(androidContext()) }
     factoryOf(::GetCurrencyRatesUseCase)
     factoryOf(::GetServicesUseCase)
+    factoryOf(::SubscriptionStatsUseCase)
 
 }

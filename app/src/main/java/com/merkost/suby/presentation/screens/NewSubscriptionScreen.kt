@@ -26,6 +26,8 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -66,6 +68,7 @@ import com.merkost.suby.presentation.base.SubyTopAppBar
 import com.merkost.suby.presentation.base.TitleColumn
 import com.merkost.suby.presentation.base.components.SheetDialog
 import com.merkost.suby.presentation.base.components.service.ServiceRowItem
+import com.merkost.suby.presentation.screens.create.OptionalField
 import com.merkost.suby.presentation.sheets.SelectServiceSheet
 import com.merkost.suby.presentation.states.NewSubscriptionUiState
 import com.merkost.suby.presentation.viewModel.NewSubscriptionViewModel
@@ -108,10 +111,15 @@ fun NewSubscriptionScreen(
     val currency by remember {
         derivedStateOf { pickedCurrency ?: mainCurrency }
     }
-    var descriptionEnabled by rememberSaveable { mutableStateOf(false) }
+
+    var enabledOptionalFields by rememberSaveable {
+        mutableStateOf(setOf<OptionalField>())
+    }
+
     val selectedPeriod by remember { derivedStateOf { selectedValues.period } }
     val selectedStatus by remember { derivedStateOf { selectedValues.status } }
     val billingDate by remember { derivedStateOf { selectedValues.billingDate } }
+    val paymentStartDate by remember { derivedStateOf { selectedValues.paymentStartDate } }
     val description by remember { derivedStateOf { selectedValues.description } }
 
     var selectServiceSheet by remember { mutableStateOf(false) }
@@ -136,24 +144,26 @@ fun NewSubscriptionScreen(
         )
     }
 
-    Scaffold(topBar = {
-        SubyTopAppBar(
-            title = {
-                Text(text = stringResource(R.string.new_subscription))
-            }, upPress = upPress
-        )
-    }, floatingActionButton = {
-        SaveButton(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .imePadding(),
-            enabled = couldSave
-        ) {
-            viewModel.saveNewSubscription(currency)
-        }
+    Scaffold(
+        topBar = {
+            SubyTopAppBar(
+                title = {
+                    Text(text = stringResource(R.string.new_subscription))
+                }, upPress = upPress
+            )
+        }, floatingActionButton = {
+            SaveButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .imePadding(),
+                enabled = couldSave
+            ) {
+                // TODO: Pass optional fields to viewModel when saving
+                viewModel.saveNewSubscription(currency)
+            }
 
-    },
+        },
         floatingActionButtonPosition = FabPosition.Center
     ) {
         Column(
@@ -162,23 +172,12 @@ fun NewSubscriptionScreen(
                 .padding(it),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            TitleColumn(modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-                title = stringResource(R.string.title_service),
-                actions = {
-                    AnimatedVisibility(descriptionEnabled.not()) {
-                        Text(
-                            stringResource(R.string.add_description),
-                            modifier = Modifier.clickable {
-                                descriptionEnabled = true
-                            },
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        )
-                    }
-                }) {
+            TitleColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                title = stringResource(R.string.title_service)
+            ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -203,11 +202,51 @@ fun NewSubscriptionScreen(
                 }
             }
 
-            AnimatedVisibility(visible = descriptionEnabled) {
+            TitleColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                title = "Optional Details"
+            ) {
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(OptionalField.entries) { field ->
+                        val isSelected = enabledOptionalFields.contains(field)
+                        FilterChip(
+                            selected = isSelected,
+                            onClick = {
+                                enabledOptionalFields = if (isSelected) {
+                                    enabledOptionalFields - field
+                                } else {
+                                    enabledOptionalFields + field
+                                }
+                            },
+                            label = { Text(field.title) },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = field.icon,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        )
+                    }
+                }
+            }
+
+            AnimatedVisibility(visible = enabledOptionalFields.contains(OptionalField.Description)) {
                 DescriptionView(
                     modifier = Modifier.padding(horizontal = 16.dp),
                     description = description,
                     onDescriptionChanged = viewModel::onDescriptionChanged
+                )
+            }
+
+            AnimatedVisibility(visible = enabledOptionalFields.contains(OptionalField.PaymentStartDate)) {
+                PaymentStartDateComponent(
+                    paymentStartDate = paymentStartDate,
+                    onPaymentStartDateSelected = viewModel::onPaymentStartDateSelected
                 )
             }
 
@@ -242,12 +281,34 @@ fun NewSubscriptionScreen(
 }
 
 @Composable
+fun PaymentStartDateComponent(
+    paymentStartDate: Long?,
+    onPaymentStartDateSelected: (Long?) -> Unit,
+) {
+    TitleColumn(
+        modifier = Modifier.padding(horizontal = 16.dp),
+        title = "Payment Start Date",
+        infoInformation = buildAnnotatedString {
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
+                append("The date when the subscription service actually started. This helps track how long you've been using the service and calculate total spending.")
+            }
+        }) {
+        BillingDate(
+            billingDate = paymentStartDate,
+            onBillingDateSelected = onPaymentStartDateSelected,
+            placeholder = "Select start date (optional)"
+        )
+    }
+}
+
+@Composable
 fun BillingDateComponent(
     billingDate: Long?,
     billingDateInfo: String?,
     onBillingDateSelected: (Long?) -> Unit,
 ) {
-    TitleColumn(modifier = Modifier.padding(horizontal = 16.dp),
+    TitleColumn(
+        modifier = Modifier.padding(horizontal = 16.dp),
         title = stringResource(R.string.title_billing_date),
         infoInformation = buildAnnotatedString {
             withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
@@ -276,7 +337,8 @@ fun PeriodComponent(
     selectedPeriod: BasePeriod?,
     onPeriodSelected: (BasePeriod) -> Unit,
 ) {
-    TitleColumn(modifier = Modifier.padding(horizontal = 16.dp),
+    TitleColumn(
+        modifier = Modifier.padding(horizontal = 16.dp),
         title = stringResource(R.string.title_period),
         infoInformation = buildAnnotatedString {
             Period.entries.forEachIndexed { i, period ->
@@ -305,7 +367,8 @@ fun StatusComponent(
     selectedStatus: Status?,
     onStatusClicked: (Status) -> Unit
 ) {
-    TitleColumn(modifier = Modifier.padding(horizontal = 16.dp),
+    TitleColumn(
+        modifier = Modifier.padding(horizontal = 16.dp),
         title = stringResource(R.string.title_status),
         infoInformation = buildAnnotatedString {
             Status.entries.fastForEachIndexed { i, status ->
@@ -324,7 +387,8 @@ fun StatusComponent(
 
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             items(Status.entries) { status ->
-                StatusItem(modifier = Modifier.width(IntrinsicSize.Max),
+                StatusItem(
+                    modifier = Modifier.width(IntrinsicSize.Max),
                     status,
                     isSelected = selectedStatus == status,
                     onClick = { onStatusClicked(status) })

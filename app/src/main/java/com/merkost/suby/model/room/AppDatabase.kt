@@ -12,18 +12,18 @@ import com.merkost.suby.model.room.dao.SubscriptionDao
 import com.merkost.suby.model.room.entity.CategoryDb
 import com.merkost.suby.model.room.entity.CurrencyRatesDb
 import com.merkost.suby.model.room.entity.PartialSubscriptionDb
-import com.merkost.suby.model.room.entity.Service
+import com.merkost.suby.model.room.entity.ServiceDb
 import com.merkost.suby.model.room.entity.SubscriptionDb
 
 @Database(
     entities = [
-        Service::class,
+        ServiceDb::class,
         CategoryDb::class,
         SubscriptionDb::class,
         PartialSubscriptionDb::class,
         CurrencyRatesDb::class
     ],
-    version = 5, exportSchema = true
+    version = 6, exportSchema = true
 )
 @TypeConverters(CurrencyRatesTypeConverter::class, Converters::class)
 abstract class AppDatabase : RoomDatabase() {

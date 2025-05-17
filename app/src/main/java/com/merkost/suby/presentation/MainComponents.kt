@@ -148,6 +148,7 @@ fun BillingDate(
     modifier: Modifier = Modifier,
     billingDate: Long?,
     onBillingDateSelected: (Long?) -> Unit,
+    placeholder: String = stringResource(R.string.select_payday)
 ) {
     val datePickerDate = rememberDatePickerState()
     var showDatePicker by rememberSaveable { mutableStateOf(false) }
@@ -206,7 +207,7 @@ fun BillingDate(
                     )
                 } else {
                     Text(
-                        text = stringResource(R.string.select_payday),
+                        text = placeholder,
                         style = MaterialTheme.typography.bodyLarge,
                     )
                 }

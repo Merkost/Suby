@@ -63,10 +63,10 @@ class SubyApplication : Application(), ImageLoaderFactory {
     }
 
     private fun initSentry() {
-        if (BuildConfig.DEBUG) return
-
         SentryAndroid.init(this) { options: SentryAndroidOptions ->
             options.isEnablePerformanceV2 = true
+            options.isDebug = false
+            options.environment = if (BuildConfig.DEBUG) "debug" else "production"
             options.beforeSend =
                 SentryOptions.BeforeSendCallback { event: SentryEvent, hint: Hint? ->
                     if (event.level == null) return@BeforeSendCallback null
