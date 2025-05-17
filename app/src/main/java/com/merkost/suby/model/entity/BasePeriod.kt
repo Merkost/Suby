@@ -1,36 +1,32 @@
 package com.merkost.suby.model.entity
 
-import com.merkost.suby.utils.now
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
-import kotlinx.datetime.toKotlinLocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
+import kotlinx.datetime.todayIn
+import kotlinx.datetime.until
 
 data class BasePeriod(
     val type: CustomPeriod,
     val duration: Long,
     val period: Period
 ) {
-
     constructor(type: CustomPeriod, duration: Long) : this(
         type, duration, mapToPeriodEnum(type, duration)
     )
 
-    fun nextBillingDate(fromDate: LocalDate): LocalDate {
-        val javaFromDate = fromDate.toJavaLocalDate()
-        val nextDate = javaFromDate.plus(duration, type.chronoUnit)
-        return nextDate.toKotlinLocalDate()
-    }
+    fun nextBillingDate(fromDate: LocalDate): LocalDate =
+        fromDate + type.toDatePeriod(duration.toInt())
 
     fun nextBillingDateFromToday(fromDate: LocalDate): LocalDate {
-        val today = LocalDate.now().toJavaLocalDate()
-        var javaNextDate = fromDate.toJavaLocalDate()
-
-        if (javaNextDate.isBefore(today)) {
-            val multiplier = type.chronoUnit.between(javaNextDate, today) / duration + 1
-            javaNextDate = javaNextDate.plus(multiplier * duration, type.chronoUnit)
-        }
-
-        return javaNextDate.toKotlinLocalDate()
+        val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+        if (fromDate >= today) return fromDate
+        require(duration > 0)
+        val diff = fromDate.until(today, type.unit)
+        val periods = ((diff + duration - 1) / duration).coerceAtLeast(1)
+        val total = (duration * periods).toInt()
+        return fromDate + type.toDatePeriod(total)
     }
 
     val approxDays: Long

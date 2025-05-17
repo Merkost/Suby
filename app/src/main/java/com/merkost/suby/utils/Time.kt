@@ -10,6 +10,7 @@ import kotlinx.datetime.toInstant
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDateTime
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.todayIn
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 import java.util.Date
@@ -27,10 +28,8 @@ fun LocalDateTime.Companion.now(): LocalDateTime {
     return java.time.LocalDateTime.now().toKotlinLocalDateTime()
 }
 
-val currentMoment: Instant = Clock.System.now()
-
 fun LocalDate.Companion.now() =
-    currentMoment.toLocalDateTime(TimeZone.currentSystemDefault()).date
+    Clock.System.todayIn(TimeZone.currentSystemDefault())
 
 
 val Long.toLocalDate: LocalDate
