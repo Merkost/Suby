@@ -64,6 +64,7 @@ class SubyApplication : Application(), ImageLoaderFactory {
 
     private fun initSentry() {
         SentryAndroid.init(this) { options: SentryAndroidOptions ->
+            options.dsn = BuildConfig.SENTRY_DSN
             options.isEnablePerformanceV2 = true
             options.isDebug = false
             options.environment = if (BuildConfig.DEBUG) "debug" else "production"

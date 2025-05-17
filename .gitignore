@@ -16,5 +16,3 @@
 .cxx
 local.properties
 
-# Sentry Config File
-sentry.properties
