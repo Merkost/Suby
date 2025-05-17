@@ -16,14 +16,16 @@ plugins {
 
 android {
     namespace = "com.merkost.suby"
-    compileSdk = 35
+    compileSdk = libs.versions.compileSdk.get().toInt()
+
+
 
     defaultConfig {
         applicationId = "com.merkost.suby"
-        minSdk = 26
-        targetSdk = 35
-        versionCode = 19
-        versionName = "0.1.15"
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
+        versionCode = libs.versions.appVersionCode.get().toInt()
+        versionName = libs.versions.appVersionName.get().toString()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -37,17 +39,41 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("debug")
-            buildConfigField("String", "QONVERSION_API_KEY", findProperty("QONVERSION_API_KEY").toString())
-            buildConfigField("String", "AMPLITUDE_API_KEY", findProperty("AMPLITUDE_API_KEY").toString())
-            buildConfigField("String", "SUPABASE_API_KEY", findProperty("SUPABASE_API_KEY").toString())
+            buildConfigField(
+                "String",
+                "QONVERSION_API_KEY",
+                findProperty("QONVERSION_API_KEY").toString()
+            )
+            buildConfigField(
+                "String",
+                "AMPLITUDE_API_KEY",
+                findProperty("AMPLITUDE_API_KEY").toString()
+            )
+            buildConfigField(
+                "String",
+                "SUPABASE_API_KEY",
+                findProperty("SUPABASE_API_KEY").toString()
+            )
             buildConfigField("String", "SUPABASE_ID", findProperty("SUPABASE_ID").toString())
         }
         debug {
             versionNameSuffix = ".debug"
             applicationIdSuffix = ".debug"
-            buildConfigField("String", "QONVERSION_API_KEY", findProperty("QONVERSION_API_KEY").toString())
-            buildConfigField("String", "AMPLITUDE_API_KEY", findProperty("AMPLITUDE_API_KEY").toString())
-            buildConfigField("String", "SUPABASE_API_KEY", findProperty("SUPABASE_API_KEY").toString())
+            buildConfigField(
+                "String",
+                "QONVERSION_API_KEY",
+                findProperty("QONVERSION_API_KEY").toString()
+            )
+            buildConfigField(
+                "String",
+                "AMPLITUDE_API_KEY",
+                findProperty("AMPLITUDE_API_KEY").toString()
+            )
+            buildConfigField(
+                "String",
+                "SUPABASE_API_KEY",
+                findProperty("SUPABASE_API_KEY").toString()
+            )
             buildConfigField("String", "SUPABASE_ID", findProperty("SUPABASE_ID").toString())
         }
     }
@@ -76,7 +102,8 @@ android {
 
     applicationVariants.configureEach {
         outputs.configureEach {
-            (this as? BaseVariantOutputImpl)?.outputFileName = "Suby_${versionName}($versionCode).apk"
+            (this as? BaseVariantOutputImpl)?.outputFileName =
+                "Suby_${versionName}($versionCode).apk"
         }
     }
 }
