@@ -99,6 +99,7 @@ dependencies {
     implementation(libs.coil)
     implementation(libs.coil.svg)
     implementation(libs.lottie)
+    implementation(libs.constraintlayout)
 
     implementation(platform(libs.compose.bom))
     implementation(libs.icons.extended)
