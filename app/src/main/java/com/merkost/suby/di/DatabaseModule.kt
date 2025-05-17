@@ -180,7 +180,6 @@ object Migrations {
             db.execSQL("ALTER TABLE subscription_new RENAME TO subscription")
 
 
-            // Create the new table for PartialSubscriptionDb
             db.execSQL(
                 """
             CREATE TABLE IF NOT EXISTS PartialSubscriptionDb (

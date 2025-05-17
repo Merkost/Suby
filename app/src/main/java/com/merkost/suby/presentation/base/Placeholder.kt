@@ -12,7 +12,6 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.rememberTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
@@ -124,7 +123,6 @@ private data class Shimmer(
     )
 
     override fun alpha(progress: Float): Float = when {
-        // From 0f...ProgressForOpaqueAlpha we animate from 0..1
         progress <= progressForMaxAlpha -> {
             lerp(
                 start = 0f,
@@ -132,7 +130,7 @@ private data class Shimmer(
                 fraction = progress / progressForMaxAlpha
             )
         }
-        // From ProgressForOpaqueAlpha..1f we animate from 1..0
+
         else -> {
             lerp(
                 start = 1f,
