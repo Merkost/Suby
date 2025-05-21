@@ -61,11 +61,11 @@ class SubyApplication : Application(), ImageLoaderFactory {
         setRemoteConfig()
         initQonversion()
 
-        if (BuildConfig.DEBUG.not()) {
+//        if (BuildConfig.DEBUG.not()) {
             val sessionReplayPlugin = SessionReplayPlugin(sampleRate = 1.0)
             amplitude.add(sessionReplayPlugin)
             amplitude.flush()
-        }
+//        }
 
         initSentry()
         initTimber()

@@ -140,11 +140,20 @@ fun HorizontalSubscriptionItem(
                         },
                         label = "priceForPeriodAnim"
                     ) { priceForPeriod ->
+                        val formattedAmountForPeriod by remember(subscription.price, selectedPeriod) {
+                            derivedStateOf {
+                                currencyFormat.formatCurrencyStyle(
+                                    priceForPeriod.round().toBigDecimal(),
+                                    subscription.currency.code
+                                )
+                            }
+                        }
+
                         if (selectedPeriod.approxDays != subscription.period.approxDays) {
                             Column {
                                 Spacer(modifier = Modifier.size(8.dp))
                                 Text(
-                                    text = "~${priceForPeriod.round()}${subscription.currency.symbol}",
+                                    text = "~$formattedAmountForPeriod",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                                 )
