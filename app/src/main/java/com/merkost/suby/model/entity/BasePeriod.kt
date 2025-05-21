@@ -6,6 +6,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 import kotlinx.datetime.until
+import timber.log.Timber
 
 data class BasePeriod(
     val type: CustomPeriod,
@@ -21,12 +22,20 @@ data class BasePeriod(
 
     fun nextBillingDateFromToday(fromDate: LocalDate): LocalDate {
         val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
-        if (fromDate >= today) return fromDate
-        require(duration > 0)
+
+        if (fromDate > today) {
+            Timber.tag("BasePeriod").w("fromDate is in the future: $fromDate, $type, $period")
+            return fromDate
+        }
+        if (duration <= 0) {
+            Timber.tag("BasePeriod").w("Duration is zero or negative: $duration, $type, $period")
+            return today
+        }
+
         val diff = fromDate.until(today, type.unit)
-        val periods = ((diff + duration - 1) / duration).coerceAtLeast(1)
-        val total = (duration * periods).toInt()
-        return fromDate + type.toDatePeriod(total)
+        val periodsNeeded = (diff / duration) + 1
+
+        return fromDate + type.toDatePeriod((duration * periodsNeeded).toInt())
     }
 
     val approxDays: Long

@@ -8,6 +8,7 @@ import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import coil.util.DebugLogger
 import com.amplitude.android.Amplitude
+import com.amplitude.android.plugins.SessionReplayPlugin
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ConfigUpdate
@@ -49,6 +50,13 @@ class SubyApplication : Application(), ImageLoaderFactory {
         super.onCreate()
         setRemoteConfig()
         initQonversion()
+
+        if (BuildConfig.DEBUG.not()) {
+            val sessionReplayPlugin = SessionReplayPlugin(sampleRate = 1.0)
+            amplitude.add(sessionReplayPlugin)
+            amplitude.flush()
+        }
+
         initSentry()
         initTimber()
         startKoin {

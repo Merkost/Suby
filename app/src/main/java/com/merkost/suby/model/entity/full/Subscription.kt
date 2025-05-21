@@ -48,19 +48,20 @@ data class Subscription(
 
     val remainingDays: Long
         get() = LocalDate.now()
-            .daysUntil(
-                period.nextBillingDateFromToday(paymentDate.date),
-            ).toLong()
+            .daysUntil(period.nextBillingDateFromToday(paymentDate.date),).toLong()
 
     fun getRemainingDurationString(context: Context): String {
         val formattedDate = paymentDate.toJavaLocalDateTime().format(Constants.dataFormat)
         // FIXME: This is not working for preview
 
         return when (status) {
-            Status.ACTIVE -> when (remainingDays) {
-                0L -> context.getString(R.string.today)
-                1L -> context.getString(R.string.tomorrow)
-                else -> context.getString(R.string.after_days, remainingDays)
+            Status.ACTIVE -> {
+                val days = remainingDays
+                when {
+                    days <= 0 -> context.getString(R.string.today)
+                    days == 1L -> context.getString(R.string.tomorrow)
+                    else -> context.getString(R.string.after_days, days)
+                }
             }
 
             Status.TRIAL -> if (remainingDays > 0) {
