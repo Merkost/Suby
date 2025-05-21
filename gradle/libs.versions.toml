@@ -11,11 +11,12 @@ jvmVersion = "JVM_21"
 
 #Bom
 koin-bom = "4.0.4"
-compose-bom = "2025.05.00"
-firebase-bom = "33.13.0"
+compose-bom = "2025.05.01"
+firebase-bom = "33.14.0"
 
 agp = "8.10.0"
 amplitude = "1.20.7"
+amplitude-session-replay = "0.20.5"
 billing-ktx = "7.1.1"
 compose-multiplatform-android = "2.6.2"
 koin-android = "4.0.4"
@@ -33,7 +34,7 @@ sdk = "8.2.5"
 supabase = "3.1.4"
 navigation = "2.9.0"
 room = "2.7.1"
-ksp = "2.1.20-1.0.32"
+ksp = "2.1.21-2.0.1"
 ktor = "3.1.3"
 secrets = "2.0.1"
 datastore = "1.1.6"
@@ -43,6 +44,8 @@ timber = "5.0.1"
 
 [libraries]
 analytics-android = { module = "com.amplitude:analytics-android", version.ref = "amplitude" }
+amplitude-session-replay = { module = "com.amplitude:plugin-session-replay-android", version.ref = "amplitude-session-replay" }
+
 billing-ktx = { module = "com.android.billingclient:billing-ktx", version.ref = "billing-ktx" }
 compose-multiplatform-android = { module = "com.kizitonwose.calendar:compose-multiplatform-android", version.ref = "compose-multiplatform-android" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }

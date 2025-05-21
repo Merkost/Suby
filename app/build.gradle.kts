@@ -14,6 +14,12 @@ plugins {
     alias(libs.plugins.sentry)
 }
 
+sentry {
+    findProperty("sentry.auth.token")?.let {
+        authToken = it.toString()
+    }
+}
+
 android {
     namespace = "com.merkost.suby"
     compileSdk = libs.versions.compileSdk.get().toInt()
@@ -82,10 +88,6 @@ android {
         arg("room.schemaLocation", "$projectDir/schemas")
     }
 
-    sentry {
-        authToken = findProperty("SENTRY_AUTH_TOKEN").toString()
-    }
-
     applicationVariants.configureEach {
         outputs.configureEach {
             (this as? BaseVariantOutputImpl)?.outputFileName =
@@ -99,6 +101,7 @@ dependencies {
 
     implementation(libs.material)
     implementation(libs.analytics.android)
+    implementation(libs.amplitude.session.replay)
     implementation(libs.qonversion.sdk)
 
     implementation(libs.koin.compose)
