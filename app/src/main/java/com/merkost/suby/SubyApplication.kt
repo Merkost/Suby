@@ -48,6 +48,16 @@ class SubyApplication : Application(), ImageLoaderFactory {
 
     override fun onCreate() {
         super.onCreate()
+
+        startKoin {
+            androidLogger()
+            androidContext(this@SubyApplication)
+            modules(
+                appModule, databaseModule, databaseRepositoryModule,
+                repositoryModule, useCaseModule, viewModelModule,
+            )
+        }
+
         setRemoteConfig()
         initQonversion()
 
@@ -59,14 +69,6 @@ class SubyApplication : Application(), ImageLoaderFactory {
 
         initSentry()
         initTimber()
-        startKoin {
-            androidLogger()
-            androidContext(this@SubyApplication)
-            modules(
-                appModule, databaseModule, databaseRepositoryModule,
-                repositoryModule, useCaseModule, viewModelModule,
-            )
-        }
 
     }
 
