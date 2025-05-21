@@ -1,7 +1,6 @@
 package com.merkost.suby.model.entity
 
 import android.os.Parcelable
-import com.merkost.suby.model.entity.Currency.entries
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 

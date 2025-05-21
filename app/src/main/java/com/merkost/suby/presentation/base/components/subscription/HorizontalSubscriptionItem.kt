@@ -19,6 +19,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -27,6 +30,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.merkost.suby.SubyShape
+import com.merkost.suby.domain.ui.LocalCurrencyFormatter
 import com.merkost.suby.formatDecimal
 import com.merkost.suby.model.entity.BasePeriod
 import com.merkost.suby.model.entity.Currency
@@ -49,6 +53,16 @@ fun HorizontalSubscriptionItem(
     shouldShowDurationLeft: Boolean = true,
     onClick: () -> Unit
 ) {
+    val currencyFormat = LocalCurrencyFormatter.current
+    val formattedAmount by remember(subscription.price, subscription.currency) {
+        derivedStateOf {
+            currencyFormat.formatCurrencyStyle(
+                subscription.price.formatDecimal().toBigDecimal(),
+                subscription.currency.code
+            )
+        }
+    }
+
     Surface(
         modifier = modifier
             .animateContentSize()
@@ -112,7 +126,7 @@ fun HorizontalSubscriptionItem(
                 horizontalAlignment = Alignment.End,
             ) {
                 Text(
-                    text = "${subscription.price.formatDecimal()}${subscription.currency.symbol}",
+                    text = formattedAmount,
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.End,
                     color = MaterialTheme.colorScheme.onSurface

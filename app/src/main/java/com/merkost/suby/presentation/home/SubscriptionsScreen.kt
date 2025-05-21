@@ -2,15 +2,18 @@ package com.merkost.suby.presentation.home
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,16 +21,22 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.merkost.suby.R
@@ -41,6 +50,7 @@ import com.merkost.suby.ui.theme.LocalAppState
 import com.merkost.suby.ui.theme.SubyTheme
 import com.merkost.suby.utils.Constants
 import com.merkost.suby.utils.Constants.MAX_FREE_SERVICES
+import com.merkost.suby.utils.Destinations
 import com.merkost.suby.utils.all
 import com.merkost.suby.utils.analytics.ScreenLog
 import com.merkost.suby.utils.analytics.Screens
@@ -50,11 +60,7 @@ import org.koin.androidx.compose.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubscriptionsScreen(
-    onAddClicked: () -> Unit,
-    onCurrencyClick: () -> Unit,
-    onPremiumClick: () -> Unit,
-    onCalendarViewClick: () -> Unit,
-    onSubscriptionInfo: (subscriptionId: Int) -> Unit,
+    onNavigate: (Destinations) -> Unit
 ) {
     ScreenLog(Screens.Main)
     val appState = LocalAppState.current
@@ -74,16 +80,16 @@ fun SubscriptionsScreen(
         topBar = {
             SubyTopAppBar(
                 title = {
-                    MainScreenTitle(onLogoClick = onPremiumClick)
+                    MainScreenTitle(onLogoClick = { onNavigate(Destinations.PremiumFeatures) })
                 },
                 actions = {
                     ElevatedButton(
                         modifier = Modifier.padding(end = 8.dp),
                         onClick = {
                             if (appState.hasPremium || subscriptions.size < MAX_FREE_SERVICES) {
-                                onAddClicked()
+                                onNavigate(Destinations.NewSubscription)
                             } else {
-                                onPremiumClick()
+                                onNavigate(Destinations.PremiumFeatures)
                             }
                         }
                     ) { Icon(Icons.Default.Add) }
@@ -94,7 +100,7 @@ fun SubscriptionsScreen(
             AnimatedVisibilityCrossfade(hasSubscriptions) {
                 FloatingActionButton(
                     modifier = Modifier.systemBarsPadding(),
-                    onClick = onCalendarViewClick
+                    onClick = { onNavigate(Destinations.CalendarView) }
                 ) {
                     Icon(Icons.Default.CalendarMonth)
                 }
@@ -108,7 +114,7 @@ fun SubscriptionsScreen(
             label = ""
         ) { hasSubs ->
             if (hasSubs.not()) {
-                EmptySubscriptions(onAddClicked)
+                EmptySubscriptions { onNavigate(Destinations.NewSubscription) }
             } else {
                 LazyColumn(
                     modifier = Modifier,
@@ -121,7 +127,7 @@ fun SubscriptionsScreen(
                             totalPrice = totalState,
                             mainCurrency = mainCurrency,
                             period = selectedPeriod,
-                            onCurrencyClick = onCurrencyClick,
+                            onCurrencyClick = { onNavigate(Destinations.CurrencyPick(true)) },
                             onUpdateClick = viewModel::onUpdateRatesClicked,
                             onPeriodClick = viewModel::updateMainPeriod
                         )
@@ -132,7 +138,7 @@ fun SubscriptionsScreen(
                     }
 
                     if (subscriptions.size >= MAX_FREE_SERVICES && !appState.hasPremium) {
-                        item { AddMoreServicesItem(onClick = { onPremiumClick() }) }
+                        item { AddMoreServicesItem(onClick = { onNavigate(Destinations.PremiumFeatures) }) }
                     }
 
                     items(subscriptions, key = { it.id }) { subscription ->
@@ -141,7 +147,7 @@ fun SubscriptionsScreen(
                                 .animateItem(),
                             subscription = subscription,
                             selectedPeriod = selectedPeriod,
-                            onClick = { onSubscriptionInfo(subscription.id) }
+                            onClick = { onNavigate(Destinations.SubscriptionInfo(subscription.id)) }
                         )
                     }
 
@@ -156,6 +162,32 @@ fun SubscriptionsScreen(
                     }
 
                     item {
+                        TextButton(
+                            onClick = { onNavigate(Destinations.About) },
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(vertical = 16.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Info,
+                                    contentDescription = "About",
+                                    modifier = Modifier.size(18.dp),
+                                    tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
+                                )
+                                Spacer(modifier = Modifier.size(width = 8.dp, height = 0.dp))
+                                Text(
+                                    "About Suby",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Medium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+
                         Spacer(modifier = Modifier.height(Constants.LAZY_PADDING))
                     }
                 }
@@ -168,6 +200,6 @@ fun SubscriptionsScreen(
 @Composable
 fun SubscriptionsScreenPreview() {
     SubyTheme {
-        SubscriptionsScreen({}, {}, {}, {}, { _ -> })
+        SubscriptionsScreen {}
     }
 }

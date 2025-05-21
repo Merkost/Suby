@@ -17,4 +17,5 @@ sealed class Screens(
     data object EditCustomService : Screens("edit_custom_service")
     data object Feedback : Screens("feedback")
     data object FiltersAndSort : Screens("filters_and_sort")
+    data object About : Screens("about")
 }

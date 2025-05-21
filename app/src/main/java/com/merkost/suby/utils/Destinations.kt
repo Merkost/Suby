@@ -45,6 +45,9 @@ sealed interface Destinations {
 
     @Serializable
     data object CalendarView: Destinations
+    
+    @Serializable
+    data object About: Destinations
 }
 
 object Arguments {

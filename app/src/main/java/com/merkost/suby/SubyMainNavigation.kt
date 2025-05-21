@@ -19,6 +19,7 @@ import com.merkost.suby.presentation.home.SubscriptionsScreen
 import com.merkost.suby.presentation.onboarding.GreetingScreen
 import com.merkost.suby.presentation.onboarding.OnboardingCurrencyScreen
 import com.merkost.suby.presentation.premium.PremiumFeaturesScreen
+import com.merkost.suby.presentation.screens.AboutScreen
 import com.merkost.suby.presentation.screens.EditSubscriptionScreen
 import com.merkost.suby.presentation.screens.FeedbackScreen
 import com.merkost.suby.presentation.screens.NewSubscriptionScreen
@@ -84,16 +85,8 @@ private fun NavGraphBuilder.NavGraph(
 
     composable<Destinations.MainScreen> { backStackEntry ->
         SubscriptionsScreen(
-            onAddClicked = {
-                navController.navigate(Destinations.NewSubscription)
-            }, onCurrencyClick = {
-                navController.navigate(Destinations.CurrencyPick(true))
-            }, onSubscriptionInfo = { subId ->
-                navController.navigate(Destinations.SubscriptionInfo(subId))
-            }, onCalendarViewClick = {
-                navController.navigate(Destinations.CalendarView)
-            }, onPremiumClick = {
-                navController.navigate(Destinations.PremiumFeatures)
+            onNavigate = { destination ->
+                navController.navigate(destination)
             }
         )
     }
@@ -178,5 +171,9 @@ private fun NavGraphBuilder.NavGraph(
                 navController.navigate(Destinations.SubscriptionInfo(it.id))
             }
         )
+    }
+
+    composable<Destinations.About> {
+        AboutScreen(upPress = upPress)
     }
 }
