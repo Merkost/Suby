@@ -83,9 +83,8 @@ fun HorizontalSubscriptionItem(
         ) {
             Box(modifier = Modifier) {
                 ServiceLogo(
-                    modifier = Modifier
-                        .size(54.dp)
-                        .then(imageTransitionModifier),
+                    modifier = imageTransitionModifier
+                        .size(54.dp),
                     service = subscription.toService()
                 )
 

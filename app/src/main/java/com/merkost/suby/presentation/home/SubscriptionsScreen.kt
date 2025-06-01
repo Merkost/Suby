@@ -146,8 +146,7 @@ fun SubscriptionsScreen(
 
                     items(subscriptions, key = { it.id }) { subscription ->
                         HorizontalSubscriptionItem(
-                            modifier = Modifier
-                                .animateItem(),
+                            modifier = Modifier.animateItem(),
                             imageTransitionModifier = Modifier.sharedElement(
                                 SharedTransitionKeys.Subscription.serviceLogoFromHome(subscription.id),
                             ),
