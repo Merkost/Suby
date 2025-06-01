@@ -21,13 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.SubcomposeAsyncImage
-import coil.decode.SvgDecoder
-import coil.request.ImageRequest
+import coil3.compose.SubcomposeAsyncImage
 import com.merkost.suby.SubyShape
 import com.merkost.suby.model.entity.full.Category
 import com.merkost.suby.model.entity.full.Service
@@ -50,10 +47,7 @@ fun ServiceSvg(
 ) {
     SubcomposeAsyncImage(
         modifier = modifier,
-        model = ImageRequest.Builder(LocalContext.current.applicationContext)
-            .data(link)
-            .decoderFactory(SvgDecoder.Factory())
-            .build(),
+        model = link,
         loading = {
             Box(
                 modifier = modifier.placeholder3(

@@ -14,6 +14,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
+import coil3.ImageLoader
+import coil3.compose.setSingletonImageLoaderFactory
+import coil3.disk.DiskCache
+import coil3.disk.directory
+import coil3.memory.MemoryCache
+import coil3.request.crossfade
+import coil3.svg.SvgDecoder
+import coil3.util.DebugLogger
+import coil3.util.Logger
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.FeedbackAction
 import com.merkost.suby.presentation.home.SubscriptionsScreen
@@ -43,6 +52,8 @@ fun SubyMainNavigation() {
     val startDestination =
         if (appState.isFirstTimeLaunch) Destinations.Greeting else Destinations.MainScreen
 
+    ImageManager()
+
     Scaffold(
         modifier = Modifier,
         contentWindowInsets = WindowInsets(0.dp)
@@ -64,6 +75,30 @@ fun SubyMainNavigation() {
                 )
             }
         }
+    }
+}
+
+@Composable
+internal fun ImageManager() {
+    setSingletonImageLoaderFactory { context ->
+        ImageLoader.Builder(context)
+            .crossfade(true)
+            .memoryCache {
+                MemoryCache.Builder()
+                    .maxSizePercent(context, 0.20)
+                    .build()
+            }
+            .diskCache {
+                DiskCache.Builder()
+                    .directory(context.filesDir.resolve("coil_cache"))
+                    .maxSizeBytes(40 * 1024 * 1024)
+                    .build()
+            }
+            .components {
+                add(SvgDecoder.Factory())
+            }
+            .logger(logger = DebugLogger(minLevel = if (BuildConfig.DEBUG) Logger.Level.Debug else Logger.Level.Error))
+            .build()
     }
 }
 

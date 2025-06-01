@@ -114,6 +114,7 @@ dependencies {
     implementation(libs.activity.compose)
     implementation(libs.coil)
     implementation(libs.coil.svg)
+    implementation(libs.coil.ktor)
     implementation(libs.lottie)
     implementation(libs.constraintlayout)
 

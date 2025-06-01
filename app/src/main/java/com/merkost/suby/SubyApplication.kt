@@ -2,11 +2,6 @@ package com.merkost.suby
 
 import android.app.Application
 import android.util.Log
-import coil.ImageLoader
-import coil.ImageLoaderFactory
-import coil.disk.DiskCache
-import coil.memory.MemoryCache
-import coil.util.DebugLogger
 import com.amplitude.android.Amplitude
 import com.amplitude.android.plugins.SessionReplayPlugin
 import com.google.firebase.crashlytics.ktx.crashlytics
@@ -42,7 +37,7 @@ import org.koin.core.context.startKoin
 import timber.log.Timber
 import kotlin.time.Duration.Companion.hours
 
-class SubyApplication : Application(), ImageLoaderFactory {
+class SubyApplication : Application() {
 
     private val amplitude: Amplitude by inject()
 
@@ -69,7 +64,6 @@ class SubyApplication : Application(), ImageLoaderFactory {
 
         initSentry()
         initTimber()
-
     }
 
     private fun initSentry() {
@@ -140,25 +134,6 @@ class SubyApplication : Application(), ImageLoaderFactory {
 
             override fun onError(error: FirebaseRemoteConfigException) {}
         })
-    }
-
-    override fun newImageLoader(): ImageLoader {
-        return ImageLoader.Builder(this)
-            .crossfade(true)
-            .memoryCache {
-                MemoryCache.Builder(this)
-                    .maxSizePercent(0.20)
-                    .build()
-            }
-            .diskCache {
-                DiskCache.Builder()
-                    .directory(cacheDir.resolve("image_cache"))
-                    .maxSizeBytes(20 * 1024 * 1024)
-                    .build()
-            }
-            .logger(logger = DebugLogger(level = if (BuildConfig.DEBUG) Log.DEBUG else Log.ERROR))
-            .respectCacheHeaders(false)
-            .build()
     }
 
     private inner class CrashReportingTree : Timber.Tree() {
