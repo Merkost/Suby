@@ -86,6 +86,7 @@ import com.merkost.suby.presentation.base.components.service.ServiceLogo
 import com.merkost.suby.presentation.base.components.subscription.StatusBubble
 import com.merkost.suby.presentation.viewModel.SubscriptionDetailsState
 import com.merkost.suby.presentation.viewModel.SubscriptionDetailsViewModel
+import com.merkost.suby.roundToBigDecimal
 import com.merkost.suby.showToast
 import com.merkost.suby.utils.analytics.ScreenLog
 import com.merkost.suby.utils.analytics.Screens
@@ -456,9 +457,9 @@ private fun SubscriptionStatsSection(
                                                     if (statsState.mainCurrency != subscription.currency) {
                                                         statsState.monthlyNormalizedPrice / statsState.originalMonthlyPrice
                                                     } else 1.0
-                                                (statsState.totalSpentEstimate / conversionRate).toBigDecimal()
+                                                (statsState.totalSpentEstimate / conversionRate).roundToBigDecimal()
                                             } else {
-                                                statsState.totalSpentEstimate.toBigDecimal()
+                                                statsState.totalSpentEstimate.roundToBigDecimal()
                                             },
                                             if (showOriginalCurrency) subscription.currency.code else statsState.mainCurrency.code
                                         )
@@ -474,9 +475,9 @@ private fun SubscriptionStatsSection(
                                                     if (statsState.mainCurrency != subscription.currency) {
                                                         statsState.monthlyNormalizedPrice / statsState.originalMonthlyPrice
                                                     } else 1.0
-                                                (statsState.annualCost / conversionRate).toBigDecimal()
+                                                (statsState.annualCost / conversionRate).roundToBigDecimal()
                                             } else {
-                                                statsState.annualCost.toBigDecimal()
+                                                statsState.annualCost.roundToBigDecimal()
                                             },
                                             if (showOriginalCurrency) subscription.currency.code else statsState.mainCurrency.code
                                         )
@@ -584,7 +585,7 @@ fun PriceWithCurrency(price: Double, currency: Currency) {
         }
         Text(
             text = currencyFormatter.formatCurrencyStyle(
-                price.toBigDecimal(), currency.code
+                price.roundToBigDecimal(), currency.code
             ),
             style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
             color = MaterialTheme.colorScheme.onSurface
@@ -626,7 +627,7 @@ private fun UpcomingPaymentsListSection(
                         DetailsRow(
                             label = paymentDate.toJavaLocalDate().dateString(),
                             value = currencyFormatter.formatCurrencyStyle(
-                                price.toBigDecimal(), currency.code
+                                price.roundToBigDecimal(), currency.code
                             ),
                             icon = Icons.Default.Event
                         )

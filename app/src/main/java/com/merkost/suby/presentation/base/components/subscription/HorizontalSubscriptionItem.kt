@@ -31,7 +31,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.merkost.suby.SubyShape
 import com.merkost.suby.domain.ui.LocalCurrencyFormatter
-import com.merkost.suby.formatDecimal
 import com.merkost.suby.model.entity.BasePeriod
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.CustomPeriod
@@ -40,7 +39,7 @@ import com.merkost.suby.model.entity.Status
 import com.merkost.suby.model.entity.full.Category
 import com.merkost.suby.model.entity.full.Subscription
 import com.merkost.suby.presentation.base.components.service.ServiceLogo
-import com.merkost.suby.round
+import com.merkost.suby.roundToBigDecimal
 import com.merkost.suby.ui.theme.SubyTheme
 import com.merkost.suby.utils.now
 import kotlinx.datetime.LocalDateTime
@@ -57,7 +56,7 @@ fun HorizontalSubscriptionItem(
     val formattedAmount by remember(subscription.price, subscription.currency) {
         derivedStateOf {
             currencyFormat.formatCurrencyStyle(
-                subscription.price.formatDecimal().toBigDecimal(),
+                subscription.price.roundToBigDecimal(),
                 subscription.currency.code
             )
         }
@@ -140,10 +139,13 @@ fun HorizontalSubscriptionItem(
                         },
                         label = "priceForPeriodAnim"
                     ) { priceForPeriod ->
-                        val formattedAmountForPeriod by remember(subscription.price, selectedPeriod) {
+                        val formattedAmountForPeriod by remember(
+                            subscription.price,
+                            selectedPeriod
+                        ) {
                             derivedStateOf {
                                 currencyFormat.formatCurrencyStyle(
-                                    priceForPeriod.round().toBigDecimal(),
+                                    priceForPeriod.roundToBigDecimal(),
                                     subscription.currency.code
                                 )
                             }

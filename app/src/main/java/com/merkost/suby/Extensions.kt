@@ -2,35 +2,20 @@ package com.merkost.suby
 
 import android.content.Context
 import android.content.Intent
-import android.icu.text.DateFormat
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Parcelable
 import android.widget.Toast
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.ui.unit.Dp
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.toJavaLocalDateTime
-import kotlinx.datetime.toLocalDateTime
-import java.text.DecimalFormat
-import java.time.Instant
-import java.time.LocalDate
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.util.Date
-import java.util.Locale
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 val Dp.asWindowInsets: WindowInsets
     get() = WindowInsets(this, this, this, this)
 
-fun Double.formatDecimal(): String {
-    val formatter = DecimalFormat("#.##").apply {
-        isDecimalSeparatorAlwaysShown = false
-    }
-    return formatter.format(this)}
-
-fun String?.toSafeLocalDateTime(): LocalDateTime? =
-    runCatching { this?.toLocalDateTime() }.getOrNull()
+fun Double.roundToBigDecimal(): BigDecimal =
+    BigDecimal.valueOf(this).setScale(2, RoundingMode.HALF_UP)
 
 inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
     SDK_INT >= 33 -> getParcelableExtra(key, T::class.java)

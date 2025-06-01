@@ -19,6 +19,7 @@ import com.merkost.suby.presentation.SortOption
 import com.merkost.suby.repository.datastore.AppSettings
 import com.merkost.suby.repository.datastore.LastTotalPrice
 import com.merkost.suby.repository.room.SubscriptionRepository
+import com.merkost.suby.roundToBigDecimal
 import com.merkost.suby.use_case.GetCurrencyRatesUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -262,7 +263,7 @@ private fun Double?.formatWithCurrency(
     currencyCode: String
 ): String? {
     return this?.let {
-        currencyFormatter.formatCurrencyStyle(it.toBigDecimal(), currencyCode)
+        currencyFormatter.formatCurrencyStyle(it.roundToBigDecimal(), currencyCode)
     }
 }
 
