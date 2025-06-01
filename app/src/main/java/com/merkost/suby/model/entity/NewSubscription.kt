@@ -18,37 +18,49 @@ data class NewSubscription(
 ) {
     val billingDateInfo: String?
         get() {
-            if (billingDate == null || period == null || status == null) {
-                return null
-            }
+            val bdLong = billingDate ?: return null
+            val per = period ?: return null
+            val st = status ?: return null
 
-            val currentDate = LocalDate.now().toJavaLocalDate()
+            val today: LocalDate = LocalDate.now()
+            val billingLocal: LocalDate = bdLong.toLocalDate
+            val endDate: LocalDate = per.nextBillingDate(billingLocal)
 
-            val endDate =
-                period.nextBillingDate(billingDate.toLocalDate).toJavaLocalDate()
+            val isPassed: Boolean = endDate <= today
+            val endDateStr: String = endDate.toJavaLocalDate().dateString()
 
-            val isPast = endDate.isBefore(currentDate) || endDate.isEqual(currentDate)
-
-            val endDateFormatted = endDate.dateString()
-
-            val subscriptionEndText = when {
-                status == Status.ACTIVE && isPast -> {
-                    val nextBillingDate =
-                        period.nextBillingDateFromToday(billingDate.toLocalDate)
+            return when (st) {
+                Status.ACTIVE ->
+                    if (isPassed) {
+                        val nextFromToday: String = per
+                            .nextBillingDateFromToday(billingLocal)
                             .toJavaLocalDate()
-                    "Subscription renews on ${nextBillingDate.dateString()}"
-                }
+                            .dateString()
+                        "Subscription renews on $nextFromToday"
+                    } else {
+                        "Subscription renews on $endDateStr"
+                    }
 
-                status == Status.ACTIVE && !isPast -> "Subscription renews on $endDateFormatted"
-                status == Status.CANCELED && isPast -> "Subscription was canceled on $endDateFormatted"
-                status == Status.CANCELED && !isPast -> "Subscription will be canceled on $endDateFormatted"
-                status == Status.EXPIRED && !isPast -> "Subscription expires on $endDateFormatted"
-                status == Status.EXPIRED && isPast -> "Subscription expired on $endDateFormatted"
-                status == Status.TRIAL && isPast -> "Trial period ended on $endDateFormatted"
-                status == Status.TRIAL && !isPast -> "Trial period ends on $endDateFormatted"
+                Status.CANCELED ->
+                    if (isPassed) {
+                        "Subscription was canceled on $endDateStr"
+                    } else {
+                        "Subscription will be canceled on $endDateStr"
+                    }
 
-                else -> "Subscription status: $status"
+                Status.EXPIRED ->
+                    if (isPassed) {
+                        "Subscription expired on $endDateStr"
+                    } else {
+                        "Subscription expires on $endDateStr"
+                    }
+
+                Status.TRIAL ->
+                    if (isPassed) {
+                        "Trial period ended on $endDateStr"
+                    } else {
+                        "Trial period ends on $endDateStr"
+                    }
             }
-            return subscriptionEndText
         }
 }

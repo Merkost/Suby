@@ -23,10 +23,8 @@ data class BasePeriod(
     fun nextBillingDateFromToday(fromDate: LocalDate): LocalDate {
         val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
 
-        if (fromDate > today) {
-            Timber.tag("BasePeriod").w("fromDate is in the future: $fromDate, $type, $period")
-            return fromDate
-        }
+        if (fromDate > today) return fromDate
+
         if (duration <= 0) {
             Timber.tag("BasePeriod").w("Duration is zero or negative: $duration, $type, $period")
             return today
