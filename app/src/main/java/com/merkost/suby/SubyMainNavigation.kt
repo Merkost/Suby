@@ -1,5 +1,6 @@
 package com.merkost.suby
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -30,31 +31,38 @@ import com.merkost.suby.presentation.viewModel.OnboardingViewModel
 import com.merkost.suby.ui.theme.LocalAppState
 import com.merkost.suby.utils.Arguments
 import com.merkost.suby.utils.Destinations
+import com.merkost.suby.utils.transition.ProvideAnimatedVisibilityScope
+import com.merkost.suby.utils.transition.SharedTransitionProvider
 import org.koin.androidx.compose.koinViewModel
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun SubyMainNavigation() {
     val navController = rememberNavController()
     val appState = LocalAppState.current
     val startDestination =
         if (appState.isFirstTimeLaunch) Destinations.Greeting else Destinations.MainScreen
+
     Scaffold(
         modifier = Modifier,
         contentWindowInsets = WindowInsets(0.dp)
     ) { scaffoldPadding ->
-        NavHost(
-            modifier = Modifier.padding(scaffoldPadding),
-            navController = navController,
-            startDestination = startDestination,
+        SharedTransitionProvider(
+            modifier = Modifier.padding(scaffoldPadding)
         ) {
-            NavGraph(
+            NavHost(
                 navController = navController,
-                upPress = {
-                    if (!navController.popBackStack()) {
-                        navController.navigate(Destinations.MainScreen)
-                    }
-                },
-            )
+                startDestination = startDestination,
+            ) {
+                NavGraph(
+                    navController = navController,
+                    upPress = {
+                        if (!navController.popBackStack()) {
+                            navController.navigate(Destinations.MainScreen)
+                        }
+                    },
+                )
+            }
         }
     }
 }
@@ -84,11 +92,13 @@ private fun NavGraphBuilder.NavGraph(
     }
 
     composable<Destinations.MainScreen> { backStackEntry ->
-        SubscriptionsScreen(
-            onNavigate = { destination ->
-                navController.navigate(destination)
-            }
-        )
+        ProvideAnimatedVisibilityScope(this) {
+            SubscriptionsScreen(
+                onNavigate = { destination ->
+                    navController.navigate(destination)
+                }
+            )
+        }
     }
 
     composable<Destinations.NewSubscription> { backStackEntry ->
@@ -125,18 +135,20 @@ private fun NavGraphBuilder.NavGraph(
 
     composable<Destinations.SubscriptionInfo> {
         val subscriptionInfo = it.toRoute<Destinations.SubscriptionInfo>()
-        SubscriptionDetailsScreen(
-            upPress = upPress,
-            onEditClick = {
-                navController.navigate(
-                    Destinations.EditSubscription(
-                        subscriptionInfo.subscriptionId
+        ProvideAnimatedVisibilityScope(this) {
+            SubscriptionDetailsScreen(
+                upPress = upPress,
+                onEditClick = {
+                    navController.navigate(
+                        Destinations.EditSubscription(
+                            subscriptionInfo.subscriptionId
+                        )
                     )
-                )
-            },
-            onCalendarClick = {
-                navController.navigate(Destinations.CalendarView)
-            })
+                },
+                onCalendarClick = {
+                    navController.navigate(Destinations.CalendarView)
+                })
+        }
     }
 
     composable<Destinations.CurrencyPick> {
@@ -165,12 +177,14 @@ private fun NavGraphBuilder.NavGraph(
     }
 
     composable<Destinations.CalendarView> {
-        CalendarViewScreen(
-            upPress = upPress,
-            onSubscriptionClick = {
-                navController.navigate(Destinations.SubscriptionInfo(it.id))
-            }
-        )
+        ProvideAnimatedVisibilityScope(this) {
+            CalendarViewScreen(
+                upPress = upPress,
+                onSubscriptionClick = {
+                    navController.navigate(Destinations.SubscriptionInfo(it.id))
+                }
+            )
+        }
     }
 
     composable<Destinations.About> {

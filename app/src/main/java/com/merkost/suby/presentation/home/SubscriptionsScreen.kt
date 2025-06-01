@@ -1,6 +1,7 @@
 package com.merkost.suby.presentation.home
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -57,7 +58,7 @@ import com.merkost.suby.utils.analytics.Screens
 import com.merkost.suby.utils.anim.AnimatedVisibilityCrossfade
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun SubscriptionsScreen(
     onNavigate: (Destinations) -> Unit

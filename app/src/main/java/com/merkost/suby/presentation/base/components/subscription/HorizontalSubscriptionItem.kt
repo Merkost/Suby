@@ -42,6 +42,9 @@ import com.merkost.suby.presentation.base.components.service.ServiceLogo
 import com.merkost.suby.roundToBigDecimal
 import com.merkost.suby.ui.theme.SubyTheme
 import com.merkost.suby.utils.now
+import com.merkost.suby.utils.transition.SharedTransitionKeys
+import com.merkost.suby.utils.transition.sharedElement
+import com.merkost.suby.utils.transition.sharedTextElement
 import kotlinx.datetime.LocalDateTime
 
 @Composable
@@ -79,7 +82,9 @@ fun HorizontalSubscriptionItem(
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             ServiceLogo(
-                modifier = Modifier.size(54.dp),
+                modifier = Modifier
+                    .size(54.dp)
+                    .sharedElement(SharedTransitionKeys.Subscription.serviceLogo(subscription.id)),
                 service = subscription.toService()
             )
 
@@ -90,6 +95,7 @@ fun HorizontalSubscriptionItem(
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 Text(
+                    modifier = Modifier.sharedTextElement(SharedTransitionKeys.Subscription.serviceName(subscription.id)),
                     text = subscription.serviceName,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,

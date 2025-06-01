@@ -92,6 +92,9 @@ import com.merkost.suby.utils.analytics.ScreenLog
 import com.merkost.suby.utils.analytics.Screens
 import com.merkost.suby.utils.dateString
 import com.merkost.suby.utils.now
+import com.merkost.suby.utils.transition.SharedTransitionKeys
+import com.merkost.suby.utils.transition.sharedElement
+import com.merkost.suby.utils.transition.sharedTextElement
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 import org.koin.androidx.compose.koinViewModel
@@ -101,7 +104,9 @@ import java.time.temporal.ChronoUnit
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubscriptionDetailsScreen(
-    upPress: () -> Unit, onEditClick: () -> Unit, onCalendarClick: () -> Unit
+    upPress: () -> Unit,
+    onEditClick: () -> Unit,
+    onCalendarClick: () -> Unit
 ) {
     ScreenLog(Screens.SubscriptionDetails)
     val viewModel: SubscriptionDetailsViewModel = koinViewModel()
@@ -137,8 +142,16 @@ fun SubscriptionDetailsScreen(
         topBar = {
             SubyLargeTopAppBar(
                 title = {
+                    val subscription = (uiState as? BaseUiState.Success<Subscription>)?.data
+                    val titleText = subscription?.serviceName.orEmpty()
+
                     Text(
-                        text = (uiState as? BaseUiState.Success<Subscription>)?.data?.serviceName.orEmpty(),
+                        modifier = if (subscription != null) {
+                            Modifier.sharedTextElement(SharedTransitionKeys.Subscription.serviceName(subscription.id))
+                        } else {
+                            Modifier
+                        },
+                        text = titleText,
                     )
                 },
                 upPress = upPress,
@@ -161,10 +174,10 @@ fun SubscriptionDetailsScreen(
                 .windowInsetsPadding(WindowInsets.navigationBars),
         ) { data ->
             SubscriptionInfo(
-                modifier = Modifier.fillMaxSize(),
                 subscription = data,
                 statsState = statsState,
-                onCalendarClick = onCalendarClick
+                onCalendarClick = onCalendarClick,
+                modifier = Modifier.fillMaxSize()
             )
         }
     }
@@ -192,13 +205,13 @@ fun SubscriptionDetailsActionMenu(
         ) {
             DropdownMenuItem(
                 text = {
-                Text(
-                    text = stringResource(R.string.option_edit),
-                )
-            }, onClick = {
-                menuExpanded = false
-                onEditClick()
-            }, contentPadding = PaddingValues(horizontal = 16.dp)
+                    Text(
+                        text = stringResource(R.string.option_edit),
+                    )
+                }, onClick = {
+                    menuExpanded = false
+                    onEditClick()
+                }, contentPadding = PaddingValues(horizontal = 16.dp)
             )
 
             HorizontalDivider(
@@ -209,14 +222,14 @@ fun SubscriptionDetailsActionMenu(
 
             DropdownMenuItem(
                 text = {
-                Text(
-                    text = stringResource(R.string.action_delete),
-                    color = MaterialTheme.colorScheme.error
-                )
-            }, onClick = {
-                menuExpanded = false
-                onDeleteClick()
-            }, contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                    Text(
+                        text = stringResource(R.string.action_delete),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }, onClick = {
+                    menuExpanded = false
+                    onDeleteClick()
+                }, contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
             )
         }
     }
@@ -235,7 +248,7 @@ internal fun SubscriptionInfo(
             .background(MaterialTheme.colorScheme.background)
             .padding(bottom = 32.dp), verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        HeroSection(subscription)
+        HeroSection(subscription, Modifier)
 
         SubscriptionDetailsSection(
             modifier = Modifier.padding(horizontal = 16.dp), subscription = subscription
@@ -495,7 +508,7 @@ private fun SubscriptionStatsSection(
 }
 
 @Composable
-    private fun SubscriptionDetailsSection(modifier: Modifier, subscription: Subscription) {
+private fun SubscriptionDetailsSection(modifier: Modifier, subscription: Subscription) {
     SectionColumn(modifier = modifier) {
         SectionTitle(text = stringResource(R.string.subscription_details))
 
@@ -690,7 +703,8 @@ fun SectionColumn(modifier: Modifier = Modifier, content: @Composable ColumnScop
 
 @Composable
 fun HeroSection(
-    subscription: Subscription, modifier: Modifier = Modifier
+    subscription: Subscription,
+    modifier: Modifier = Modifier
 ) {
     val heroBrush = Brush.verticalGradient(
         colors = listOf(
@@ -733,11 +747,15 @@ fun HeroSection(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-
                     ServiceLogo(
                         modifier = Modifier
                             .height(72.dp)
-                            .weight(1f, false),
+                            .weight(1f, false)
+                            .sharedElement(
+                                SharedTransitionKeys.Subscription.serviceLogo(
+                                    subscription.id
+                                )
+                            ),
                         service = subscription.toService()
                     )
                     Spacer(modifier = Modifier.width(16.dp))
