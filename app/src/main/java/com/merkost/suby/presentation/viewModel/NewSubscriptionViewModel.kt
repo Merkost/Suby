@@ -43,10 +43,16 @@ class NewSubscriptionViewModel(
         with(it) {
             service != null
                     && period != null
-                    && price.toDoubleOrNull() != null
+                    && getPriceAsDouble(price) != null
                     && billingDate != null
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
+    private fun getPriceAsDouble(priceString: String): Double? {
+        if (priceString.isEmpty()) return null
+        val normalizedPrice = priceString.replace(',', '.')
+        return normalizedPrice.toDoubleOrNull()
+    }
 
     fun saveNewSubscription(currency: Currency) {
         viewModelScope.launch {
@@ -63,7 +69,7 @@ class NewSubscriptionViewModel(
                     return@launch
                 }
 
-                values.price.toDoubleOrNull() == null -> {
+                getPriceAsDouble(values.price) == null -> {
                     _uiState.update { NewSubscriptionUiState.Requirement.PriceRequired }
                     return@launch
                 }
@@ -86,7 +92,7 @@ class NewSubscriptionViewModel(
                             serviceId = values.service.id,
                             status = values.status,
                             currency = currency,
-                            price = values.price.toDouble(),
+                            price = getPriceAsDouble(values.price) ?: 0.0,
                             paymentDate = values.billingDate.toKotlinLocalDateTime(),
                             paymentStartDate = values.paymentStartDate?.toKotlinLocalDateTime(),
                             periodType = period.type,
@@ -119,7 +125,13 @@ class NewSubscriptionViewModel(
     }
 
     fun onPriceInput(newPrice: String) {
-        if (newPrice.isEmpty() || newPrice.toDoubleOrNull() != null) {
+        if (newPrice.isEmpty()) {
+            selectedValues.update { it.copy(price = newPrice) }
+            return
+        }
+
+        val normalizedPrice = newPrice.replace(',', '.')
+        if (normalizedPrice.toDoubleOrNull() != null) {
             selectedValues.update { it.copy(price = newPrice) }
         }
     }
@@ -153,7 +165,7 @@ class NewSubscriptionViewModel(
     fun onBillingDateSelected(date: Long?) {
         selectedValues.update { it.copy(billingDate = date) }
     }
-    
+
     fun onPaymentStartDateSelected(date: Long?) {
         selectedValues.update { it.copy(paymentStartDate = date) }
     }

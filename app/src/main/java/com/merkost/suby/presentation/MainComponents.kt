@@ -43,22 +43,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.merkost.suby.R
-import com.merkost.suby.SubyShape
 import com.merkost.suby.model.entity.BasePeriod
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.model.entity.CustomPeriod
 import com.merkost.suby.model.entity.Period
 import com.merkost.suby.presentation.base.BaseItem
 import com.merkost.suby.presentation.base.Icon
+import com.merkost.suby.presentation.base.ImprovedPriceField
 import com.merkost.suby.presentation.base.SubyTextField
 import com.merkost.suby.presentation.base.TitleColumn
 import com.merkost.suby.presentation.screens.PeriodItem
-import com.merkost.suby.ui.theme.subyColors
 import com.merkost.suby.utils.Constants.DEFAULT_CUSTOM_PERIOD_DAYS
 import com.merkost.suby.utils.dateString
+import java.util.Locale
 
 @Composable
 fun DescriptionView(
@@ -91,7 +90,6 @@ fun DescriptionView(
     }
 }
 
-
 @Composable
 fun PriceField(
     modifier: Modifier = Modifier,
@@ -100,46 +98,21 @@ fun PriceField(
     textStyle: TextStyle = MaterialTheme.typography.displaySmall.copy(
         fontWeight = FontWeight.Bold,
     ),
-    onPriceInput: ((String) -> Unit)? = null,
+    onPriceInput: (String) -> Unit,
+    locale: Locale = Locale.getDefault(),
+    maxValue: Double = Double.MAX_VALUE,
+    showTrailingZeros: Boolean = false
 ) {
-    val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
-
-    SubyTextField(
-        modifier = modifier
-            .focusRequester(focusRequester),
-        value = price,
-        readOnly = onPriceInput == null,
-        prefix = {
-            Text(
-                text = currency.symbol,
-                style = textStyle,
-                overflow = TextOverflow.Visible,
-                maxLines = 1
-            )
-        },
-        onValueChange = { newValue ->
-            onPriceInput?.let { onPriceInput(newValue) }
-        },
-        textStyle = textStyle,
-        singleLine = true,
-        shape = SubyShape,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number,
-            imeAction = ImeAction.Done
-        ),
-        keyboardActions = KeyboardActions(
-            onDone = { focusManager.clearFocus() }
-        ),
-        placeholder = {
-            Text(
-                text = "0.00",
-                style = textStyle.copy(color = MaterialTheme.subyColors.textPlaceholderColor),
-                maxLines = 1,
-                overflow = TextOverflow.Visible
-            )
-        }
-    )
+        ImprovedPriceField(
+            modifier = modifier,
+            value = price,
+            onValueChange = onPriceInput,
+            currency = currency,
+            textStyle = textStyle,
+            locale = locale,
+            maxValue = maxValue,
+            showTrailingZeros = showTrailingZeros
+        )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

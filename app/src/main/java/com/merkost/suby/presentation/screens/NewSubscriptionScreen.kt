@@ -428,7 +428,7 @@ internal fun PriceAndCurrencyRow(
     price: String,
     currency: Currency,
     flipCurrencyArrow: Boolean = false,
-    onPriceInput: ((String) -> Unit)?,
+    onPriceInput: (String) -> Unit,
     onCurrencyClicked: (() -> Unit)? = null,
 ) {
     Row(

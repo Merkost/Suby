@@ -16,8 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.merkost.suby.presentation.base.Icon
+import com.merkost.suby.ui.theme.SubyTheme
 
 @Composable
 fun DetailsRow(
@@ -34,21 +34,24 @@ fun DetailsRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 4.dp),
+            .padding(
+                vertical = SubyTheme.spacing.small,
+                horizontal = SubyTheme.spacing.extraSmall
+            ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(SubyTheme.spacing.small),
             modifier = Modifier.weight(1f)
         ) {
             Icon(
                 imageVector = icon,
                 tint = iconTint,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(SubyTheme.spacing.iconMedium)
             )
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(SubyTheme.spacing.small))
             Text(
                 text = label,
                 style = labelStyle,

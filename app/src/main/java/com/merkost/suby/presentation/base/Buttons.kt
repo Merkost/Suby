@@ -45,7 +45,7 @@ fun SubyButton(
 ) {
     Button(modifier = modifier, enabled = enabled, onClick = onClick, shape = shape) {
         Text(
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.padding(horizontal = 8.dp),
             text = text,
             style = MaterialTheme.typography.titleMedium
         )

@@ -5,11 +5,10 @@ import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.CheckCircleOutline
 import androidx.compose.material.icons.outlined.DoNotDisturbOn
 import androidx.compose.material.icons.outlined.Timelapse
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.merkost.suby.ui.theme.subyColors
+import com.merkost.suby.ui.theme.SubyTheme
 
 enum class Status(
     val icon: ImageVector,
@@ -40,9 +39,9 @@ enum class Status(
     val color: Color
         @Composable
         get() = when (this) {
-            ACTIVE -> MaterialTheme.subyColors.statusGreen
-            TRIAL -> MaterialTheme.subyColors.statusYellow
-            EXPIRED -> MaterialTheme.subyColors.statusOrange
-            CANCELED -> MaterialTheme.subyColors.statusRed
+            ACTIVE -> SubyTheme.colors.statusGreen
+            TRIAL -> SubyTheme.colors.statusYellow
+            EXPIRED -> SubyTheme.colors.statusOrange
+            CANCELED -> SubyTheme.colors.statusRed
         }
 }

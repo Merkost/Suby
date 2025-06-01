@@ -55,7 +55,7 @@
     <string name="period_required">Period is required</string>
     <string name="price_required">Price is required</string>
     <string name="billing_date_required">Billing date is required</string>
-    <string name="error_try_later">Error occured. Please, try again later.</string>
+    <string name="error_try_later">Error occurred. Please, try again later.</string>
     <string name="info_billing_date">The date when the most recent payment for your subscription was processed.\n\nThis is the starting point for calculating the next billing cycle based on the selected period (e.g., monthly, annually).</string>
     <string name="select_payday">Select a payday</string>
     <string name="press_back_to_exit">Press back again to exit</string>
@@ -181,4 +181,12 @@
     <string name="feedback_website_hint">Website URL (optional)</string>
     <string name="feedback_details_hint">Additional details (optional)</string>
     <string name="feedback_submit_button">Submit Request</string>
+
+    <!--  Filters  -->
+    <string name="filter_and_sort_title">Filters &amp; Sort</string>
+    <string name="apply_button_text">Apply</string>
+    <string name="sorting_state_text">Sorting by %1$s (%2$s)</string>
+    <string name="sort_state_ascending">Ascending</string>
+    <string name="sort_state_descending">Descending</string>
+
 </resources>

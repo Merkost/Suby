@@ -12,8 +12,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.merkost.suby.presentation.SortFilterBottomSheet
-import com.merkost.suby.presentation.TinySortFilterRow
+import com.merkost.suby.presentation.home.filters.SortFilterBottomSheet
+import com.merkost.suby.presentation.home.filters.TinySortFilterRow
 import com.merkost.suby.presentation.viewModel.MainViewModel
 import kotlinx.coroutines.launch
 
