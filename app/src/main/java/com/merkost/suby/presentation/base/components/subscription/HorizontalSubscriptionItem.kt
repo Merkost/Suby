@@ -44,13 +44,12 @@ import com.merkost.suby.presentation.base.components.service.ServiceLogo
 import com.merkost.suby.roundToBigDecimal
 import com.merkost.suby.ui.theme.SubyTheme
 import com.merkost.suby.utils.now
-import com.merkost.suby.utils.transition.SharedTransitionKeys
-import com.merkost.suby.utils.transition.sharedElement
 import kotlinx.datetime.LocalDateTime
 
 @Composable
 fun HorizontalSubscriptionItem(
     modifier: Modifier = Modifier,
+    imageTransitionModifier: Modifier = Modifier,
     subscription: Subscription,
     selectedPeriod: Period? = null,
     shouldShowDurationLeft: Boolean = true,
@@ -86,9 +85,7 @@ fun HorizontalSubscriptionItem(
                 ServiceLogo(
                     modifier = Modifier
                         .size(54.dp)
-                        .sharedElement(
-                            SharedTransitionKeys.Subscription.serviceLogo(subscription.id),
-                        ),
+                        .then(imageTransitionModifier),
                     service = subscription.toService()
                 )
 

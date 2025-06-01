@@ -56,6 +56,8 @@ import com.merkost.suby.utils.all
 import com.merkost.suby.utils.analytics.ScreenLog
 import com.merkost.suby.utils.analytics.Screens
 import com.merkost.suby.utils.anim.AnimatedVisibilityCrossfade
+import com.merkost.suby.utils.transition.SharedTransitionKeys
+import com.merkost.suby.utils.transition.sharedElement
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
@@ -146,6 +148,9 @@ fun SubscriptionsScreen(
                         HorizontalSubscriptionItem(
                             modifier = Modifier
                                 .animateItem(),
+                            imageTransitionModifier = Modifier.sharedElement(
+                                SharedTransitionKeys.Subscription.serviceLogoFromHome(subscription.id),
+                            ),
                             subscription = subscription,
                             selectedPeriod = selectedPeriod,
                             onClick = { onNavigate(Destinations.SubscriptionInfo(subscription.id)) }
@@ -165,7 +170,8 @@ fun SubscriptionsScreen(
                     item {
                         TextButton(
                             onClick = { onNavigate(Destinations.About) },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
                                 .padding(vertical = 16.dp)
                         ) {
                             Row(

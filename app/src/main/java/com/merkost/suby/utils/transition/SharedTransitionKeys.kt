@@ -4,7 +4,8 @@ object SharedTransitionKeys {
     
     object Subscription {
         fun serviceName(subscriptionId: Int) = "subscription_service_name_$subscriptionId"
-        fun serviceLogo(subscriptionId: Int) = "subscription_service_logo_$subscriptionId"
+        fun serviceLogoFromHome(subscriptionId: Int) = "subscription_service_logo_home_$subscriptionId"
+        fun serviceLogoFromCalendar(subscriptionId: Int) = "subscription_service_logo_calendar_$subscriptionId"
         fun serviceRow(subscriptionId: Int) = "subscription_service_row_$subscriptionId"
         fun statusBubble(subscriptionId: Int) = "subscription_status_bubble_$subscriptionId"
         

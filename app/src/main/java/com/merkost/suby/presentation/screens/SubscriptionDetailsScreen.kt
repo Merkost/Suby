@@ -758,7 +758,7 @@ fun HeroSection(
                             .widthIn(min = 72.dp)
                             .weight(1f, false)
                             .sharedElement(
-                                SharedTransitionKeys.Subscription.serviceLogo(
+                                SharedTransitionKeys.Subscription.serviceLogoFromHome(
                                     subscription.id
                                 )
                             ),
