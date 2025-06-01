@@ -33,7 +33,7 @@ import com.merkost.suby.R
 import com.merkost.suby.model.entity.Currency
 import com.merkost.suby.presentation.HorizontalPicker
 import com.merkost.suby.presentation.base.LogoImage
-import com.merkost.suby.presentation.base.SubyButton
+import com.merkost.suby.presentation.base.SubyHugeButton
 import com.merkost.suby.presentation.rememberPickerState
 import com.merkost.suby.presentation.screens.CurrencyLabel
 import com.merkost.suby.presentation.viewModel.AppViewModel
@@ -119,7 +119,7 @@ fun OnboardingCurrencyScreen(onCurrencySelected: (Currency) -> Unit) {
 
             }
 
-            SubyButton(
+            SubyHugeButton(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth(),

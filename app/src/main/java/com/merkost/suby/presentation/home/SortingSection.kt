@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Sorting(viewModel: MainViewModel) {
+fun SortingSection(viewModel: MainViewModel) {
     val selectedFilters by viewModel.selectedFilters.collectAsState()
     val sortState by viewModel.sortState.collectAsState()
 

@@ -30,6 +30,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -267,7 +268,9 @@ fun NewSubscriptionScreen(
 
             StatusComponent(
                 selectedStatus = selectedStatus,
-                onStatusClicked = viewModel::onStatusClicked
+                isTrial = selectedValues.isTrial,
+                onStatusClicked = viewModel::onStatusClicked,
+                onTrialChanged = viewModel::onTrialChanged
             )
 
             PeriodComponent(
@@ -365,7 +368,9 @@ fun PeriodComponent(
 @Composable
 fun StatusComponent(
     selectedStatus: Status?,
-    onStatusClicked: (Status) -> Unit
+    isTrial: Boolean,
+    onStatusClicked: (Status) -> Unit,
+    onTrialChanged: (Boolean) -> Unit
 ) {
     TitleColumn(
         modifier = Modifier.padding(horizontal = 16.dp),
@@ -393,6 +398,21 @@ fun StatusComponent(
                     isSelected = selectedStatus == status,
                     onClick = { onStatusClicked(status) })
             }
+        }
+        
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = stringResource(R.string.trial_period),
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Switch(
+                checked = isTrial,
+                onCheckedChange = onTrialChanged
+            )
         }
     }
 }

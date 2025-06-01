@@ -105,6 +105,10 @@ class EditSubscriptionViewModel(
         updateSubscriptionState { it.copy(status = status) }
     }
 
+    fun onTrialChanged(isTrial: Boolean) {
+        updateSubscriptionState { it.copy(isTrial = isTrial) }
+    }
+
     fun onPeriodChanged(period: BasePeriod) {
         updateSubscriptionState { it.copy(period = period) }
     }

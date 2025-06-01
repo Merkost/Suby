@@ -22,28 +22,4 @@ val Color.Companion.StatusRed: Color
 val Color.Companion.StatusYellow: Color
     get() = Color(0xFFFDD835)
 
-val Color.Companion.InfoBannerBackground: Color
-    get() = Color(0xFF6A4C93)
-
-val Color.Companion.InfoBannerContent: Color
-    get() = Color(0xFFFFFFFF)
-
-val Color.Companion.SuccessBannerBackground: Color
-    get() = Color(0xFF2E8B57)
-
-val Color.Companion.SuccessBannerContent: Color
-    get() = Color(0xFFFFFFFF)
-
-val Color.Companion.WarningBannerBackground: Color
-    get() = Color(0xFFFF8C42)
-
-val Color.Companion.WarningBannerContent: Color
-    get() = Color(0xFF1A1A1A)
-
-val Color.Companion.ErrorBannerBackground: Color
-    get() = Color(0xFFE74C3C)
-
-val Color.Companion.ErrorBannerContent: Color
-    get() = Color(0xFFFFFFFF)
-
 

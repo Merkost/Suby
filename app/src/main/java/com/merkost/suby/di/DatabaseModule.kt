@@ -9,6 +9,7 @@ import com.merkost.suby.di.Migrations.MIGRATION_2_3
 import com.merkost.suby.di.Migrations.MIGRATION_3_4
 import com.merkost.suby.di.Migrations.MIGRATION_4_5
 import com.merkost.suby.di.Migrations.MIGRATION_5_6
+import com.merkost.suby.di.Migrations.MIGRATION_6_7
 import com.merkost.suby.model.room.AppDatabase
 import com.merkost.suby.model.room.dao.CategoryDao
 import com.merkost.suby.model.room.dao.CurrencyRatesDao
@@ -25,7 +26,14 @@ val databaseModule = module {
             AppDatabase::class.java,
             if (BuildConfig.DEBUG) "app_database_debug.db" else "app_database.db"
         )
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+            .addMigrations(
+                MIGRATION_1_2,
+                MIGRATION_2_3,
+                MIGRATION_3_4,
+                MIGRATION_4_5,
+                MIGRATION_5_6,
+                MIGRATION_6_7
+            )
             .build()
     }
 
@@ -201,7 +209,8 @@ object Migrations {
         override fun migrate(db: SupportSQLiteDatabase) {
             val MAX_BACKEND_SERVICE_ID = 200
 
-            db.execSQL("""
+            db.execSQL(
+                """
             CREATE TABLE IF NOT EXISTS service_new (
                 id INTEGER PRIMARY KEY NOT NULL,
                 backendId INTEGER,
@@ -214,26 +223,33 @@ object Migrations {
                 lastUpdated TEXT NOT NULL,
                 FOREIGN KEY(categoryId) REFERENCES category(id) ON DELETE CASCADE
             )
-        """.trimIndent())
+        """.trimIndent()
+            )
 
-            db.execSQL("""
+            db.execSQL(
+                """
             INSERT INTO service_new (id, backendId, name, categoryId, logoName, customImageUri, isDeprecated, createdAt, lastUpdated)
             SELECT id, id AS backendId, name, categoryId, logoName, NULL, 0, createdAt, lastUpdated
             FROM service
-        """.trimIndent())
+        """.trimIndent()
+            )
 
-            db.execSQL("""
+            db.execSQL(
+                """
             INSERT INTO service_new (id, backendId, name, categoryId, logoName, customImageUri, isDeprecated, createdAt, lastUpdated)
             SELECT id + $MAX_BACKEND_SERVICE_ID, NULL, name, categoryId, NULL, imageUri, 0, createdAt, lastUpdated
             FROM custom_service
-        """.trimIndent())
+        """.trimIndent()
+            )
 
             // 4. Update subscriptions for custom services by adding the offset to serviceId where isCustomService = 1
-            db.execSQL("""
+            db.execSQL(
+                """
             UPDATE subscription
             SET serviceId = serviceId + $MAX_BACKEND_SERVICE_ID
             WHERE isCustomService = 1
-        """.trimIndent())
+        """.trimIndent()
+            )
 
             db.execSQL("DROP TABLE service")
             db.execSQL("DROP TABLE custom_service")
@@ -243,7 +259,8 @@ object Migrations {
             db.execSQL("CREATE INDEX IF NOT EXISTS index_service_categoryId ON service(categoryId)")
             db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_service_backendId ON service(backendId)")
 
-            db.execSQL("""
+            db.execSQL(
+                """
             CREATE TABLE IF NOT EXISTS subscription_new (
                 id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                 serviceId INTEGER NOT NULL,
@@ -257,13 +274,16 @@ object Migrations {
                 description TEXT NOT NULL,
                 FOREIGN KEY(serviceId) REFERENCES service(id) ON DELETE CASCADE
             )
-        """.trimIndent())
+        """.trimIndent()
+            )
 
-            db.execSQL("""
+            db.execSQL(
+                """
             INSERT INTO subscription_new (id, serviceId, price, currency, periodType, periodDuration, status, paymentDate, createdDate, description)
             SELECT id, serviceId, price, currency, periodType, periodDuration, status, paymentDate, createdDate, description
             FROM subscription
-        """.trimIndent())
+        """.trimIndent()
+            )
 
             db.execSQL("DROP TABLE subscription")
 
@@ -277,6 +297,19 @@ object Migrations {
         override fun migrate(db: SupportSQLiteDatabase) {
             db.execSQL("ALTER TABLE subscription ADD COLUMN paymentStartDate TEXT")
             db.execSQL("ALTER TABLE PartialSubscriptionDb ADD COLUMN paymentStartDate TEXT")
+        }
+    }
+
+    val MIGRATION_6_7 = object : Migration(6, 7) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE subscription ADD COLUMN isTrial INTEGER NOT NULL DEFAULT 0")
+            db.execSQL("ALTER TABLE PartialSubscriptionDb ADD COLUMN isTrial INTEGER NOT NULL DEFAULT 0")
+
+            db.execSQL("UPDATE subscription SET isTrial = 1 WHERE status = 'TRIAL'")
+            db.execSQL("UPDATE PartialSubscriptionDb SET isTrial = 1 WHERE status = 'TRIAL'")
+
+            db.execSQL("UPDATE subscription SET status = 'ACTIVE' WHERE status = 'TRIAL'")
+            db.execSQL("UPDATE PartialSubscriptionDb SET status = 'ACTIVE' WHERE status = 'TRIAL'")
         }
     }
 }

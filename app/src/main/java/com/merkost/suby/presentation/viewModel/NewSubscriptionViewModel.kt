@@ -91,6 +91,7 @@ class NewSubscriptionViewModel(
                         val newSubscriptionDb = SubscriptionDb(
                             serviceId = values.service.id,
                             status = values.status,
+                            isTrial = values.isTrial,
                             currency = currency,
                             price = getPriceAsDouble(values.price) ?: 0.0,
                             paymentDate = values.billingDate.toKotlinLocalDateTime(),
@@ -172,6 +173,10 @@ class NewSubscriptionViewModel(
 
     fun onStatusClicked(newStatus: Status) {
         selectedValues.update { it.copy(status = newStatus) }
+    }
+
+    fun onTrialChanged(isTrial: Boolean) {
+        selectedValues.update { it.copy(isTrial = isTrial) }
     }
 
     fun onDescriptionChanged(newText: String) {

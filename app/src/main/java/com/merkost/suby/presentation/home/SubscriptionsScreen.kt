@@ -135,7 +135,7 @@ fun SubscriptionsScreen(
                     }
 
                     item {
-                        Sorting(viewModel)
+                        SortingSection(viewModel)
                     }
 
                     if (subscriptions.size >= MAX_FREE_SERVICES && !appState.hasPremium) {

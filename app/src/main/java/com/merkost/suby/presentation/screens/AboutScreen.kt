@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.merkost.suby.BuildConfig
 import com.merkost.suby.presentation.base.LogoImage
-import com.merkost.suby.presentation.base.SubyButton
+import com.merkost.suby.presentation.base.SubyHugeButton
 import com.merkost.suby.presentation.base.SubyTopAppBar
 import com.merkost.suby.ui.theme.SubyTheme
 import com.merkost.suby.utils.analytics.ScreenLog
@@ -91,7 +91,7 @@ fun AboutScreen(
                 )
             }
 
-            SubyButton(
+            SubyHugeButton(
                 onClick = { context.sendSupportEmail() },
                 text = "Contact Us",
             )

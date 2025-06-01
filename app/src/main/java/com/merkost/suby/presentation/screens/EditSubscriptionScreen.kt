@@ -166,7 +166,9 @@ fun EditSubscriptionContent(
 
             StatusComponent(
                 selectedStatus = subscription.status,
-                onStatusClicked = viewModel::onStatusChanged
+                isTrial = subscription.isTrial,
+                onStatusClicked = viewModel::onStatusChanged,
+                onTrialChanged = viewModel::onTrialChanged
             )
 
             PeriodComponent(

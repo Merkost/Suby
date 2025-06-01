@@ -53,6 +53,23 @@ fun SubyButton(
 }
 
 @Composable
+fun SubyHugeButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    enabled: Boolean = true,
+    shape: Shape = SubyShape,
+    onClick: () -> Unit
+) {
+    Button(modifier = modifier, enabled = enabled, onClick = onClick, shape = shape) {
+        Text(
+            modifier = Modifier.padding(8.dp),
+            text = text,
+            style = MaterialTheme.typography.titleMedium
+        )
+    }
+}
+
+@Composable
 fun SaveButton(modifier: Modifier = Modifier, enabled: Boolean, onClick: () -> Unit) {
     Button(
         modifier = modifier,

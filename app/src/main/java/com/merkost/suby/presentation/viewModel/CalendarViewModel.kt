@@ -22,15 +22,13 @@ class CalendarViewModel(
     private val subscriptionRepository: SubscriptionRepository
 ) : ViewModel() {
 
-    private val validStatuses = setOf(Status.ACTIVE, Status.TRIAL)
-
     val subscriptionsByPaymentDate: StateFlow<Map<LocalDate, List<Subscription>>> =
         subscriptionRepository.subscriptions
             .map { subscriptions ->
                 val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
                 val fromDate = today.minus(365, DateTimeUnit.DAY)
                 val toDate = today.plus(365, DateTimeUnit.DAY)
-                subscriptions.filter { it.status in validStatuses }
+                subscriptions.filter { it.status == Status.ACTIVE || it.isTrial }
                     .flatMap { subscription ->
                         subscription.allPaydays(fromDate, toDate)
                             .map { payday -> payday to subscription }

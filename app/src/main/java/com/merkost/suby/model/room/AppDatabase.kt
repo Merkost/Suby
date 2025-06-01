@@ -23,7 +23,7 @@ import com.merkost.suby.model.room.entity.SubscriptionDb
         PartialSubscriptionDb::class,
         CurrencyRatesDb::class
     ],
-    version = 6, exportSchema = true
+    version = 7, exportSchema = true
 )
 @TypeConverters(CurrencyRatesTypeConverter::class, Converters::class)
 abstract class AppDatabase : RoomDatabase() {

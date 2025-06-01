@@ -41,14 +41,15 @@ fun ProvideAnimatedVisibilityScope(
 }
 
 @Composable
-fun Modifier.sharedElement(key: String): Modifier {
+fun Modifier.sharedElement(key: String, renderInOverlay: Boolean = true): Modifier {
     val sharedTransitionScope = LocalSharedTransitionScope.current
     val animatedVisibilityScope = LocalAnimatedVisibilityScope.current
-    
+
     return if (sharedTransitionScope != null && animatedVisibilityScope != null) {
         with(sharedTransitionScope) {
             this@sharedElement.sharedElement(
                 sharedContentState = rememberSharedContentState(key = key),
+                renderInOverlayDuringTransition = renderInOverlay,
                 animatedVisibilityScope = animatedVisibilityScope
             )
         }
@@ -61,13 +62,15 @@ fun Modifier.sharedElement(key: String): Modifier {
 fun Modifier.sharedTextElement(key: String): Modifier {
     val sharedTransitionScope = LocalSharedTransitionScope.current
     val animatedVisibilityScope = LocalAnimatedVisibilityScope.current
-    
+
     return if (sharedTransitionScope != null && animatedVisibilityScope != null) {
         with(sharedTransitionScope) {
-            this@sharedTextElement.sharedElement(
-                sharedContentState = rememberSharedContentState(key = key),
-                animatedVisibilityScope = animatedVisibilityScope
-            ).skipToLookaheadSize()
+            this@sharedTextElement
+                .sharedElement(
+                    sharedContentState = rememberSharedContentState(key = key),
+                    animatedVisibilityScope = animatedVisibilityScope
+                )
+                .skipToLookaheadSize()
         }
     } else {
         this
@@ -78,7 +81,7 @@ fun Modifier.sharedTextElement(key: String): Modifier {
 fun Modifier.sharedBounds(key: String): Modifier {
     val sharedTransitionScope = LocalSharedTransitionScope.current
     val animatedVisibilityScope = LocalAnimatedVisibilityScope.current
-    
+
     return if (sharedTransitionScope != null && animatedVisibilityScope != null) {
         with(sharedTransitionScope) {
             this@sharedBounds.sharedBounds(

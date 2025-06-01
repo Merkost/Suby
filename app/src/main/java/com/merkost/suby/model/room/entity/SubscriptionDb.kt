@@ -33,6 +33,7 @@ data class SubscriptionDb(
     val periodDuration: Long,
 
     val status: Status,
+    val isTrial: Boolean = false,
     val paymentDate: LocalDateTime,
     val paymentStartDate: LocalDateTime? = null,
 

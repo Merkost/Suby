@@ -73,6 +73,7 @@
     <string name="status_required">Status is required</string>
     <string name="no_subscriptions_by_filter">No subscriptions found</string>
     <string name="reset_filters">Reset Filters</string>
+    <string name="trial_period">Trial period</string>
 
 
     <!-- General Screen Titles -->

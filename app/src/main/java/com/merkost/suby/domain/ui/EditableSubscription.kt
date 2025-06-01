@@ -15,6 +15,7 @@ data class EditableSubscription(
     val currency: Currency,
     val period: BasePeriod,
     val status: Status,
+    val isTrial: Boolean = false,
     val service: Service,
     val billingDate: LocalDateTime,
 ) {
@@ -27,6 +28,7 @@ data class EditableSubscription(
             periodType = period.type,
             periodDuration = period.duration,
             status = status,
+            isTrial = isTrial,
             paymentDate = billingDate,
         )
     }

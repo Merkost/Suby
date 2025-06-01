@@ -29,6 +29,7 @@ fun SubscriptionWithDetails.toSubscription() =
             duration = subscription.periodDuration
         ),
         status = subscription.status,
+        isTrial = subscription.isTrial,
         paymentDate = subscription.paymentDate,
         paymentStartDate = subscription.paymentStartDate,
         createdDate = subscription.createdDate,

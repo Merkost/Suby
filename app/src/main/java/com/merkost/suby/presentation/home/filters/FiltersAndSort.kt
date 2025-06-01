@@ -157,9 +157,11 @@ private fun FilterLabel(filters: List<FilterOption>) {
             filters.contains(FilterOption.ALL) -> {
                 Text(text = "All")
             }
+
             filters.size == 1 -> {
                 Text(text = filters.first().displayName)
             }
+
             else -> {
                 Text(text = "Filter")
                 Spacer(modifier = Modifier.width(4.dp))
@@ -269,19 +271,19 @@ private fun BottomSheetContent(
             .navigationBarsPadding()
     ) {
         BottomSheetHeader()
-        
+
         FilterSection(
             selectedFilters = selectedFilters,
             onFilterSelected = onFilterSelected
         )
-        
+
         SectionDivider()
-        
+
         SortSection(
             selectedSortState = selectedSortState,
             onSortSelected = onSortSelected
         )
-        
+
         Spacer(modifier = Modifier.height(MaterialTheme.subySpacing.extraLarge))
 
         SubyButton(
@@ -452,7 +454,18 @@ fun FilterChipComponent(
                 }
             )
         },
-        colors = getFilterChipComponentColors(isSelected = isSelected),
+        colors = FilterChipDefaults.filterChipColors(
+            containerColor = if (isSelected) {
+                MaterialTheme.colorScheme.primaryContainer
+            } else {
+                MaterialTheme.colorScheme.surfaceVariant
+            },
+            labelColor = if (isSelected) {
+                MaterialTheme.colorScheme.onPrimaryContainer
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            }
+        ),
         modifier = Modifier.height(ChipSizes.RegularChipHeight)
     )
 }
@@ -466,19 +479,6 @@ private fun getFilterChipColors(isSelected: Boolean) = if (isSelected) {
 } else {
     FilterChipDefaults.filterChipColors().copy(
         containerColor = Color.Transparent,
-        labelColor = MaterialTheme.colorScheme.onSurfaceVariant
-    )
-}
-
-@Composable
-private fun getFilterChipComponentColors(isSelected: Boolean) = if (isSelected) {
-    FilterChipDefaults.filterChipColors(
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
-        labelColor = MaterialTheme.colorScheme.onPrimaryContainer
-    )
-} else {
-    FilterChipDefaults.filterChipColors(
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
         labelColor = MaterialTheme.colorScheme.onSurfaceVariant
     )
 }

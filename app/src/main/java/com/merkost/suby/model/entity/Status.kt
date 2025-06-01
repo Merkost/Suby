@@ -4,7 +4,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.CheckCircleOutline
 import androidx.compose.material.icons.outlined.DoNotDisturbOn
-import androidx.compose.material.icons.outlined.Timelapse
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -19,11 +18,6 @@ enum class Status(
         Icons.Outlined.CheckCircleOutline,
         "Active",
         "for subscriptions that are currently ongoing and for which you are regularly being charged. "
-    ),
-    TRIAL(
-        Icons.Outlined.Timelapse,
-        "Trial",
-        "for subscriptions that are in their trial period."
     ),
     EXPIRED(
         Icons.Outlined.DoNotDisturbOn,
@@ -40,7 +34,6 @@ enum class Status(
         @Composable
         get() = when (this) {
             ACTIVE -> SubyTheme.colors.statusGreen
-            TRIAL -> SubyTheme.colors.statusYellow
             EXPIRED -> SubyTheme.colors.statusOrange
             CANCELED -> SubyTheme.colors.statusRed
         }

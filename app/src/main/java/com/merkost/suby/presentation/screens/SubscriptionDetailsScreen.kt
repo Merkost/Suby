@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -84,6 +85,7 @@ import com.merkost.suby.presentation.base.components.DetailsRow
 import com.merkost.suby.presentation.base.components.ScreenStateHandler
 import com.merkost.suby.presentation.base.components.service.ServiceLogo
 import com.merkost.suby.presentation.base.components.subscription.StatusBubble
+import com.merkost.suby.presentation.base.components.subscription.TrialBubble
 import com.merkost.suby.presentation.viewModel.SubscriptionDetailsState
 import com.merkost.suby.presentation.viewModel.SubscriptionDetailsViewModel
 import com.merkost.suby.roundToBigDecimal
@@ -94,7 +96,6 @@ import com.merkost.suby.utils.dateString
 import com.merkost.suby.utils.now
 import com.merkost.suby.utils.transition.SharedTransitionKeys
 import com.merkost.suby.utils.transition.sharedElement
-import com.merkost.suby.utils.transition.sharedTextElement
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 import org.koin.androidx.compose.koinViewModel
@@ -145,14 +146,7 @@ fun SubscriptionDetailsScreen(
                     val subscription = (uiState as? BaseUiState.Success<Subscription>)?.data
                     val titleText = subscription?.serviceName.orEmpty()
 
-                    Text(
-                        modifier = if (subscription != null) {
-                            Modifier.sharedTextElement(SharedTransitionKeys.Subscription.serviceName(subscription.id))
-                        } else {
-                            Modifier
-                        },
-                        text = titleText,
-                    )
+                    Text(text = titleText)
                 },
                 upPress = upPress,
                 actions = {
@@ -734,11 +728,22 @@ fun HeroSection(
                     .padding(horizontal = 16.dp, vertical = 24.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                StatusBubble(
-                    status = subscription.status,
-                    textStyle = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                    padding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
-                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (subscription.isTrial) {
+                        TrialBubble(
+                            textStyle = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                            padding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                        )
+                    }
+                    StatusBubble(
+                        status = subscription.status,
+                        textStyle = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                        padding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                    )
+                }
 
                 Row(
                     modifier = Modifier
@@ -750,6 +755,7 @@ fun HeroSection(
                     ServiceLogo(
                         modifier = Modifier
                             .height(72.dp)
+                            .widthIn(min = 72.dp)
                             .weight(1f, false)
                             .sharedElement(
                                 SharedTransitionKeys.Subscription.serviceLogo(

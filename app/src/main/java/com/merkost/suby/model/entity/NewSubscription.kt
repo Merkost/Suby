@@ -12,6 +12,7 @@ data class NewSubscription(
     val service: Service? = null,
     val period: BasePeriod? = null,
     val status: Status? = null,
+    val isTrial: Boolean = false,
     val billingDate: Long? = null,
     val paymentStartDate: Long? = null,
     val description: String = "",
@@ -29,8 +30,15 @@ data class NewSubscription(
             val isPassed: Boolean = endDate <= today
             val endDateStr: String = endDate.toJavaLocalDate().dateString()
 
-            return when (st) {
-                Status.ACTIVE ->
+            return when {
+                isTrial ->
+                    if (isPassed) {
+                        "Trial ended on $endDateStr"
+                    } else {
+                        "Trial ends on $endDateStr"
+                    }
+                
+                st == Status.ACTIVE ->
                     if (isPassed) {
                         val nextFromToday: String = per
                             .nextBillingDateFromToday(billingLocal)
@@ -41,26 +49,20 @@ data class NewSubscription(
                         "Subscription renews on $endDateStr"
                     }
 
-                Status.CANCELED ->
+                st == Status.CANCELED ->
                     if (isPassed) {
                         "Subscription was canceled on $endDateStr"
                     } else {
                         "Subscription will be canceled on $endDateStr"
                     }
 
-                Status.EXPIRED ->
+                st == Status.EXPIRED ->
                     if (isPassed) {
                         "Subscription expired on $endDateStr"
                     } else {
                         "Subscription expires on $endDateStr"
                     }
-
-                Status.TRIAL ->
-                    if (isPassed) {
-                        "Trial period ended on $endDateStr"
-                    } else {
-                        "Trial period ends on $endDateStr"
-                    }
+                else -> null
             }
         }
 }

@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.merkost.suby.R
 import com.merkost.suby.presentation.base.LogoImage
-import com.merkost.suby.presentation.base.SubyButton
+import com.merkost.suby.presentation.base.SubyHugeButton
 import com.merkost.suby.ui.theme.SubyTheme
 import com.merkost.suby.utils.analytics.ScreenLog
 import com.merkost.suby.utils.analytics.Screens
@@ -77,7 +77,7 @@ fun GreetingScreen(onContinueClick: () -> Unit) {
                     .weight(1f)
                     .fillMaxWidth(),
             ) {
-                SubyButton(
+                SubyHugeButton(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth(),

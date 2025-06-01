@@ -36,6 +36,7 @@ data class Subscription(
     val period: BasePeriod,
 
     val status: Status,
+    val isTrial: Boolean = false,
     val paymentDate: LocalDateTime,
     val paymentStartDate: LocalDateTime? = null,
 
@@ -54,8 +55,18 @@ data class Subscription(
         val formattedDate = paymentDate.toJavaLocalDateTime().format(Constants.dataFormat)
         // FIXME: This is not working for preview
 
-        return when (status) {
-            Status.ACTIVE -> {
+        return when {
+            isTrial -> if (remainingDays > 0) {
+                context.resources.getQuantityString(
+                    R.plurals.trial_more_days,
+                    remainingDays.toInt(),
+                    remainingDays
+                )
+            } else {
+                context.getString(R.string.trial_ended_on, formattedDate)
+            }
+            
+            status == Status.ACTIVE -> {
                 val days = remainingDays
                 when {
                     days <= 0 -> context.getString(R.string.today)
@@ -64,19 +75,11 @@ data class Subscription(
                 }
             }
 
-            Status.TRIAL -> if (remainingDays > 0) {
-                context.resources.getQuantityString(
-                    /* id = */ R.plurals.trial_more_days,
-                    /* quantity = */ remainingDays.toInt(),
-                    /* ...formatArgs = */ remainingDays
-                )
-            } else {
-                context.getString(R.string.trial_ended_on, formattedDate)
-            }
+            status == Status.CANCELED -> context.getString(R.string.canceled_on, formattedDate)
 
-            Status.CANCELED -> context.getString(R.string.canceled_on, formattedDate)
-
-            Status.EXPIRED -> context.getString(R.string.expired_on, formattedDate)
+            status == Status.EXPIRED -> context.getString(R.string.expired_on, formattedDate)
+            
+            else -> formattedDate
         }
     }
 
@@ -106,17 +109,18 @@ data class Subscription(
         currency = currency,
         period = period,
         status = status,
+        isTrial = isTrial,
         service = toService(),
         billingDate = paymentDate,
     )
 }
 
 fun Subscription.upcomingPayments(count: Int = 3): List<LocalDate> {
-    if (status == Status.CANCELED || status == Status.EXPIRED) {
+    if (status == Status.CANCELED || status == Status.EXPIRED || isTrial) {
         return emptyList()
     }
 
-    // TODO: Add trial period and price after trial
+    //todo: add the trial perion ending date and first payment here
 
     val currentDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
     val upcomingDates = mutableListOf<LocalDate>()

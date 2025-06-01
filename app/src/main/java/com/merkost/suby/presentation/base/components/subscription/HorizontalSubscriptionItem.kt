@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
@@ -44,7 +46,6 @@ import com.merkost.suby.ui.theme.SubyTheme
 import com.merkost.suby.utils.now
 import com.merkost.suby.utils.transition.SharedTransitionKeys
 import com.merkost.suby.utils.transition.sharedElement
-import com.merkost.suby.utils.transition.sharedTextElement
 import kotlinx.datetime.LocalDateTime
 
 @Composable
@@ -81,12 +82,24 @@ fun HorizontalSubscriptionItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            ServiceLogo(
-                modifier = Modifier
-                    .size(54.dp)
-                    .sharedElement(SharedTransitionKeys.Subscription.serviceLogo(subscription.id)),
-                service = subscription.toService()
-            )
+            Box(modifier = Modifier) {
+                ServiceLogo(
+                    modifier = Modifier
+                        .size(54.dp)
+                        .sharedElement(
+                            SharedTransitionKeys.Subscription.serviceLogo(subscription.id),
+                        ),
+                    service = subscription.toService()
+                )
+
+                if (subscription.isTrial) {
+                    TrialBadge(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .offset(x = 4.dp, y = (-4).dp)
+                    )
+                }
+            }
 
             Column(
                 modifier = Modifier
@@ -95,25 +108,18 @@ fun HorizontalSubscriptionItem(
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 Text(
-                    modifier = Modifier.sharedTextElement(SharedTransitionKeys.Subscription.serviceName(subscription.id)),
                     text = subscription.serviceName,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                if (subscription.status != Status.ACTIVE || shouldShowDurationLeft) {
+                if (subscription.status != Status.ACTIVE || subscription.isTrial || shouldShowDurationLeft) {
                     Row(
                         modifier = Modifier,
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        if (subscription.status != Status.ACTIVE) {
-                            StatusBubble(
-                                modifier = Modifier,
-                                status = subscription.status
-                            )
-                        }
                         if (shouldShowDurationLeft) {
                             Text(
                                 text = subscription.getRemainingDurationString(LocalContext.current),
@@ -199,6 +205,7 @@ private fun PreviewHorizontalSubscriptionItem() {
                     ),
                     period = BasePeriod(type = CustomPeriod.WEEKS, duration = 1L),
                     status = Status.ACTIVE,
+                    isTrial = true,
                     paymentDate = LocalDateTime.now(),
                     createdDate = LocalDateTime.now(),
                     description = "Alvaro"

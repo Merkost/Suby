@@ -71,10 +71,10 @@ class MainViewModel(
             filteredSubscriptions = filteredSubscriptions.filter { subscription ->
                 selectedFilters.any { filter ->
                     when (filter) {
-                        ACTIVE -> subscription.status == Status.ACTIVE
+                        ACTIVE -> subscription.status == Status.ACTIVE && !subscription.isTrial
                         EXPIRED -> subscription.status == Status.EXPIRED
                         CANCELLED -> subscription.status == Status.CANCELED
-                        TRIAL -> subscription.status == Status.TRIAL
+                        TRIAL -> subscription.isTrial
                         ALL -> true
                     }
                 }
@@ -221,17 +221,14 @@ class MainViewModel(
         }
     }
 
-
     fun selectSortOption(sortOption: SortOption) {
         viewModelScope.launch {
             if (_sortState.value.selectedOption == sortOption) {
-                // Toggle between ASCENDING and DESCENDING
                 _sortState.value = _sortState.value.copy(
                     direction = if (_sortState.value.direction == SortDirection.ASCENDING)
                         SortDirection.DESCENDING else SortDirection.ASCENDING
                 )
             } else {
-                // Select a new sort option and default to ASCENDING
                 _sortState.value = SelectedSortState(sortOption, SortDirection.ASCENDING)
             }
         }

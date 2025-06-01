@@ -16,6 +16,7 @@ data class PartialSubscriptionDb(
     val periodType: CustomPeriod,
     val periodDuration: Long,
     val status: Status,
+    val isTrial: Boolean = false,
     val description: String,
     val paymentDate: LocalDateTime,
     val paymentStartDate: LocalDateTime? = null,
