@@ -24,4 +24,4 @@
 -keep class * extends androidx.room.RoomDatabase
 -keep class com.merkost.suby.model.** { *; }
 #Datastore
--keep class androidx.datastore.*.** { *; }
+-keep class androidx.datastore.** { *; }

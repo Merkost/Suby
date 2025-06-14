@@ -41,14 +41,14 @@ fun ProvideAnimatedVisibilityScope(
 }
 
 @Composable
-fun Modifier.sharedElement(key: String, renderInOverlay: Boolean = true): Modifier {
+fun Modifier.sharedElement(key: SharedTransitionKeys, renderInOverlay: Boolean = true): Modifier {
     val sharedTransitionScope = LocalSharedTransitionScope.current
     val animatedVisibilityScope = LocalAnimatedVisibilityScope.current
 
     return if (sharedTransitionScope != null && animatedVisibilityScope != null) {
         with(sharedTransitionScope) {
             this@sharedElement.sharedElement(
-                sharedContentState = rememberSharedContentState(key = key),
+                sharedContentState = rememberSharedContentState(key = key.id),
                 renderInOverlayDuringTransition = renderInOverlay,
                 animatedVisibilityScope = animatedVisibilityScope
             )

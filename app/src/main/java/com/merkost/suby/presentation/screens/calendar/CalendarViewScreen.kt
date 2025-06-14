@@ -165,7 +165,7 @@ fun CalendarViewContent(
                         val subs = filteredSubscriptions[date] ?: emptyList()
                         if (subs.isNotEmpty()) {
                             stickyHeader(key = date.toString()) { DateHeader(date = date) }
-                            items(subs) { subscription ->
+                            items(subs, key = { it.id }) { subscription ->
                                 HorizontalSubscriptionItem(
                                     subscription = subscription,
                                     onClick = { onSubscriptionClick(subscription) },

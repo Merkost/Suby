@@ -21,10 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.merkost.suby.SubyShape
 import com.merkost.suby.model.entity.full.Category
 import com.merkost.suby.model.entity.full.Service
@@ -43,11 +46,17 @@ import java.util.Date
 fun ServiceSvg(
     modifier: Modifier = Modifier,
     link: String,
+    cacheKey: String? = null,
     contentScale: ContentScale = ContentScale.Fit
 ) {
     SubcomposeAsyncImage(
         modifier = modifier,
-        model = link,
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(link)
+            .crossfade(true)
+            .placeholderMemoryCacheKey(cacheKey)
+            .memoryCacheKey(cacheKey)
+            .build(),
         loading = {
             Box(
                 modifier = modifier.placeholder3(
@@ -72,17 +81,16 @@ fun ServiceLogo(
     service: Service,
     shape: Shape = SubyShape
 ) {
-    if (service.logoUrl != null) {
+    service.logoUrl?.let {
         ServiceSvg(
             modifier = modifier
                 .clip(shape)
-                .then(
-                    if (service.isCustomService) Modifier.aspectRatio(1f) else Modifier
-                ),
+                .then(if (service.isCustomService) Modifier.aspectRatio(1f) else Modifier),
             link = service.logoUrl,
+            cacheKey = service.id.toString(),
             contentScale = if (service.isCustomService) ContentScale.Crop else ContentScale.Fit
         )
-    } else {
+    } ?: run {
         ServiceNameImage(
             modifier = modifier,
             shape = shape,

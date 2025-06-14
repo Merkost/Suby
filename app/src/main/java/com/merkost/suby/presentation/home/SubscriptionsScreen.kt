@@ -148,7 +148,7 @@ fun SubscriptionsScreen(
                         HorizontalSubscriptionItem(
                             modifier = Modifier.animateItem(),
                             imageTransitionModifier = Modifier.sharedElement(
-                                SharedTransitionKeys.Subscription.serviceLogoFromHome(subscription.id),
+                                SharedTransitionKeys.Subscription.ServiceLogoHomeToDescription(subscription.id),
                             ),
                             subscription = subscription,
                             selectedPeriod = selectedPeriod,

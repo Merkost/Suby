@@ -700,6 +700,9 @@ fun HeroSection(
     subscription: Subscription,
     modifier: Modifier = Modifier
 ) {
+    val service by remember {
+        derivedStateOf { subscription.toService() }
+    }
     val heroBrush = Brush.verticalGradient(
         colors = listOf(
             MaterialTheme.colorScheme.primaryContainer.copy(0.35f),
@@ -754,19 +757,20 @@ fun HeroSection(
                 ) {
                     ServiceLogo(
                         modifier = Modifier
+                            .sharedElement(
+                                SharedTransitionKeys.Subscription.ServiceLogoHomeToDescription(
+                                    subscription.id
+                                ),
+                            )
                             .height(72.dp)
                             .widthIn(min = 72.dp)
-                            .weight(1f, false)
-                            .sharedElement(
-                                SharedTransitionKeys.Subscription.serviceLogoFromHome(
-                                    subscription.id
-                                )
-                            ),
-                        service = subscription.toService()
+                            .weight(1f, false),
+                        service = service
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     PriceWithCurrency(
-                        price = subscription.price, currency = subscription.currency
+                        price = subscription.price,
+                        currency = subscription.currency
                     )
                 }
             }

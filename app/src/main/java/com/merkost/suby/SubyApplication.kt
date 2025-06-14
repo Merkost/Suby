@@ -57,9 +57,10 @@ class SubyApplication : Application() {
         initQonversion()
 
         if (BuildConfig.DEBUG.not()) {
-            val sessionReplayPlugin = SessionReplayPlugin(sampleRate = 1.0)
+            val sessionReplayPlugin = SessionReplayPlugin(
+                sampleRate = 0.0,
+            )
             amplitude.add(sessionReplayPlugin)
-            amplitude.flush()
         }
 
         initSentry()

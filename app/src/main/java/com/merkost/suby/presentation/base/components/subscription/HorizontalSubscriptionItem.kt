@@ -65,6 +65,10 @@ fun HorizontalSubscriptionItem(
         }
     }
 
+    val service by remember {
+        derivedStateOf { subscription.toService() }
+    }
+
     Surface(
         modifier = modifier
             .animateContentSize()
@@ -83,9 +87,10 @@ fun HorizontalSubscriptionItem(
         ) {
             Box(modifier = Modifier) {
                 ServiceLogo(
-                    modifier = imageTransitionModifier
+                    modifier = Modifier
+                        .then(imageTransitionModifier)
                         .size(54.dp),
-                    service = subscription.toService()
+                    service = service
                 )
 
                 if (subscription.isTrial) {

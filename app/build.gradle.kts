@@ -152,6 +152,5 @@ dependencies {
 sentry {
     org.set("merkost")
     projectName.set("suby")
-
     includeSourceContext.set(true)
 }
