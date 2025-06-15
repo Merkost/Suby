@@ -23,10 +23,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FabPosition
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingToolbarDefaults
+import androidx.compose.material3.HorizontalFloatingToolbar
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -60,7 +62,11 @@ import com.merkost.suby.utils.transition.SharedTransitionKeys
 import com.merkost.suby.utils.transition.sharedElement
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class,
+    ExperimentalSharedTransitionApi::class,
+    ExperimentalMaterial3ExpressiveApi::class
+)
 @Composable
 fun SubscriptionsScreen(
     onNavigate: (Destinations) -> Unit
@@ -78,43 +84,53 @@ fun SubscriptionsScreen(
 
     DoubleBackPressHandler(true)
 
-    Scaffold(
-        contentWindowInsets = WindowInsets.statusBars,
-        topBar = {
-            SubyTopAppBar(
-                title = {
-                    MainScreenTitle(onLogoClick = { onNavigate(Destinations.PremiumFeatures) })
-                },
-                actions = {
-                    ElevatedButton(
-                        modifier = Modifier.padding(end = 8.dp),
-                        onClick = {
-                            if (appState.hasPremium || subscriptions.size < MAX_FREE_SERVICES) {
-                                onNavigate(Destinations.NewSubscription)
-                            } else {
-                                onNavigate(Destinations.PremiumFeatures)
-                            }
+    Scaffold(contentWindowInsets = WindowInsets.statusBars, topBar = {
+        SubyTopAppBar(
+            title = {
+                MainScreenTitle(onLogoClick = { onNavigate(Destinations.PremiumFeatures) })
+            })
+    }, floatingActionButton = {
+        AnimatedVisibilityCrossfade(true) {
+            HorizontalFloatingToolbar(
+                modifier = Modifier.systemBarsPadding(),
+                expanded = true,
+                colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
+                floatingActionButton = {
+                    FloatingActionButton(onClick = {
+                        if (appState.hasPremium || subscriptions.size < MAX_FREE_SERVICES) {
+                            onNavigate(Destinations.NewSubscription)
+                        } else {
+                            onNavigate(Destinations.PremiumFeatures)
                         }
-                    ) { Icon(Icons.Default.Add) }
-                }
-            )
-        },
-        floatingActionButton = {
-            AnimatedVisibilityCrossfade(hasSubscriptions) {
-                FloatingActionButton(
-                    modifier = Modifier.systemBarsPadding(),
-                    onClick = { onNavigate(Destinations.CalendarView) }
-                ) {
-                    Icon(Icons.Default.CalendarMonth)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add subscription"
+                        )
+                    }
+                }) {
+//                IconButton(
+//                    onClick = { onNavigate(Destinations.NotificationSettings) }) {
+//                    Icon(
+//                        imageVector = Icons.Default.Notifications,
+//                        contentDescription = "Notifications"
+//                    )
+//                }
+
+                if (hasSubscriptions) {
+                    IconButton(
+                        onClick = { onNavigate(Destinations.CalendarView) }) {
+                        Icon(
+                            imageVector = Icons.Default.CalendarMonth,
+                            contentDescription = "Calendar view"
+                        )
+                    }
                 }
             }
-        },
-        floatingActionButtonPosition = FabPosition.End,
-    ) {
+        }
+    }) {
         AnimatedContent(
-            modifier = Modifier.padding(it),
-            targetState = hasSubscriptions,
-            label = ""
+            modifier = Modifier.padding(it), targetState = hasSubscriptions, label = ""
         ) { hasSubs ->
             if (hasSubs.not()) {
                 EmptySubscriptions { onNavigate(Destinations.NewSubscription) }
@@ -148,12 +164,13 @@ fun SubscriptionsScreen(
                         HorizontalSubscriptionItem(
                             modifier = Modifier.animateItem(),
                             imageTransitionModifier = Modifier.sharedElement(
-                                SharedTransitionKeys.Subscription.ServiceLogoHomeToDescription(subscription.id),
+                                SharedTransitionKeys.Subscription.ServiceLogoHomeToDescription(
+                                    subscription.id
+                                ),
                             ),
                             subscription = subscription,
                             selectedPeriod = selectedPeriod,
-                            onClick = { onNavigate(Destinations.SubscriptionInfo(subscription.id)) }
-                        )
+                            onClick = { onNavigate(Destinations.SubscriptionInfo(subscription.id)) })
                     }
 
                     if (subscriptions.isEmpty()) {

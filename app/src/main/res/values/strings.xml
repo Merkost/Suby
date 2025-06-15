@@ -59,7 +59,6 @@
     <string name="info_billing_date">The date when the most recent payment for your subscription was processed.\n\nThis is the starting point for calculating the next billing cycle based on the selected period (e.g., monthly, annually).</string>
     <string name="select_payday">Select a payday</string>
     <string name="press_back_to_exit">Press back again to exit</string>
-    <string name="btn_start_greeting">Let\'s get it started</string>
     <string name="price">Price</string>
     <string name="renewal_period">Renewal Period</string>
     <string name="next_payment_date">Next Payment Date</string>
@@ -189,5 +188,91 @@
     <string name="sorting_state_text">Sorting by %1$s (%2$s)</string>
     <string name="sort_state_ascending">Ascending</string>
     <string name="sort_state_descending">Descending</string>
+
+    <!-- Notification Settings -->
+    <string name="notification_settings">Notification Settings</string>
+    <string name="enable_notifications">Enable Notifications</string>
+    <string name="notification_description">Get reminders before your subscriptions renew</string>
+    <string name="days_before_reminder">Days Before Reminder</string>
+    <string name="days_count">%d days before renewal</string>
+    <string name="notification_time">Notification Time</string>
+    <string name="current_time">Current time: %1$s</string>
+    <string name="subscription_statuses">Subscription Statuses</string>
+    <string name="select_statuses_description">Select which subscription statuses should trigger notifications</string>
+    <string name="trial_notifications">Trial Notifications</string>
+    <string name="trial_notifications_description">Get notifications for trial subscriptions before they convert to paid</string>
+
+    <!-- Notification Channel -->
+    <string name="notification_channel_name">Subscription Reminders</string>
+    <string name="notification_channel_description">Notifications about upcoming subscription renewals</string>
+
+    <!-- Notification Content -->
+    <string name="notification_title">Subscription Reminder</string>
+    <string name="notification_text">%1$s subscription will renew soon for %2$s</string>
+    <string name="change_time">Change Time</string>
+    <string name="select_notification_time">Select Notification Time</string>
+    <string name="days_before_reminder_description">Set how many days before billing date you want to be reminded</string>
+    <string name="day">day</string>
+    <string name="days">days</string>
+    <string name="days_range_info">You can set from %d to %d days</string>
+    <string name="enabled_statuses">Enabled Statuses</string>
+    <string name="enabled_statuses_description">Choose which subscription statuses should trigger notifications</string>
+    <string name="status_selection_error">Please select at least one status</string>
+
+    <!-- ================================ -->
+    <!-- ONBOARDING & WELCOME SCREENS    -->
+    <!-- ================================ -->
+    
+    <!-- Welcome Screen -->
+    <string name="welcome_tagline">Where subscriptions meet simplicity</string>
+    <string name="welcome_app_name">Suby</string>
+    <string name="btn_continue">Continue</string>
+    
+    <!-- Onboarding - Currency Selection -->
+    <string name="onboarding_currency_title">Choose Currency</string>
+    <string name="onboarding_currency_description">Select your preferred currency for tracking costs</string>
+    <string name="btn_proceed">Proceed</string>
+    
+    <!-- Onboarding - Notifications Setup -->
+    <string name="onboarding_notifications_title">Stay Informed</string>
+    <string name="onboarding_notifications_subtitle">Never miss a payment again</string>
+    <string name="onboarding_notifications_description">Get timely reminders before your subscriptions renew</string>
+    <string name="onboarding_notifications_benefit_1">• Get notified before renewals</string>
+    <string name="onboarding_notifications_benefit_2">• Avoid unwanted charges</string>
+    <string name="onboarding_notifications_benefit_3">• Stay in control of your budget</string>
+    
+    <!-- Benefit Card Titles and Descriptions -->
+    <string name="benefit_smart_reminders_title">Smart Reminders</string>
+    <string name="benefit_smart_reminders_description">Get notified before renewals</string>
+    <string name="benefit_avoid_surprises_title">Avoid Surprises</string>
+    <string name="benefit_avoid_surprises_description">Prevent unwanted charges</string>
+    <string name="benefit_budget_control_title">Budget Control</string>
+    <string name="benefit_budget_control_description">Stay in control of spending</string>
+    
+    <!-- Content Descriptions -->
+    <string name="cd_back_button">Back</string>
+    <string name="cd_logo">Suby logo</string>
+    <string name="app_title">Suby</string>
+    
+    <!-- Notification Permission -->
+    <string name="notification_permission_required">Notification Permission Required</string>
+    <string name="notification_permission_description">To send you reminders about your subscriptions, we need permission to show notifications.</string>
+    <string name="grant_permission">Grant Permission</string>
+    <string name="permission_denied_message">Notifications are disabled. You can enable them later in Settings.</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="btn_enable_notifications">Enable Alerts</string>
+    <string name="btn_skip_notifications">Skip for Now</string>
+    
+    <!-- Onboarding - Completion -->
+    <string name="onboarding_ready_title">All Set!</string>
+    <string name="onboarding_ready_description">Ready to manage your subscriptions</string>
+    <string name="btn_get_started">Get Started</string>
+    
+    <!-- Legacy Onboarding (for backward compatibility) -->
+    <string name="greeting_title">Welcome to Suby</string>
+    <string name="greeting_subtitle">Smart Subscription Management</string>
+    <string name="greeting_description">The easiest way to track and manage all your subscriptions in one place</string>
+    <string name="btn_start_greeting">Let\'s get it started</string>
+    <string name="btn_start_managing">Start Managing Subscriptions</string>
 
 </resources>

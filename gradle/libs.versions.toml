@@ -12,6 +12,8 @@ jvmVersion = "JVM_21"
 #Bom
 koin-bom = "4.1.0"
 compose-bom = "2025.06.00"
+material3 = "1.4.0-alpha15"
+material3-alpha = "1.14.0-alpha01"
 firebase-bom = "33.15.0"
 
 agp = "8.10.1"
@@ -40,6 +42,7 @@ secrets = "2.0.1"
 datastore = "1.1.7"
 serialization = "1.8.1"
 timber = "5.0.1"
+moko-permissions = "0.19.1"
 
 
 [libraries]
@@ -65,7 +68,7 @@ koin-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = 
 lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
-material = { module = "com.google.android.material:material", version.ref = "material" }
+material = { module = "com.google.android.material:material", version.ref = "material3-alpha" }
 qonversion-sdk = { module = "io.qonversion.android.sdk:sdk", version.ref = "sdk" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 
@@ -78,7 +81,7 @@ ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
-material3 = { group = "androidx.compose.material3", name = "material3" }
+material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version = "1.1.1" }
@@ -105,6 +108,10 @@ supabase-bom = { group = "io.github.jan-tennert.supabase", name = "bom", version
 supabase-database = { group = "io.github.jan-tennert.supabase", name = "postgrest-kt" }
 supabase-storage = { group = "io.github.jan-tennert.supabase", name = "storage-kt" }
 supabase-compose-auth = { group = "io.github.jan-tennert.supabase", name = "compose-auth" }
+
+moko-permissions = { group = "dev.icerock.moko", name = "permissions", version.ref = "moko-permissions" }
+moko-permissions-compose = { group = "dev.icerock.moko", name = "permissions-compose", version.ref = "moko-permissions" }
+moko-permissions-notifications = { group = "dev.icerock.moko", name = "permissions-notifications", version.ref = "moko-permissions" }
 
 [bundles]
 ktor = ["ktor", "ktor-logging", "ktor-negotiation", "ktor-serialization"]

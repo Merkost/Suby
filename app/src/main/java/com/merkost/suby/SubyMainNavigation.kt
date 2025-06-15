@@ -107,23 +107,29 @@ private fun NavGraphBuilder.NavGraph(
     navController: NavController,
 ) {
     composable<Destinations.Greeting> {
-        GreetingScreen(onContinueClick = { navController.navigate(Destinations.Onboarding) })
+        WelcomeScreen(
+            onContinue = {
+                navController.navigate(Destinations.Onboarding)
+            }
+        )
     }
 
-    navigation(
-        route = Destinations.Onboarding::class,
-        startDestination = Destinations.OnboardingCurrency::class
-    ) {
-        composable<Destinations.OnboardingCurrency> {
-            val onboardingViewModel = koinViewModel<OnboardingViewModel>()
+    composable<Destinations.Onboarding> {
+        val onboardingViewModel = koinViewModel<OnboardingViewModel>()
 
-            OnboardingCurrencyScreen(onCurrencySelected = {
-                onboardingViewModel.saveMainCurrency(it)
-                navController.navigate(Destinations.MainScreen)
-            })
-        }
-
-        //Other onboarding screens
+        OnboardingPagerScreen(
+            onComplete = { currency ->
+                onboardingViewModel.saveMainCurrency(currency)
+                onboardingViewModel.completeOnboarding()
+                navController.navigate(Destinations.MainScreen) {
+                    popUpTo(Destinations.Greeting) { inclusive = true }
+                }
+            },
+            onEnableNotifications = {
+                onboardingViewModel.enableNotifications()
+            },
+            upPress = upPress,
+        )
     }
 
     composable<Destinations.MainScreen> { backStackEntry ->

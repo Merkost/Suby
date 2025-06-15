@@ -17,7 +17,10 @@ sealed interface Destinations {
     data object Onboarding: Destinations
 
     @Serializable
-    data object OnboardingCurrency: Destinations
+    data object OnboardingNotifications: Destinations
+
+    @Serializable
+    data object OnboardingComplete: Destinations
 
     @Serializable
     data object MainScreen: Destinations

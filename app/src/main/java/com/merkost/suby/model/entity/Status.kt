@@ -8,7 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.merkost.suby.ui.theme.SubyTheme
+import kotlinx.serialization.Serializable
 
+@Serializable
 enum class Status(
     val icon: ImageVector,
     val statusName: String,
